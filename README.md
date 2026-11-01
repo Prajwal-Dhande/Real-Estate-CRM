@@ -69,7 +69,8 @@ python -m venv venv
 # source venv/bin/activate
 
 pip install -r requirements.txt
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8001 --reload
+python run.py
+# or: uvicorn app.main:app --host 127.0.0.1 --port 8001 --reload
 ```
 *Health check:* `http://127.0.0.1:8001/health`  
 *Interactive Swagger Docs:* `http://127.0.0.1:8001/docs`

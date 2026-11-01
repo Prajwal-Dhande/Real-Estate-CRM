@@ -9,6 +9,14 @@ import logging
 import time
 from contextlib import asynccontextmanager
 
+import sys
+from pathlib import Path
+
+# Add project root to sys.path so 'app' is always resolvable regardless of working directory
+_AI_ENGINE_DIR = Path(__file__).resolve().parent.parent
+if str(_AI_ENGINE_DIR) not in sys.path:
+    sys.path.insert(0, str(_AI_ENGINE_DIR))
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 

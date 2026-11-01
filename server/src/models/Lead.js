@@ -32,3 +32,4 @@ const leadSchema = new mongoose.Schema({
 const Lead = mongoose.model('Lead', leadSchema);
 
 module.exports = Lead;
+

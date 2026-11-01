@@ -10,3 +10,4 @@ router.patch('/:id', authenticate, propertyController.updateProperty);
 router.delete('/:id', authenticate, propertyController.deleteProperty);
 
 module.exports = router;
+

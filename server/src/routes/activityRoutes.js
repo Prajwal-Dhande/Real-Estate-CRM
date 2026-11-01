@@ -8,3 +8,4 @@ router.get('/lead/:leadId', authenticate, activityController.getActivitiesByLead
 router.patch('/:id/complete', authenticate, activityController.completeFollowUp);
 
 module.exports = router;
+

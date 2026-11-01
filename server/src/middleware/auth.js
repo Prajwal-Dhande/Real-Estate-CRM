@@ -66,3 +66,4 @@ module.exports = {
   authorize,
   JWT_SECRET
 };
+

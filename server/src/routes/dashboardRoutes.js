@@ -6,3 +6,4 @@ const { authenticate } = require('../middleware/auth');
 router.get('/metrics', authenticate, dashboardController.getDashboardMetrics);
 
 module.exports = router;
+

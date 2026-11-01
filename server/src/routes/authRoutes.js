@@ -9,3 +9,4 @@ router.get('/me', authenticate, authController.getMe);
 router.get('/agents', authenticate, authController.getAgents);
 
 module.exports = router;
+

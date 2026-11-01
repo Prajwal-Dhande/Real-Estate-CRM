@@ -11,3 +11,4 @@ router.patch('/:id', authenticate, leadController.updateLead);
 router.delete('/:id', authenticate, leadController.deleteLead);
 
 module.exports = router;
+

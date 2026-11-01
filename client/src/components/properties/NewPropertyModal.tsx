@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Property, PredictPriceResult } from "@/types";
 import { createProperty, predictPrice } from "@/lib/api";
 import { formatCurrencyLakhs } from "@/lib/utils";
-import { X, Sparkles, Building2, Calculator, Check, ArrowRight } from "lucide-react";
+import { X, Building2, Calculator, Check, Cpu } from "lucide-react";
 
 interface NewPropertyModalProps {
   isOpen: boolean;
@@ -122,45 +122,40 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-      <div className="bg-white rounded-2xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+      <div className="bg-white rounded-lg max-w-2xl w-full border border-slate-200 shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="p-5 bg-slate-900 text-white flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
-              <Building2 className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <h3 className="font-bold text-base">Add New Property</h3>
-              <p className="text-xs text-slate-400">Includes live XGBoost price estimation</p>
-            </div>
+        <div className="p-4 bg-[#0F172A] text-white flex items-center justify-between shrink-0 border-b border-slate-800">
+          <div>
+            <h3 className="font-semibold text-sm font-mono tracking-tight text-white">List New Property</h3>
+            <p className="text-[11px] text-slate-400">Includes live XGBoost fair market price evaluation</p>
           </div>
-          <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:text-white">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="p-1 rounded-md text-slate-400 hover:text-white transition-colors">
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-5 flex-1">
+        <form onSubmit={handleSubmit} className="p-5 overflow-y-auto space-y-4 flex-1">
           {/* Title & Locality */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Property Title *</label>
+              <label className="text-[11px] font-mono font-medium text-slate-700 block mb-1">Property Title *</label>
               <input
                 type="text"
                 required
                 placeholder="e.g. Modern 3BHK East-Facing Apartment"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="w-full text-xs p-2 border border-slate-200 rounded-md focus:outline-hidden focus:ring-1 focus:ring-slate-900 bg-slate-50/70"
               />
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Locality (Nagpur) *</label>
+              <label className="text-[11px] font-mono font-medium text-slate-700 block mb-1">Locality (Nagpur) *</label>
               <select
                 value={locality}
                 onChange={(e) => setLocality(e.target.value)}
-                className="w-full text-xs p-2.5 border rounded-lg bg-white"
+                className="w-full text-xs font-mono p-2 border border-slate-200 rounded-md bg-white"
               >
                 {LOCALITIES.map((loc) => (
                   <option key={loc.name} value={loc.name}>
@@ -172,48 +167,48 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1">Address / Landmark</label>
+            <label className="text-[11px] font-mono font-medium text-slate-700 block mb-1">Address / Landmark</label>
             <input
               type="text"
               placeholder="e.g. Plot 15, Near Metro Pillar 44, Vasudev Nagar"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="w-full text-xs p-2.5 border rounded-lg"
+              className="w-full text-xs font-mono p-2 border border-slate-200 rounded-md bg-slate-50/70"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1">Description *</label>
+            <label className="text-[11px] font-mono font-medium text-slate-700 block mb-1">Description *</label>
             <textarea
               required
               rows={2}
               placeholder="Spacious apartment with modular kitchen, private balcony, and covered parking..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full text-xs p-2 border border-slate-200 rounded-md focus:outline-hidden focus:ring-1 focus:ring-slate-900 bg-slate-50/70"
             />
           </div>
 
           {/* Area, BHK, Floors */}
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-4 gap-3 font-mono">
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Carpet Area (sq ft)</label>
+              <label className="text-[11px] font-medium text-slate-700 block mb-1">Carpet (sq.ft)</label>
               <input
                 type="number"
                 min={300}
                 max={5000}
                 value={carpetAreaSqFt}
                 onChange={(e) => setCarpetAreaSqFt(Number(e.target.value))}
-                className="w-full text-xs p-2.5 border rounded-lg"
+                className="w-full text-xs p-2 border border-slate-200 rounded-md bg-slate-50/70"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">BHK</label>
+              <label className="text-[11px] font-medium text-slate-700 block mb-1">BHK</label>
               <select
                 value={bhk}
                 onChange={(e) => setBhk(Number(e.target.value))}
-                className="w-full text-xs p-2.5 border rounded-lg bg-white"
+                className="w-full text-xs p-2 border border-slate-200 rounded-md bg-white"
               >
                 <option value={1}>1 BHK</option>
                 <option value={2}>2 BHK</option>
@@ -224,35 +219,35 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Floor</label>
+              <label className="text-[11px] font-medium text-slate-700 block mb-1">Floor</label>
               <input
                 type="number"
                 min={0}
                 value={floorNumber}
                 onChange={(e) => setFloorNumber(Number(e.target.value))}
-                className="w-full text-xs p-2.5 border rounded-lg"
+                className="w-full text-xs p-2 border border-slate-200 rounded-md bg-slate-50/70"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Total Floors</label>
+              <label className="text-[11px] font-medium text-slate-700 block mb-1">Total Floors</label>
               <input
                 type="number"
                 min={1}
                 value={totalFloors}
                 onChange={(e) => setTotalFloors(Number(e.target.value))}
-                className="w-full text-xs p-2.5 border rounded-lg"
+                className="w-full text-xs p-2 border border-slate-200 rounded-md bg-slate-50/70"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Furnishing</label>
+              <label className="text-[11px] font-mono font-medium text-slate-700 block mb-1">Furnishing</label>
               <select
                 value={furnishing}
                 onChange={(e) => setFurnishing(e.target.value as any)}
-                className="w-full text-xs p-2.5 border rounded-lg bg-white"
+                className="w-full text-xs font-mono p-2 border border-slate-200 rounded-md bg-white"
               >
                 <option value="Unfurnished">Unfurnished</option>
                 <option value="Semi-Furnished">Semi-Furnished</option>
@@ -261,7 +256,7 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Listed Price (₹ in Lakhs) *</label>
+              <label className="text-[11px] font-mono font-medium text-slate-700 block mb-1">Listed Price (₹ in Lakhs) *</label>
               <input
                 type="number"
                 step="0.5"
@@ -269,15 +264,15 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
                 required
                 value={listedPriceInLakhs}
                 onChange={(e) => setListedPriceInLakhs(Number(e.target.value))}
-                className="w-full text-xs p-2.5 border rounded-lg font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500"
+                className="w-full text-xs font-mono font-bold text-slate-900 p-2 border border-slate-200 rounded-md focus:outline-hidden focus:ring-1 focus:ring-slate-900 bg-slate-50/70"
               />
             </div>
           </div>
 
           {/* Amenities Pills */}
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1.5">Amenities</label>
-            <div className="flex flex-wrap gap-1.5">
+            <label className="text-[11px] font-mono font-medium text-slate-700 block mb-1.5">Amenities</label>
+            <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
               {AVAILABLE_AMENITIES.map((amenity) => {
                 const selected = selectedAmenities.includes(amenity);
                 return (
@@ -285,9 +280,9 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
                     key={amenity}
                     type="button"
                     onClick={() => toggleAmenity(amenity)}
-                    className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
+                    className={`px-2 py-0.5 rounded border transition-colors ${
                       selected
-                        ? "bg-indigo-600 text-white border-indigo-600 font-semibold shadow-xs"
+                        ? "bg-slate-900 text-white border-slate-900 font-medium"
                         : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
                     }`}
                   >
@@ -299,39 +294,37 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
           </div>
 
           {/* LIVE AI VALUATION SECTION */}
-          <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-50 via-slate-50 to-blue-50 border border-indigo-200/80 space-y-3">
+          <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-2.5 font-mono">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-indigo-600" />
-                <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                  Live AI Valuation Preview
-                </span>
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800">
+                <Cpu className="w-3.5 h-3.5 text-emerald-600" />
+                <span>AI Valuation Telemetry</span>
               </div>
 
               <button
                 type="button"
                 onClick={handleFetchAiValuation}
                 disabled={estimating}
-                className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs disabled:opacity-50"
+                className="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 rounded text-[11px] font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
               >
-                <Calculator className="w-3.5 h-3.5" />
-                {estimating ? "Estimating..." : "Estimate Price with ML"}
+                <Calculator className="w-3 h-3 text-slate-500" />
+                {estimating ? "Estimating..." : "Evaluate Price with ML"}
               </button>
             </div>
 
             {aiValuation ? (
-              <div className="p-3 bg-white rounded-xl border border-indigo-100 shadow-xs space-y-2">
-                <div className="flex items-baseline justify-between">
+              <div className="p-3 bg-white rounded-md border border-slate-200 space-y-2">
+                <div className="flex items-baseline justify-between text-xs">
                   <div>
-                    <span className="text-[11px] text-slate-500 block">AI Estimated Fair Value</span>
-                    <span className="text-xl font-extrabold text-indigo-700">
+                    <span className="text-[10px] text-slate-500 block uppercase tracking-wider">AI Fair Market Value</span>
+                    <span className="text-base font-bold text-slate-900">
                       ₹{aiValuation.estimatedPriceInLakhs.toFixed(2)} Lakhs
                     </span>
                   </div>
 
                   <div className="text-right">
-                    <span className="text-[11px] text-slate-500 block">Range (Conf: {Math.round(aiValuation.confidenceScore * 100)}%)</span>
-                    <span className="text-xs font-bold text-slate-800">
+                    <span className="text-[10px] text-slate-500 block uppercase tracking-wider">Spread (Conf: {Math.round(aiValuation.confidenceScore * 100)}%)</span>
+                    <span className="text-xs font-semibold text-slate-700">
                       ₹{aiValuation.priceRangeMin} L - ₹{aiValuation.priceRangeMax} L
                     </span>
                   </div>
@@ -339,47 +332,47 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
 
                 {/* Ratio comparison */}
                 {listedPriceInLakhs && (
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="text-slate-600">Listed vs AI Estimate:</span>
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                    <span className="text-slate-500">Listed vs AI:</span>
                     {listedPriceInLakhs < aiValuation.estimatedPriceInLakhs * 0.95 ? (
-                      <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
-                        Undervalued by ₹{(aiValuation.estimatedPriceInLakhs - listedPriceInLakhs).toFixed(2)} L (High Buyer Demand)
+                      <span className="font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                        Undervalued by ₹{(aiValuation.estimatedPriceInLakhs - listedPriceInLakhs).toFixed(2)} L (High Demand)
                       </span>
                     ) : listedPriceInLakhs > aiValuation.estimatedPriceInLakhs * 1.05 ? (
-                      <span className="font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded">
-                        Overpriced by ₹{(listedPriceInLakhs - aiValuation.estimatedPriceInLakhs).toFixed(2)} L (May require discount)
+                      <span className="font-semibold text-rose-700 bg-rose-50 px-1.5 py-0.2 rounded border border-rose-200">
+                        Overpriced by ₹{(listedPriceInLakhs - aiValuation.estimatedPriceInLakhs).toFixed(2)} L (High Price)
                       </span>
                     ) : (
-                      <span className="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-                        Fair Market Value (±5% deviation)
+                      <span className="font-semibold text-slate-700 bg-slate-100 px-1.5 py-0.2 rounded border border-slate-200">
+                        Fair Market Valuation (±5%)
                       </span>
                     )}
                   </div>
                 )}
               </div>
             ) : (
-              <p className="text-xs text-slate-500">
-                Click &ldquo;Estimate Price with ML&rdquo; to test how your listed price compares to XGBoost median estimates for {locality}.
+              <p className="text-[11px] text-slate-400">
+                Click &ldquo;Evaluate Price with ML&rdquo; to benchmark listed price against XGBoost regression models for {locality}.
               </p>
             )}
           </div>
 
           {/* Footer Submit */}
-          <div className="pt-2 flex items-center justify-end gap-2 border-t">
+          <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-100 font-mono">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50"
+              className="px-3 py-1.5 border border-slate-200 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-md disabled:opacity-50"
+              className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-xs font-semibold flex items-center gap-1.5 shadow-2xs disabled:opacity-50 transition-colors"
             >
               <Check className="w-3.5 h-3.5 text-emerald-400" />
-              {submitting ? "Saving to Inventory..." : "Save Property to Inventory"}
+              <span>{submitting ? "Saving..." : "Save Property"}</span>
             </button>
           </div>
         </form>
@@ -387,4 +380,3 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
     </div>
   );
 }
-

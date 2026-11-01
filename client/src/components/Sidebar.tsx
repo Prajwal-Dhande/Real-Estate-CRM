@@ -7,18 +7,21 @@ import {
   KanbanSquare, 
   Building2, 
   BrainCircuit, 
-  Sparkles,
-  Layers,
-  ChevronRight
+  ChevronRight,
+  ShieldCheck,
+  Cpu,
+  Activity,
+  ArrowUpRight,
+  CircleDot
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   {
-    name: "Dashboard Analytics",
+    name: "Dashboard",
     href: "/",
     icon: LayoutDashboard,
-    badge: "Live"
+    badge: "Metrics"
   },
   {
     name: "Lead Pipeline",
@@ -30,10 +33,10 @@ const NAV_ITEMS = [
     name: "Property Inventory",
     href: "/properties",
     icon: Building2,
-    badge: "Map + Grid"
+    badge: "Map & Grid"
   },
   {
-    name: "AI Valuation Sandbox",
+    name: "AI Valuation",
     href: "/valuation",
     icon: BrainCircuit,
     badge: "ML"
@@ -44,27 +47,29 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-100 flex flex-col shrink-0 border-r border-slate-800 select-none">
-      {/* Brand Header */}
-      <div className="h-16 px-6 flex items-center justify-between border-b border-slate-800/80">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-            <Layers className="w-5 h-5" />
+    <aside className="w-64 bg-[#0F172A] text-slate-300 flex flex-col shrink-0 border-r border-slate-800/80 select-none">
+      {/* Brand & Workspace Header */}
+      <div className="h-16 px-5 flex items-center justify-between border-b border-slate-800/80">
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-white font-bold text-xs tracking-wider group-hover:border-slate-500 transition-colors">
+            <span className="text-emerald-400 font-mono">E</span>IQ
           </div>
-          <div>
+          <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-lg tracking-tight text-white">EstateIQ</span>
-              <span className="text-[10px] font-semibold bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded border border-indigo-500/30">AI CRM</span>
+              <span className="font-semibold text-sm tracking-tight text-white">EstateIQ</span>
+              <span className="text-[10px] font-medium font-mono text-slate-400 bg-slate-800/80 px-1.5 py-0.2 rounded border border-slate-700/60">
+                PRO
+              </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">Nagpur Real Estate</p>
+            <span className="text-[11px] text-slate-400 tracking-tight">Nagpur Brokerage</span>
           </div>
         </Link>
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 py-6 px-3 space-y-1.5 overflow-y-auto">
-        <div className="px-3 pb-2 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
-          CRM Workspaces
+      <div className="flex-1 py-5 px-3 space-y-1 overflow-y-auto">
+        <div className="px-3 pb-2 text-[10px] font-semibold tracking-wider text-slate-400 uppercase font-mono">
+          Workspaces
         </div>
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
@@ -74,59 +79,78 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "group flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
+                "group relative flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-colors",
                 isActive
-                  ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/30"
-                  : "text-slate-300 hover:bg-slate-800/70 hover:text-white"
+                  ? "bg-slate-800/90 text-white shadow-xs font-semibold"
+                  : "text-slate-400 hover:bg-slate-800/40 hover:text-slate-200"
               )}
             >
-              <div className="flex items-center gap-3">
-                <Icon className={cn("w-4 h-4 transition-colors", isActive ? "text-white" : "text-slate-400 group-hover:text-slate-200")} />
+              {isActive && (
+                <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-emerald-500 rounded-r-full" />
+              )}
+              <div className="flex items-center gap-2.5">
+                <Icon className={cn("w-4 h-4 transition-colors", isActive ? "text-emerald-400" : "text-slate-400 group-hover:text-slate-300")} />
                 <span>{item.name}</span>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 {item.badge && (
                   <span
                     className={cn(
-                      "text-[10px] font-semibold px-1.5 py-0.5 rounded",
+                      "text-[10px] font-mono px-1.5 py-0.5 rounded",
                       isActive
-                        ? "bg-white/20 text-white"
-                        : "bg-slate-800 text-slate-400 group-hover:bg-slate-700 group-hover:text-slate-300"
+                        ? "bg-slate-700 text-slate-200 border border-slate-600"
+                        : "text-slate-400 group-hover:text-slate-400"
                     )}
                   >
                     {item.badge}
                   </span>
                 )}
-                {isActive && <ChevronRight className="w-3.5 h-3.5 text-white/70" />}
+                <ChevronRight className={cn("w-3 h-3 text-slate-600 transition-transform", isActive ? "opacity-100 text-slate-400" : "opacity-0 group-hover:opacity-100")} />
               </div>
             </Link>
           );
         })}
       </div>
 
-      {/* AI Features Callout Card */}
-      <div className="p-3 m-3 rounded-xl bg-gradient-to-br from-indigo-950/60 to-slate-900 border border-indigo-500/20">
-        <div className="flex items-center gap-2 mb-1.5">
-          <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
-          <span className="text-xs font-semibold text-indigo-300">FastAPI ML Engine</span>
+      {/* AI Telemetry & Engine Health Card */}
+      <div className="p-3 mx-3 mb-3 rounded-lg bg-slate-900/90 border border-slate-800 text-[11px] space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-slate-300 font-medium">
+            <Cpu className="w-3.5 h-3.5 text-emerald-400" />
+            <span>AI ML Service</span>
+          </div>
+          <span className="inline-flex items-center gap-1 font-mono text-[10px] text-emerald-400 font-semibold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+            <CircleDot className="w-2 h-2 animate-pulse" /> 8001 Live
+          </span>
         </div>
-        <p className="text-[11px] text-slate-400 leading-relaxed">
-          XGBoost valuation & 384-dim semantic matching running live on port 8001.
-        </p>
+        <div className="text-[10px] text-slate-400 font-mono space-y-0.5 border-t border-slate-800 pt-1.5">
+          <div className="flex justify-between">
+            <span>Valuation:</span>
+            <span className="text-slate-300">XGBoost Ensemble</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Semantic:</span>
+            <span className="text-slate-300">MiniLM-L6 (384d)</span>
+          </div>
+        </div>
       </div>
 
       {/* User / Agent Footer */}
-      <div className="p-4 border-t border-slate-800/80 flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 flex items-center justify-center font-bold text-xs">
-          PD
+      <div className="p-3.5 border-t border-slate-800/80 flex items-center justify-between bg-slate-950/40">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-7 h-7 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center font-mono font-bold text-xs shrink-0">
+            PD
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-slate-200 truncate">Prajwal Dhande</p>
+            <p className="text-[10px] text-slate-400 truncate">Managing Broker</p>
+          </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold text-slate-200 truncate">Prajwal Dhande</p>
-          <p className="text-[11px] text-slate-400 truncate">Senior Estate Agent</p>
+        <div className="flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+          <ShieldCheck className="w-3 h-3" />
+          <span>Admin</span>
         </div>
-        <div className="w-2 h-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20" title="Online" />
       </div>
     </aside>
   );
 }
-

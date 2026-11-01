@@ -15,15 +15,15 @@ import { NewLeadModal } from "@/components/leads/NewLeadModal";
 import { Lead, PipelineStage } from "@/types";
 import { fetchLeads, updateLeadStage } from "@/lib/api";
 import { getSocket } from "@/lib/socket";
-import { Plus, Search, Filter, RefreshCw, Layers } from "lucide-react";
+import { Plus, Search, Filter, RefreshCw, SlidersHorizontal } from "lucide-react";
 
 const STAGES: { stage: PipelineStage; color: string }[] = [
-  { stage: "New Inquiry", color: "bg-blue-500" },
-  { stage: "Contacted", color: "bg-indigo-500" },
-  { stage: "Site Visit Scheduled", color: "bg-purple-500" },
+  { stage: "New Inquiry", color: "bg-slate-400" },
+  { stage: "Contacted", color: "bg-blue-500" },
+  { stage: "Site Visit Scheduled", color: "bg-indigo-500" },
   { stage: "Negotiation", color: "bg-amber-500" },
   { stage: "Closed Won", color: "bg-emerald-500" },
-  { stage: "Closed Lost", color: "bg-rose-500" },
+  { stage: "Closed Lost", color: "bg-rose-400" },
 ];
 
 export default function LeadsPage() {
@@ -65,16 +65,13 @@ export default function LeadsPage() {
     if (!s) return;
 
     const handleLeadCreated = (newLead: Lead) => {
-      console.log("[Socket] Received new lead:", newLead);
       setLeads((prev) => {
-        // Prevent duplicate insertion
         if (prev.some((l) => l._id === newLead._id)) return prev;
         return [newLead, ...prev];
       });
     };
 
     const handleLeadStageUpdated = (payload: any) => {
-      console.log("[Socket] Received lead stage update:", payload);
       setLeads((prev) =>
         prev.map((l) => {
           if (l._id === payload._id || l._id === payload.leadId) {
@@ -90,7 +87,6 @@ export default function LeadsPage() {
         })
       );
 
-      // If drawer is open on this lead, update it
       setSelectedLead((prev) => {
         if (prev && (prev._id === payload._id || prev._id === payload.leadId)) {
           return {
@@ -114,7 +110,6 @@ export default function LeadsPage() {
     };
   }, []);
 
-  // Handle Drag & Drop between stages
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
@@ -156,64 +151,63 @@ export default function LeadsPage() {
   });
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#F8FAFC]">
       <Header
         title="Lead Pipeline"
-        subtitle="Drag-and-drop Kanban with AI conversion scoring and real-time Socket.io sync"
+        subtitle="Live Deal Flow with Autonomous AI Conversion Scoring"
       />
 
       {/* Top Filter and Action Toolbar */}
-      <div className="px-6 py-3.5 bg-white border-b border-slate-200/90 flex flex-wrap items-center justify-between gap-4 shrink-0 shadow-2xs">
-        <div className="flex items-center gap-3 flex-1 max-w-md">
+      <div className="px-6 py-2.5 bg-white border-b border-slate-200/90 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="flex items-center gap-3 flex-1 max-w-lg">
           <div className="relative w-full">
-            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
             <input
               type="text"
-              placeholder="Search leads by name, phone, locality, or requirements..."
+              placeholder="Filter leads by name, phone, locality, or requirement keywords..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-hidden focus:ring-1 focus:ring-slate-900 focus:bg-white transition-all font-mono placeholder:text-slate-400"
             />
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700"
+              className="text-xs font-mono font-medium bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-slate-700 focus:outline-hidden focus:ring-1 focus:ring-slate-900"
             >
-              <option value="All">All Priority</option>
-              <option value="Hot">🔥 Hot (&gt;70)</option>
-              <option value="Warm">⚡ Warm (40-69)</option>
-              <option value="Cold">❄️ Cold (&lt;40)</option>
+              <option value="All">All Tiers</option>
+              <option value="Hot">Hot (&gt;70 pts)</option>
+              <option value="Warm">Warm (40-69 pts)</option>
+              <option value="Cold">Cold (&lt;40 pts)</option>
             </select>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <button
             onClick={loadLeads}
-            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 transition-colors"
+            className="p-1.5 rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition-colors"
             title="Refresh Leads"
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className="w-3.5 h-3.5" />
           </button>
 
           <button
             onClick={() => setIsNewLeadModalOpen(true)}
-            className="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm shadow-indigo-600/20 transition-all hover:scale-102"
+            className="px-3 py-1.5 rounded-md bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors font-mono"
           >
-            <Plus className="w-4 h-4" />
-            Add New Lead
+            <Plus className="w-3.5 h-3.5 text-emerald-400" />
+            <span>New Lead</span>
           </button>
         </div>
       </div>
 
       {/* Kanban Board Container */}
-      <div className="flex-1 overflow-x-auto p-6 kanban-scroll">
+      <div className="flex-1 overflow-x-auto p-5 kanban-scroll">
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-          <div className="flex gap-5 h-full items-start min-w-max pb-4">
+          <div className="flex gap-4 h-full items-start min-w-max pb-4">
             {STAGES.map(({ stage, color }) => {
               const stageLeads = filteredLeads.filter((l) => l.pipelineStage === stage);
               return (
@@ -251,4 +245,3 @@ export default function LeadsPage() {
     </div>
   );
 }
-

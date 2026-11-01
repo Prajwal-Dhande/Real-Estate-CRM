@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getSocket } from "@/lib/socket";
-import { Bell, Radio, Search } from "lucide-react";
+import { Bell, Radio, Search, CheckCircle2, AlertCircle } from "lucide-react";
 
 export function Header({ title, subtitle }: { title?: string; subtitle?: string }) {
   const [socketConnected, setSocketConnected] = useState<boolean>(false);
@@ -26,7 +26,7 @@ export function Header({ title, subtitle }: { title?: string; subtitle?: string 
     };
 
     const handleLeadCreated = (lead: any) => {
-      const msg = `New Lead: ${lead.fullName} (${lead.aiPriorityTag} - ${lead.aiScore} pts)`;
+      const msg = `New Lead: ${lead.fullName} (${lead.aiPriorityTag} • ${lead.aiScore} pts)`;
       setNotifications((prev) => [msg, ...prev.slice(0, 4)]);
     };
 
@@ -44,15 +44,20 @@ export function Header({ title, subtitle }: { title?: string; subtitle?: string 
   }, []);
 
   return (
-    <header className="h-16 px-6 bg-white border-b border-slate-200 flex items-center justify-between shrink-0 shadow-sm">
-      <div>
-        <h1 className="text-lg font-bold text-slate-900 tracking-tight">{title || "Dashboard Analytics"}</h1>
-        {subtitle && <p className="text-xs text-slate-500">{subtitle}</p>}
+    <header className="h-14 px-6 bg-white border-b border-slate-200/80 flex items-center justify-between shrink-0 sticky top-0 z-20">
+      <div className="flex items-center gap-3">
+        <h1 className="text-sm font-semibold text-slate-900 tracking-tight">{title || "Dashboard"}</h1>
+        {subtitle && (
+          <>
+            <span className="text-slate-300">/</span>
+            <span className="text-xs text-slate-500 font-normal">{subtitle}</span>
+          </>
+        )}
       </div>
 
-      <div className="flex items-center gap-4">
-        {/* Socket.io Live Status Indicator */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-xs font-medium">
+      <div className="flex items-center gap-3">
+        {/* WebSocket Real-time Status */}
+        <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-[11px] font-mono">
           <span className="relative flex h-2 w-2">
             {socketConnected ? (
               <>
@@ -63,8 +68,8 @@ export function Header({ title, subtitle }: { title?: string; subtitle?: string 
               <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
             )}
           </span>
-          <span className={socketConnected ? "text-emerald-700 font-semibold" : "text-amber-700"}>
-            {socketConnected ? "Socket Live" : "Connecting..."}
+          <span className={socketConnected ? "text-slate-700 font-medium" : "text-amber-700"}>
+            {socketConnected ? "Sync: Connected" : "Connecting..."}
           </span>
         </div>
 
@@ -72,30 +77,33 @@ export function Header({ title, subtitle }: { title?: string; subtitle?: string 
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 relative transition-colors"
+            className="p-1.5 rounded-md text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent hover:border-slate-200 relative transition-colors"
             title="Real-time Alerts"
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="w-4 h-4" />
             {notifications.length > 0 && (
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white"></span>
             )}
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in slide-in-from-top-1">
-              <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">Live Alerts</span>
-                <span className="text-[10px] text-indigo-600 font-medium">Socket.io feed</span>
+            <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-slate-200 py-1.5 z-50 animate-in fade-in slide-in-from-top-1 text-xs">
+              <div className="px-3.5 py-2 border-b border-slate-100 flex items-center justify-between">
+                <span className="font-semibold text-slate-900 font-mono text-[11px] uppercase tracking-wider">
+                  Live Stream
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono">Socket.io</span>
               </div>
               <div className="max-h-60 overflow-y-auto divide-y divide-slate-100">
                 {notifications.length === 0 ? (
-                  <div className="p-4 text-center text-xs text-slate-500">
-                    No recent alerts. Real-time events will pop up here!
+                  <div className="p-4 text-center text-slate-400">
+                    No active alerts. Real-time events will appear here.
                   </div>
                 ) : (
                   notifications.map((n, i) => (
-                    <div key={i} className="p-3 text-xs text-slate-700 hover:bg-slate-50">
-                      {n}
+                    <div key={i} className="p-2.5 text-slate-700 hover:bg-slate-50 flex items-start gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                      <span className="leading-snug">{n}</span>
                     </div>
                   ))
                 )}
@@ -107,4 +115,3 @@ export function Header({ title, subtitle }: { title?: string; subtitle?: string 
     </header>
   );
 }
-

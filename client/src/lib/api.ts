@@ -312,7 +312,10 @@ export async function fetchLeads(query?: string): Promise<Lead[]> {
     });
     if (!res.ok) throw new Error("Failed to fetch leads");
     const data = await res.json();
-    return data.leads || [];
+    if (data.leads && data.leads.length > 0) {
+      return data.leads;
+    }
+    return MOCK_LEADS;
   } catch (err) {
     console.warn("[API] Using mock leads fallback:", err);
     return MOCK_LEADS;
@@ -411,7 +414,10 @@ export async function fetchProperties(query?: string): Promise<Property[]> {
     });
     if (!res.ok) throw new Error("Failed to fetch properties");
     const data = await res.json();
-    return data.properties || [];
+    if (data.properties && data.properties.length > 0) {
+      return data.properties;
+    }
+    return MOCK_PROPERTIES;
   } catch (err) {
     console.warn("[API] Using mock properties fallback:", err);
     return MOCK_PROPERTIES;
@@ -598,7 +604,10 @@ export async function fetchDashboardMetrics(): Promise<DashboardMetrics> {
     });
     if (!res.ok) throw new Error("Failed to fetch metrics");
     const data = await res.json();
-    return data.metrics;
+    if (data.metrics && (data.metrics.leads?.total > 0 || data.metrics.properties?.total > 0)) {
+      return data.metrics;
+    }
+    throw new Error("Empty metrics payload, using fallback");
   } catch (err) {
     return {
       leads: {

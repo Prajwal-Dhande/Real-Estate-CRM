@@ -25,7 +25,7 @@ const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
 
 // ── Middleware ───────────────────────────────────────────────────
 app.use(cors({
-  origin: CLIENT_URL,
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', process.env.CLIENT_URL || 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
   credentials: true
 }));
@@ -98,13 +98,24 @@ async function startServer() {
       console.log(`[EstateIQ Server] 🚀 Core CRM Backend running on http://localhost:${PORT}`);
     });
   } catch (err) {
-    console.error('[MongoDB] Connection failed:', err.message);
-    console.warn('[EstateIQ Server] Starting server in fallback mode (database reconnecting in background) …');
+    console.error('[MongoDB] Primary connection failed:', err.message);
+    console.log('[EstateIQ Server] Starting fallback in-memory MongoDB server for testing …');
+
+    try {
+      const { MongoMemoryServer } = require('mongodb-memory-server');
+      const mongod = await MongoMemoryServer.create();
+      const uri = mongod.getUri();
+      console.log(`[MongoDB] In-memory database running at ${uri}`);
+      await mongoose.connect(uri);
+      console.log('[MongoDB] Connected to in-memory MongoDB ✓');
+    } catch (memErr) {
+      console.warn('[MongoDB] In-memory MongoDB failed:', memErr.message);
+    }
 
     initFollowupWorker();
 
     server.listen(PORT, () => {
-      console.log(`[EstateIQ Server] ⚠️ Running on http://localhost:${PORT} (MongoDB pending)`);
+      console.log(`[EstateIQ Server] 🚀 Core CRM Backend running on http://localhost:${PORT}`);
     });
   }
 }

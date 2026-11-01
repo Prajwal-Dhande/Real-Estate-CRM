@@ -181,7 +181,7 @@ export default function PropertiesPage() {
         <div className="h-full flex gap-5">
           {/* MAP CONTAINER */}
           {(viewMode === "split" || viewMode === "map") && (
-            <div className={`h-full ${viewMode === "split" ? "w-1/2" : "w-full"} shrink-0 flex flex-col rounded-lg overflow-hidden border border-slate-200/90 shadow-2xs`}>
+            <div className={`h-full ${viewMode === "split" ? "w-1/2" : "w-full"} shrink-0 flex flex-col`}>
               <PropertyMap
                 properties={filteredProperties}
                 selectedProperty={selectedProperty}

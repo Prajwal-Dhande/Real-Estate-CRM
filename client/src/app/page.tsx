@@ -236,8 +236,10 @@ export default function DashboardPage() {
             </div>
 
             <div className="divide-y divide-slate-100 flex-1">
-              {hotLeads.length === 0 ? (
-                <div className="p-8 text-center text-xs text-slate-400">Loading high-probability leads...</div>
+              {loading ? (
+                <div className="p-8 text-center text-xs text-slate-400 font-mono">Loading telemetry...</div>
+              ) : hotLeads.length === 0 ? (
+                <div className="p-8 text-center text-xs text-slate-400 font-mono">No hot conversion leads in current pipeline.</div>
               ) : (
                 hotLeads.map((lead) => (
                   <div key={lead._id} className="p-3.5 hover:bg-slate-50/80 transition-colors flex items-center justify-between gap-4">

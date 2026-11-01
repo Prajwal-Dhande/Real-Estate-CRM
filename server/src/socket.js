@@ -4,8 +4,8 @@ let io = null;
 
 function initSocket(httpServer, corsOptions) {
   io = new Server(httpServer, {
-    cors: corsOptions || {
-      origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    cors: {
+      origin: ['http://localhost:3000', 'http://127.0.0.1:3000', process.env.CLIENT_URL || 'http://localhost:3000'],
       methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
       credentials: true
     }

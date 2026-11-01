@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "seed": "node src/seeders/seed.js",
+    "seed": "node src/seed.js",
     "test": "node test/index.test.js"
   },
   "dependencies": {
@@ -22,8 +22,14 @@
     "socket.io": "^4.8.0"
   },
   "devDependencies": {
+    "mongodb-memory-server": "^11.3.0",
     "nodemon": "^3.1.0"
   },
-  "keywords": ["crm", "real-estate", "express", "mongodb"],
+  "keywords": [
+    "crm",
+    "real-estate",
+    "express",
+    "mongodb"
+  ],
   "license": "MIT"
 }

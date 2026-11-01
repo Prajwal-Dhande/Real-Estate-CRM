@@ -27,6 +27,11 @@ export default function PropertyMap({ properties, selectedProperty, onSelectProp
 
         if (isCancelled || !containerRef.current) return;
 
+        // Ensure container is clean
+        if ((containerRef.current as any)._leaflet_id) {
+          delete (containerRef.current as any)._leaflet_id;
+        }
+
         // Center map on Nagpur
         const nagpurCoords: [number, number] = [21.1458, 79.0882];
         const map = L.map(containerRef.current, {
@@ -56,6 +61,9 @@ export default function PropertyMap({ properties, selectedProperty, onSelectProp
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
+      }
+      if (containerRef.current) {
+        delete (containerRef.current as any)._leaflet_id;
       }
     };
   }, []);

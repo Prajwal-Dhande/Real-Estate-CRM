@@ -111,7 +111,7 @@ export function Sidebar() {
           <span className="text-xs font-semibold text-indigo-300">FastAPI ML Engine</span>
         </div>
         <p className="text-[11px] text-slate-400 leading-relaxed">
-          XGBoost valuation & 384-dim semantic matching running live on port 8000.
+          XGBoost valuation & 384-dim semantic matching running live on port 8001.
         </p>
       </div>
 

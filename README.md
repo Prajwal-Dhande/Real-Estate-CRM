@@ -12,7 +12,7 @@ The platform consists of three decoupled microservices and two backing data stor
 | :--- | :--- | :--- | :--- |
 | **Client Frontend** | Next.js 14 (App Router), TypeScript, Tailwind CSS, `@dnd-kit/core`, `react-leaflet`, Socket.io | `3000` | Real-time Kanban board, interactive Leaflet property map, analytics dashboard, AI valuation sandbox. |
 | **Core CRM Backend** | Node.js, Express.js, Mongoose, Socket.io, BullMQ, Redis, JWT Auth | `5000` | REST API, real-time WebSocket events, background BullMQ followup queue worker, AI client caching. |
-| **AI & ML Engine** | Python 3.11, FastAPI, Scikit-Learn, XGBoost, `sentence-transformers` | `8000` | Machine learning property valuation, 0–100 lead conversion scoring, 384-dimensional semantic embeddings. |
+| **AI & ML Engine** | Python 3.11, FastAPI, Scikit-Learn, XGBoost, `sentence-transformers` | `8001` | Machine learning property valuation, 0–100 lead conversion scoring, 384-dimensional semantic embeddings. |
 | **Database** | MongoDB | `27017` | Document database for users, properties, leads, and activity audit trails. |
 | **Cache & Queue** | Redis | `6379` | Valuation response caching & BullMQ asynchronous task queue. |
 
@@ -69,10 +69,10 @@ python -m venv venv
 # source venv/bin/activate
 
 pip install -r requirements.txt
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8001 --reload
 ```
-*Health check:* `http://127.0.0.1:8000/health`  
-*Interactive Swagger Docs:* `http://127.0.0.1:8000/docs`
+*Health check:* `http://127.0.0.1:8001/health`  
+*Interactive Swagger Docs:* `http://127.0.0.1:8001/docs`
 
 ---
 
@@ -118,7 +118,7 @@ Once the seed script has executed (`npm run seed`), use the following accounts t
 
 ## 📡 Microservice API Contracts
 
-### AI Engine (`http://127.0.0.1:8000/api/v1`)
+### AI Engine (`http://127.0.0.1:8001/api/v1`)
 - `POST /predict-price`: Predicts fair market value in Lakhs given locality, BHK, carpet area, floor, and amenities.
 - `POST /score-lead`: Computes conversion probability score (0–100), priority tag (`Hot`, `Warm`, `Cold`), and explanatory factors.
 - `POST /generate-embedding`: Produces a 384-dimensional vector embedding for property descriptions or buyer requirements.
@@ -142,3 +142,4 @@ Once the seed script has executed (`npm run seed`), use the following accounts t
 
 ## 📄 License
 This project is licensed under the MIT License.
+

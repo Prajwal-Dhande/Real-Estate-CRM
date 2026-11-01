@@ -475,7 +475,8 @@ export async function predictPrice(specs: {
 }): Promise<PredictPriceResult> {
   try {
     // Try calling AI Engine directly or through server
-    const res = await fetch("http://localhost:8000/api/v1/predict-price", {
+    const aiBase = process.env.NEXT_PUBLIC_AI_ENGINE_URL || "http://127.0.0.1:8001/api/v1";
+    const res = await fetch(`${aiBase}/predict-price`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(specs)

@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { redis, isReady } = require('../config/redis');
 
-const AI_ENGINE_URL = process.env.AI_ENGINE_URL || 'http://localhost:8000/api/v1';
+const AI_ENGINE_URL = process.env.AI_ENGINE_URL || 'http://127.0.0.1:8001/api/v1';
 
 const apiClient = axios.create({
   baseURL: AI_ENGINE_URL,

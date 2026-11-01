@@ -9,7 +9,7 @@ const Activity = require('./models/Activity');
 const aiClient = require('./services/aiClient');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/estateiq';
-const AI_ENGINE_URL = process.env.AI_ENGINE_URL || 'http://127.0.0.1:8000/api/v1';
+const AI_ENGINE_URL = process.env.AI_ENGINE_URL || 'http://127.0.0.1:8001/api/v1';
 
 async function connectDatabase() {
   console.log(`[Seed] Connecting to MongoDB: ${MONGODB_URI} …`);
@@ -41,7 +41,7 @@ async function connectDatabase() {
 async function verifyAiEngine() {
   console.log(`[Seed] Verifying AI Engine connectivity: ${AI_ENGINE_URL} …`);
   try {
-    const res = await axios.get('http://127.0.0.1:8000/health', { timeout: 3000 });
+    const res = await axios.get('http://127.0.0.1:8001/health', { timeout: 3000 });
     console.log(`[Seed] ✓ AI Engine is LIVE:`, res.data);
     return true;
   } catch (e) {
@@ -853,3 +853,4 @@ runSeed().catch(err => {
   console.error('[Seed Error] Seeding process failed:', err);
   process.exit(1);
 });
+

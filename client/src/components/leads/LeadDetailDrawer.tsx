@@ -168,6 +168,42 @@ export function LeadDetailDrawer({ lead, onClose, onLeadUpdated }: LeadDetailDra
           </select>
         </div>
 
+        {/* SLA Status Bar (Priority 4) */}
+        {lead.pipelineStage !== "Closed Won" && lead.pipelineStage !== "Closed Lost" && (
+          <div className="px-5 py-2 bg-slate-100/60 border-b border-slate-200/80 flex items-center justify-between font-mono text-xs">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-slate-500 font-medium">Follow-up SLA:</span>
+              {lead.nextFollowUpAt ? (
+                (() => {
+                  const diff = new Date(lead.nextFollowUpAt).getTime() - Date.now();
+                  const isOverdue = diff < 0;
+                  const absDiff = Math.abs(diff);
+                  const hrs = Math.floor(absDiff / 3600000);
+                  const mins = Math.floor((absDiff % 3600000) / 60000);
+                  const str = hrs >= 1 ? `${hrs}h ${mins}m` : `${mins}m`;
+                  return (
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${
+                      isOverdue 
+                        ? "bg-rose-50 text-rose-700 border border-rose-200/90" 
+                        : "bg-emerald-50 text-emerald-700 border border-emerald-200/90"
+                    }`}>
+                      {isOverdue ? `⚠️ Overdue by ${str}` : `⏱️ Due in ${str}`}
+                    </span>
+                  );
+                })()
+              ) : (
+                <span className="text-slate-400 text-[11px]">No follow-up scheduled</span>
+              )}
+            </div>
+
+            {lead.nextFollowUpAt && new Date(lead.nextFollowUpAt).getTime() < Date.now() && (
+              <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                Action Required (40% Conversion Impact)
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Navigation Tabs */}
         <div className="flex border-b border-slate-200 bg-white px-5 text-xs font-mono">
           <button

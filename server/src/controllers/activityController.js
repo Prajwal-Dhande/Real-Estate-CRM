@@ -50,8 +50,11 @@ async function createActivity(req, res) {
 
     await activity.save();
 
-    // 2. Update lead's last contacted timestamp
+    // 2. Update lead's last contacted timestamp & follow-up SLA
     lead.lastContactedAt = new Date();
+    if (nextFollowUpAt) {
+      lead.nextFollowUpAt = new Date(nextFollowUpAt);
+    }
 
     // If activity is a Site Visit, update stage if still in early inquiries
     if (activityType === 'Site Visit' && ['New Inquiry', 'Contacted'].includes(lead.pipelineStage)) {

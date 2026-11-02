@@ -50,6 +50,8 @@ export const MOCK_LEADS: Lead[] = [
       }
     ],
     lastContactedAt: new Date(Date.now() - 3600000 * 4).toISOString(),
+    nextFollowUpAt: new Date(Date.now() - 3 * 3600000).toISOString(), // 3 hours ago -> Overdue by 3 hrs
+    slaDeadline: new Date(Date.now() - 3 * 3600000).toISOString(),
     createdAt: new Date(Date.now() - 86400000 * 3).toISOString()
   },
   {
@@ -97,6 +99,8 @@ export const MOCK_LEADS: Lead[] = [
       }
     ],
     lastContactedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+    nextFollowUpAt: new Date(Date.now() - 45 * 60000).toISOString(), // 45 mins ago -> Overdue by 45m
+    slaDeadline: new Date(Date.now() - 45 * 60000).toISOString(),
     createdAt: new Date(Date.now() - 86400000 * 5).toISOString()
   },
   {
@@ -144,6 +148,8 @@ export const MOCK_LEADS: Lead[] = [
       }
     ],
     lastContactedAt: new Date(Date.now() - 3600000 * 12).toISOString(),
+    nextFollowUpAt: new Date(Date.now() + 25 * 60000).toISOString(), // In 25 mins -> Due in 25m (Amber)
+    slaDeadline: new Date(Date.now() + 25 * 60000).toISOString(),
     createdAt: new Date(Date.now() - 86400000 * 8).toISOString()
   },
   {
@@ -168,6 +174,8 @@ export const MOCK_LEADS: Lead[] = [
     ],
     recommendedProperties: [],
     lastContactedAt: new Date(Date.now() - 86400000 * 4).toISOString(),
+    nextFollowUpAt: new Date(Date.now() + 4 * 3600000).toISOString(), // In 4 hours
+    slaDeadline: new Date(Date.now() + 4 * 3600000).toISOString(),
     createdAt: new Date(Date.now() - 86400000 * 4).toISOString()
   },
   {
@@ -191,6 +199,53 @@ export const MOCK_LEADS: Lead[] = [
     ],
     lastContactedAt: new Date(Date.now() - 86400000 * 6).toISOString(),
     createdAt: new Date(Date.now() - 86400000 * 14).toISOString()
+  },
+  {
+    _id: "lead-6",
+    fullName: "Amit Sharma",
+    phone: "+91 98230 44551",
+    email: "amit.sharma@example.com",
+    source: "WhatsApp",
+    rawRequirementText: "Need 3BHK in Manish Nagar budget around 75L.",
+    preferredLocalities: ["Manish Nagar"],
+    budgetMinInLakhs: 70,
+    budgetMaxInLakhs: 78,
+    desiredBhk: 3,
+    minCarpetAreaSqFt: 1300,
+    pipelineStage: "New Inquiry",
+    aiScore: 88,
+    aiPriorityTag: "Hot",
+    aiScoreFactors: [
+      "Direct inbound WhatsApp inquiry - High immediate intent",
+      "Targeting Manish Nagar corridor",
+      "Budget matches locality price range"
+    ],
+    nextFollowUpAt: new Date(Date.now() - 75 * 60000).toISOString(), // 1h 15m ago -> Overdue by 1h 15m
+    slaDeadline: new Date(Date.now() - 75 * 60000).toISOString(),
+    createdAt: new Date(Date.now() - 90 * 60000).toISOString()
+  },
+  {
+    _id: "lead-7",
+    fullName: "Meenakshi Iyer",
+    phone: "+91 98228 11888",
+    email: "meenakshi.iyer@example.com",
+    source: "Website",
+    rawRequirementText: "Need 3BHK apartment in Manish Nagar close to airport with modern gymnasium and security under 90L",
+    preferredLocalities: ["Manish Nagar"],
+    budgetMinInLakhs: 80,
+    budgetMaxInLakhs: 90,
+    desiredBhk: 3,
+    minCarpetAreaSqFt: 1400,
+    pipelineStage: "Contacted",
+    aiScore: 78,
+    aiPriorityTag: "Warm",
+    aiScoreFactors: [
+      "Strong interest in airport metro corridor",
+      "Requested verified floor plan blueprints"
+    ],
+    nextFollowUpAt: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+    slaDeadline: new Date(Date.now() + 86400000).toISOString(),
+    createdAt: new Date(Date.now() - 86400000 * 2).toISOString()
   }
 ];
 
@@ -654,6 +709,43 @@ export async function updateLeadStage(id: string, stage: PipelineStage, notes?: 
     const found = MOCK_LEADS.find(l => l._id === id);
     if (found) {
       found.pipelineStage = stage;
+      return { ...found };
+    }
+    throw err;
+  }
+}
+
+/**
+ * Update or snooze follow-up SLA for a lead
+ */
+export async function updateLeadFollowup(
+  id: string,
+  nextFollowUpAt?: string,
+  reason?: string,
+  markCompleted: boolean = false
+): Promise<Lead> {
+  try {
+    const res = await fetch(`${API_BASE}/leads/${id}/followup`, {
+      method: "PATCH",
+      headers: getHeaders(),
+      body: JSON.stringify({ nextFollowUpAt, reason, markCompleted })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Failed to update follow-up");
+    }
+    const data = await res.json();
+    return data.lead;
+  } catch (err: any) {
+    console.warn(`[API] Fallback updating follow-up for ${id}:`, err.message);
+    const found = MOCK_LEADS.find(l => l._id === id);
+    if (found) {
+      if (markCompleted) {
+        found.nextFollowUpAt = undefined;
+        found.lastContactedAt = new Date().toISOString();
+      } else if (nextFollowUpAt) {
+        found.nextFollowUpAt = nextFollowUpAt;
+      }
       return { ...found };
     }
     throw err;

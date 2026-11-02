@@ -74,6 +74,8 @@ export interface Lead {
   aiScoreFactors: string[];
   recommendedProperties?: RecommendedPropertyMatch[];
   lastContactedAt?: string;
+  nextFollowUpAt?: string;
+  slaDeadline?: string;
   createdAt?: string;
   updatedAt?: string;
 }

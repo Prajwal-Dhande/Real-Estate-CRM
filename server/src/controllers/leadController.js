@@ -527,11 +527,87 @@ async function deleteLead(req, res) {
   }
 }
 
+/**
+ * PATCH /leads/:id/followup
+ * Quick action to update/snooze or complete follow-up SLA
+ */
+async function updateLeadFollowup(req, res) {
+  try {
+    const { id } = req.params;
+    const { nextFollowUpAt, reason = 'Follow-up SLA updated', markCompleted = false } = req.body;
+
+    const lead = await Lead.findById(id);
+    if (!lead) {
+      return res.status(404).json({ success: false, message: 'Lead not found' });
+    }
+
+    if (markCompleted) {
+      lead.nextFollowUpAt = undefined;
+      lead.lastContactedAt = new Date();
+    } else if (nextFollowUpAt) {
+      lead.nextFollowUpAt = new Date(nextFollowUpAt);
+    }
+
+    await lead.save();
+
+    // Log corresponding activity
+    const activity = new Activity({
+      lead: lead._id,
+      agent: req.user ? req.user._id : lead.assignedAgent,
+      activityType: markCompleted ? 'Call' : 'Note',
+      notes: markCompleted ? `Follow-up completed: ${reason}` : `SLA Rescheduled: ${reason}`,
+      callDurationSeconds: markCompleted ? 60 : 0,
+      clientSentiment: 'Neutral',
+      nextFollowUpAt: lead.nextFollowUpAt,
+      isFollowUpCompleted: Boolean(markCompleted)
+    });
+    await activity.save();
+
+    // Re-schedule BullMQ reminder if new date set
+    if (lead.nextFollowUpAt) {
+      try {
+        const { scheduleFollowupReminder } = require('../queues/followupQueue');
+        await scheduleFollowupReminder({
+          activityId: activity._id,
+          leadId: lead._id,
+          agentId: lead.assignedAgent,
+          nextFollowUpAt: lead.nextFollowUpAt,
+          notes: activity.notes
+        });
+      } catch (qErr) {
+        console.warn('[Lead Controller] Followup queue reminder notice:', qErr.message);
+      }
+    }
+
+    // Emit real-time socket update
+    emitLeadStageUpdated({
+      _id: lead._id,
+      leadId: lead._id,
+      pipelineStage: lead.pipelineStage,
+      nextFollowUpAt: lead.nextFollowUpAt ? lead.nextFollowUpAt.toISOString() : null,
+      lastContactedAt: lead.lastContactedAt
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: markCompleted ? 'Follow-up marked completed' : 'Follow-up SLA updated successfully',
+      lead
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update follow-up SLA',
+      error: err.message
+    });
+  }
+}
+
 module.exports = {
   createLead,
   getLeads,
   getLeadById,
   updateLeadStage,
+  updateLeadFollowup,
   updateLead,
   deleteLead
 };

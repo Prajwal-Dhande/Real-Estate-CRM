@@ -26,7 +26,9 @@ const leadSchema = new mongoose.Schema({
     matchScore: { type: Number } // Cosine similarity 0 to 100
   }],
   requirementEmbedding: [{ type: Number }], // 384-dim vector
-  lastContactedAt: { type: Date }
+  lastContactedAt: { type: Date },
+  nextFollowUpAt: { type: Date, index: true },
+  slaDeadline: { type: Date, index: true }
 }, { timestamps: true });
 
 const Lead = mongoose.model('Lead', leadSchema);

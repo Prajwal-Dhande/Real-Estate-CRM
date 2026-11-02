@@ -1,5 +1,6 @@
 const Property = require('../models/Property');
 const aiClient = require('../services/aiClient');
+const uploadService = require('../services/uploadService');
 
 /**
  * Create a new property
@@ -21,7 +22,13 @@ async function createProperty(req, res) {
       furnishing = 'Semi-Furnished',
       amenities = [],
       listedPriceInLakhs,
-      status = 'Available'
+      status = 'Available',
+      builderName = '',
+      reraNumber = '',
+      possessionDate = 'Ready to Move',
+      floorPlanUrl = '',
+      brochureUrl = '',
+      images = []
     } = req.body;
 
     if (!title || !description || !locality || !address || !carpetAreaSqFt || !bhk || floorNumber === undefined || !totalFloors || !listedPriceInLakhs) {
@@ -85,6 +92,12 @@ async function createProperty(req, res) {
       aiEstimatedPriceInLakhs,
       valuationConfidence,
       status,
+      builderName: builderName ? builderName.trim() : '',
+      reraNumber: reraNumber ? reraNumber.trim() : '',
+      possessionDate: possessionDate || 'Ready to Move',
+      floorPlanUrl: floorPlanUrl || '',
+      brochureUrl: brochureUrl || '',
+      images: Array.isArray(images) ? images : [],
       semanticEmbedding,
       createdBy: req.user ? req.user._id : null
     });
@@ -338,11 +351,64 @@ async function deleteProperty(req, res) {
   }
 }
 
+/**
+ * Upload document (Floor plan, Brochure, Image) via Cloudinary/S3/Local
+ */
+async function uploadDocument(req, res) {
+  try {
+    const { file, fileType = 'floorPlan', fileName, metadata } = req.body;
+    if (!file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file provided for upload'
+      });
+    }
+
+    const result = await uploadService.processUpload({
+      file,
+      fileType,
+      fileName,
+      metadata
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `${fileType} uploaded successfully`,
+      data: result
+    });
+  } catch (err) {
+    console.error('[Property Controller] Upload error:', err);
+    return res.status(500).json({
+      success: false,
+      message: err.message || 'File upload failed'
+    });
+  }
+}
+
+/**
+ * Generate/Return SVG sample blueprint for architectural layout
+ */
+async function getSampleBlueprint(req, res) {
+  try {
+    const bhk = Number(req.query.bhk) || 3;
+    const carpetAreaSqFt = Number(req.query.carpetAreaSqFt) || 1250;
+    const title = req.query.title || 'Nagpur Luxury Blueprint';
+
+    const svg = uploadService.generateSvgFloorPlan(bhk, carpetAreaSqFt, title);
+    res.setHeader('Content-Type', 'image/svg+xml');
+    return res.send(svg);
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Failed to generate sample blueprint' });
+  }
+}
+
 module.exports = {
   createProperty,
   getProperties,
   getPropertyById,
   updateProperty,
-  deleteProperty
+  deleteProperty,
+  uploadDocument,
+  getSampleBlueprint
 };
 

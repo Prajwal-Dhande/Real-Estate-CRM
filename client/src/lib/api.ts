@@ -213,7 +213,14 @@ export const MOCK_PROPERTIES: Property[] = [
     listedPriceInLakhs: 78.5,
     aiEstimatedPriceInLakhs: 82.0,
     valuationConfidence: 0.88,
-    status: "Available"
+    status: "Available",
+    builderName: "Kukreja Infrastructures",
+    reraNumber: "P50500019284",
+    isReraVerified: true,
+    possessionDate: "Ready to Move",
+    floorPlanUrl: "/api/properties/blueprint/sample?bhk=3&carpetAreaSqFt=1350",
+    brochureUrl: "https://maharera.mahaonline.gov.in",
+    images: ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"]
   },
   {
     _id: "prop-2",
@@ -232,7 +239,14 @@ export const MOCK_PROPERTIES: Property[] = [
     listedPriceInLakhs: 48.0,
     aiEstimatedPriceInLakhs: 45.2,
     valuationConfidence: 0.85,
-    status: "Available"
+    status: "Available",
+    builderName: "Moraj Group Nagpur",
+    reraNumber: "P50500028192",
+    isReraVerified: true,
+    possessionDate: "March 2026",
+    floorPlanUrl: "/api/properties/blueprint/sample?bhk=2&carpetAreaSqFt=980",
+    brochureUrl: "https://maharera.mahaonline.gov.in",
+    images: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80"]
   },
   {
     _id: "prop-3",
@@ -251,7 +265,14 @@ export const MOCK_PROPERTIES: Property[] = [
     listedPriceInLakhs: 215.0,
     aiEstimatedPriceInLakhs: 224.5,
     valuationConfidence: 0.91,
-    status: "Available"
+    status: "Available",
+    builderName: "Godrej Properties Anandam",
+    reraNumber: "P50500000125",
+    isReraVerified: true,
+    possessionDate: "Ready to Move",
+    floorPlanUrl: "/api/properties/blueprint/sample?bhk=4&carpetAreaSqFt=2600",
+    brochureUrl: "https://maharera.mahaonline.gov.in",
+    images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80"]
   },
   {
     _id: "prop-4",
@@ -270,7 +291,14 @@ export const MOCK_PROPERTIES: Property[] = [
     listedPriceInLakhs: 55.0,
     aiEstimatedPriceInLakhs: 51.5,
     valuationConfidence: 0.82,
-    status: "Available"
+    status: "Available",
+    builderName: "Sandesh City Projects",
+    reraNumber: "P50500014280",
+    isReraVerified: true,
+    possessionDate: "Dec 2025",
+    floorPlanUrl: "/api/properties/blueprint/sample?bhk=2&carpetAreaSqFt=920",
+    brochureUrl: "https://maharera.mahaonline.gov.in",
+    images: ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80"]
   },
   {
     _id: "prop-5",
@@ -289,7 +317,14 @@ export const MOCK_PROPERTIES: Property[] = [
     listedPriceInLakhs: 165.0,
     aiEstimatedPriceInLakhs: 172.0,
     valuationConfidence: 0.89,
-    status: "Under Offer"
+    status: "Under Offer",
+    builderName: "Apex Landmark Developers",
+    reraNumber: "P50500007891",
+    isReraVerified: true,
+    possessionDate: "Ready to Move",
+    floorPlanUrl: "/api/properties/blueprint/sample?bhk=3&carpetAreaSqFt=1800",
+    brochureUrl: "https://maharera.mahaonline.gov.in",
+    images: ["https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80"]
   }
 ];
 
@@ -682,6 +717,13 @@ export async function createProperty(payload: Partial<Property>): Promise<Proper
       aiEstimatedPriceInLakhs: payload.aiEstimatedPriceInLakhs || (payload.listedPriceInLakhs ? payload.listedPriceInLakhs * 1.03 : 52),
       valuationConfidence: payload.valuationConfidence || 0.86,
       status: payload.status || "Available",
+      builderName: payload.builderName || "Nagpur Premier Estates",
+      reraNumber: payload.reraNumber || "P50500019284",
+      isReraVerified: payload.isReraVerified ?? true,
+      possessionDate: payload.possessionDate || "Ready to Move",
+      floorPlanUrl: payload.floorPlanUrl || `/api/properties/blueprint/sample?bhk=${payload.bhk || 3}&carpetAreaSqFt=${payload.carpetAreaSqFt || 1200}`,
+      brochureUrl: payload.brochureUrl || "https://maharera.mahaonline.gov.in",
+      images: payload.images?.length ? payload.images : ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"],
       createdAt: new Date().toISOString()
     };
     return mockProp;
@@ -937,5 +979,44 @@ export async function simulateWhatsAppMessage(payload: {
     };
   }
 }
+
+/**
+ * Upload property document (Floor plan blueprint SVG/image, brochure PDF, or photo)
+ */
+export async function uploadPropertyDocument(
+  file: string,
+  fileType: "floorPlan" | "brochure" | "image" = "floorPlan",
+  fileName?: string
+): Promise<{ success: boolean; data: { url: string; fileName: string; storage: string } }> {
+  try {
+    const res = await fetch(`${API_BASE}/properties/upload`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({ file, fileType, fileName })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Upload failed");
+    }
+    return await res.json();
+  } catch (err: any) {
+    console.warn("[API] Local fallback for uploadPropertyDocument:", err.message);
+    let fallbackUrl = `/api/properties/blueprint/sample?bhk=3&carpetAreaSqFt=1250`;
+    if (fileType === "brochure") {
+      fallbackUrl = "https://maharera.mahaonline.gov.in";
+    } else if (fileType === "image") {
+      fallbackUrl = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80";
+    }
+    return {
+      success: true,
+      data: {
+        url: fallbackUrl,
+        fileName: fileName || `${fileType}-${Date.now()}`,
+        storage: "local-fallback"
+      }
+    };
+  }
+}
+
 
 

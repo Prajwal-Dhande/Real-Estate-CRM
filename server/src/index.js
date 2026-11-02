@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const http = require('http');
+const path = require('path');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
@@ -30,8 +31,11 @@ app.use(cors({
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
   credentials: true
 }));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Static uploads directory for floor plans, blueprints, and brochures
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // ── Socket.io Setup ──────────────────────────────────────────────
 initSocket(server, {

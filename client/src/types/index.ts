@@ -38,6 +38,13 @@ export interface Property {
   aiEstimatedPriceInLakhs?: number;
   valuationConfidence?: number;
   status: 'Available' | 'Under Offer' | 'Sold';
+  builderName?: string;
+  reraNumber?: string;
+  isReraVerified?: boolean;
+  possessionDate?: string;
+  floorPlanUrl?: string;
+  brochureUrl?: string;
+  images?: string[];
   createdBy?: User | string;
   createdAt?: string;
   updatedAt?: string;

@@ -5,7 +5,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { Lead } from "@/types";
 import { formatCurrencyLakhs } from "@/lib/utils";
-import { MapPin, BedDouble, GripVertical, Sparkles } from "lucide-react";
+import { MapPin, BedDouble, GripVertical, Sparkles, MessageSquare } from "lucide-react";
 
 interface LeadCardProps {
   lead: Lead;
@@ -66,6 +66,11 @@ export function LeadCard({ lead, onClick }: LeadCardProps) {
             <h4 className="text-xs font-semibold text-slate-900 group-hover:text-slate-700 transition-colors truncate">
               {lead.fullName}
             </h4>
+            {lead.source === "WhatsApp" && (
+              <span className="inline-flex items-center gap-0.5 text-[9px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/90 px-1 py-0.2 rounded shrink-0">
+                <MessageSquare className="w-2.5 h-2.5 text-emerald-600" /> WA
+              </span>
+            )}
           </div>
           <p className="text-[11px] font-mono text-slate-400 mt-0.5">{lead.phone}</p>
         </div>

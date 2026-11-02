@@ -29,7 +29,15 @@ export function Header({ title, subtitle }: { title?: string; subtitle?: string 
     };
 
     const handleLeadCreated = (lead: any) => {
-      const msg = `New Lead: ${lead.fullName} (${lead.aiPriorityTag} • ${lead.aiScore} pts)`;
+      const isWA = lead.source === "WhatsApp";
+      const icon = isWA ? "💬 [WhatsApp] " : "New Lead: ";
+      const msg = `${icon}${lead.fullName} (${lead.aiPriorityTag} • ${lead.aiScore} pts)`;
+      setNotifications((prev) => [msg, ...prev.slice(0, 4)]);
+    };
+
+    const handleWhatsAppLead = (payload: any) => {
+      const lead = payload.lead || {};
+      const msg = `💬 WhatsApp Lead: ${lead.fullName || "Inbound"} ("${payload.message || ""}")`;
       setNotifications((prev) => [msg, ...prev.slice(0, 4)]);
     };
 
@@ -37,12 +45,14 @@ export function Header({ title, subtitle }: { title?: string; subtitle?: string 
     s.on("disconnect", handleDisconnect);
     s.on("followup:due", handleFollowupDue);
     s.on("lead:created", handleLeadCreated);
+    s.on("whatsapp:new_lead", handleWhatsAppLead);
 
     return () => {
       s.off("connect", handleConnect);
       s.off("disconnect", handleDisconnect);
       s.off("followup:due", handleFollowupDue);
       s.off("lead:created", handleLeadCreated);
+      s.off("whatsapp:new_lead", handleWhatsAppLead);
     };
   }, []);
 

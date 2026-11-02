@@ -53,7 +53,7 @@ export interface Lead {
   fullName: string;
   phone: string;
   email?: string;
-  source: 'Website' | 'Walk-in' | 'Referral' | 'PropertyPortal';
+  source: 'Website' | 'Walk-in' | 'Referral' | 'PropertyPortal' | 'WhatsApp';
   rawRequirementText: string;
   preferredLocalities: string[];
   budgetMinInLakhs: number;

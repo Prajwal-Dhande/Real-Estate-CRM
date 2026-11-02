@@ -15,6 +15,7 @@ const propertyRoutes = require('./routes/propertyRoutes');
 const leadRoutes = require('./routes/leadRoutes');
 const activityRoutes = require('./routes/activityRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const webhookRoutes = require('./routes/webhookRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -45,6 +46,7 @@ app.use('/api/properties', propertyRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/activities', activityRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/webhook', webhookRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

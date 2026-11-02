@@ -12,11 +12,12 @@ import { Header } from "@/components/Header";
 import { KanbanColumn } from "@/components/leads/KanbanColumn";
 import { LeadDetailDrawer } from "@/components/leads/LeadDetailDrawer";
 import { NewLeadModal } from "@/components/leads/NewLeadModal";
+import { WhatsAppSimulatorModal } from "@/components/leads/WhatsAppSimulatorModal";
 import { Lead, PipelineStage } from "@/types";
 import { fetchLeads, updateLeadStage } from "@/lib/api";
 import { getSocket } from "@/lib/socket";
 import { useAuth } from "@/context/AuthContext";
-import { Plus, Search, Filter, RefreshCw, SlidersHorizontal, MapPin, UserCheck, ShieldCheck } from "lucide-react";
+import { Plus, Search, Filter, RefreshCw, SlidersHorizontal, MapPin, UserCheck, ShieldCheck, MessageSquare } from "lucide-react";
 
 const STAGES: { stage: PipelineStage; color: string }[] = [
   { stage: "New Inquiry", color: "bg-slate-400" },
@@ -35,6 +36,7 @@ export default function LeadsPage() {
   const [priorityFilter, setPriorityFilter] = useState<string>("All");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isNewLeadModalOpen, setIsNewLeadModalOpen] = useState<boolean>(false);
+  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
   const [territoryOnly, setTerritoryOnly] = useState<boolean>(true);
 
   // Configure pointer sensor for smooth dragging with a small distance threshold
@@ -233,6 +235,16 @@ export default function LeadsPage() {
             <RefreshCw className="w-3.5 h-3.5" />
           </button>
 
+          {/* WhatsApp Cloud API Ingestion Simulator Button */}
+          <button
+            onClick={() => setIsWhatsAppModalOpen(true)}
+            className="px-3 py-1.5 rounded-md bg-[#075E54] hover:bg-[#064e46] text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors font-mono"
+            title="Simulate incoming WhatsApp message webhook"
+          >
+            <MessageSquare className="w-3.5 h-3.5 text-emerald-300" />
+            <span>WhatsApp Ingestion</span>
+          </button>
+
           <button
             onClick={() => setIsNewLeadModalOpen(true)}
             className="px-3 py-1.5 rounded-md bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors font-mono"
@@ -278,6 +290,15 @@ export default function LeadsPage() {
         isOpen={isNewLeadModalOpen}
         onClose={() => setIsNewLeadModalOpen(false)}
         onLeadCreated={(newLead) => {
+          setLeads((prev) => [newLead, ...prev]);
+        }}
+      />
+
+      {/* WhatsApp Cloud API Ingestion Simulator Modal */}
+      <WhatsAppSimulatorModal
+        isOpen={isWhatsAppModalOpen}
+        onClose={() => setIsWhatsAppModalOpen(false)}
+        onLeadIngested={(newLead) => {
           setLeads((prev) => [newLead, ...prev]);
         }}
       />

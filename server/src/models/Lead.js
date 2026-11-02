@@ -4,7 +4,7 @@ const leadSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   phone: { type: String, required: true, unique: true },
   email: { type: String, lowercase: true },
-  source: { type: String, enum: ['Website', 'Walk-in', 'Referral', 'PropertyPortal'], default: 'Website' },
+  source: { type: String, enum: ['Website', 'Walk-in', 'Referral', 'PropertyPortal', 'WhatsApp'], default: 'Website' },
   rawRequirementText: { type: String, required: true }, // e.g., "Need 3BHK near metro station under 75L"
   preferredLocalities: [{ type: String }],
   budgetMinInLakhs: { type: Number, required: true },

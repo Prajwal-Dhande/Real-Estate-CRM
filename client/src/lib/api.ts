@@ -1,4 +1,4 @@
-import { Lead, Property, Activity, DashboardMetrics, PredictPriceResult, PipelineStage } from "@/types";
+import { Lead, Property, Activity, DashboardMetrics, PredictPriceResult, PipelineStage, User } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
@@ -313,7 +313,7 @@ export interface AuthResponse {
   success: boolean;
   message?: string;
   token?: string;
-  user?: import("@/types").User;
+  user?: User;
   error?: string;
 }
 
@@ -339,7 +339,7 @@ export async function loginApi(email: string, password: string): Promise<AuthRes
     const isSneha = email.toLowerCase().includes("sneha");
     const role = (isRahul || isSneha) ? "agent" : "admin";
     
-    const mockUser: import("@/types").User = isRahul
+    const mockUser: User = isRahul
       ? {
           _id: "user-agent-rahul",
           name: "Rahul Sharma",
@@ -398,7 +398,7 @@ export async function registerApi(payload: {
     return data;
   } catch (err: any) {
     console.warn("[API] Register offline fallback:", err.message);
-    const mockUser: import("@/types").User = {
+    const mockUser: User = {
       _id: `user-${Date.now()}`,
       name: payload.name,
       email: payload.email,
@@ -437,7 +437,7 @@ export async function demoSwitchApi(email: string): Promise<AuthResponse> {
   const isRahul = email.toLowerCase().includes("rahul");
   const isSneha = email.toLowerCase().includes("sneha");
 
-  const mockUser: import("@/types").User = isRahul
+  const mockUser: User = isRahul
     ? {
         _id: "user-agent-rahul",
         name: "Rahul Sharma",
@@ -475,7 +475,7 @@ export async function demoSwitchApi(email: string): Promise<AuthResponse> {
 /**
  * Fetch current user profile from token
  */
-export async function fetchCurrentUser(): Promise<import("@/types").User | null> {
+export async function fetchCurrentUser(): Promise<User | null> {
   try {
     const res = await fetch(`${API_BASE}/auth/me`, {
       headers: getHeaders(),
@@ -492,7 +492,7 @@ export async function fetchCurrentUser(): Promise<import("@/types").User | null>
 /**
  * Fetch active agents list
  */
-export async function fetchAgents(): Promise<import("@/types").User[]> {
+export async function fetchAgents(): Promise<User[]> {
   try {
     const res = await fetch(`${API_BASE}/auth/agents`, {
       headers: getHeaders(),

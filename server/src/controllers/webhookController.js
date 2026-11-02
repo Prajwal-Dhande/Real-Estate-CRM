@@ -379,3 +379,4 @@ module.exports = {
   handleIncomingWhatsApp,
   simulateIncomingWhatsApp
 };
+

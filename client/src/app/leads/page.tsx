@@ -52,7 +52,13 @@ export default function LeadsPage() {
     setLoading(true);
     try {
       const data = await fetchLeads();
-      setLeads(data);
+      const seen = new Set<string>();
+      const uniqueLeads = data.filter((l: Lead) => {
+        if (!l._id || seen.has(l._id)) return false;
+        seen.add(l._id);
+        return true;
+      });
+      setLeads(uniqueLeads);
     } catch (err) {
       console.error("Failed to load leads:", err);
     } finally {
@@ -178,58 +184,64 @@ export default function LeadsPage() {
       />
 
       {/* Top Filter and Action Toolbar */}
-      <div className="px-6 py-2.5 bg-white border-b border-slate-200/90 flex flex-wrap items-center justify-between gap-3 shrink-0">
-        <div className="flex items-center gap-3 flex-1 max-w-2xl">
-          <div className="relative w-full max-w-sm">
+      <div className="px-6 py-3 bg-white/90 backdrop-blur-md border-b border-slate-200/70 flex flex-wrap items-center justify-between gap-4 shrink-0">
+        <div className="flex flex-wrap items-center gap-3 flex-1">
+          {/* Search Bar */}
+          <div className="relative w-full sm:w-72">
             <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
             <input
               type="text"
-              placeholder="Filter leads by name, phone, locality, or requirement keywords..."
+              placeholder="Search leads, phone, locality..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:outline-hidden focus:ring-1 focus:ring-slate-900 focus:bg-white transition-all font-mono placeholder:text-slate-400"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200/80 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all placeholder:text-slate-400 text-slate-800"
             />
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
-            <select
-              value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
-              className="text-xs font-mono font-medium bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-slate-700 focus:outline-hidden focus:ring-1 focus:ring-slate-900"
-            >
-              <option value="All">All Tiers</option>
-              <option value="Hot">Hot (&gt;70 pts)</option>
-              <option value="Warm">Warm (40-69 pts)</option>
-              <option value="Cold">Cold (&lt;40 pts)</option>
-            </select>
+          {/* Segmented Priority Filter Pills */}
+          <div className="flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200/60 text-xs font-medium">
+            {["All", "Hot", "Warm", "Cold"].map((tier) => (
+              <button
+                key={tier}
+                onClick={() => setPriorityFilter(tier)}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                  priorityFilter === tier
+                    ? "bg-white text-slate-900 shadow-xs"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                {tier === "All" ? "All Deals" : tier}
+              </button>
+            ))}
           </div>
 
           {/* Agent Territory Switcher Pill */}
           {isAgent && assignedLocalities.length > 0 && (
-            <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-blue-50/80 border border-blue-200 text-xs font-mono shrink-0">
-              <span className="text-blue-900 font-semibold flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-blue-600" />
-                Territory: {assignedLocalities.join(", ")}
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-indigo-50/80 border border-indigo-200/70 text-xs shrink-0">
+              <span className="text-indigo-900 font-semibold flex items-center gap-1 text-[11px]">
+                <MapPin className="w-3 h-3 text-indigo-600" />
+                {assignedLocalities.slice(0, 2).join(", ")}
               </span>
               <button
                 type="button"
                 onClick={() => setTerritoryOnly(!territoryOnly)}
-                className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors ${
+                className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-all ${
                   territoryOnly
-                    ? "bg-blue-600 text-white"
-                    : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                    ? "bg-indigo-600 text-white shadow-2xs"
+                    : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
                 }`}
               >
-                {territoryOnly ? `My Scope (${territoryLeadCount})` : "All Leads"}
+                {territoryOnly ? `My Localities (${territoryLeadCount})` : "All"}
               </button>
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2.5">
           <button
             onClick={loadLeads}
-            className="p-1.5 rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition-colors"
+            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-colors shadow-2xs"
             title="Refresh Leads"
           >
             <RefreshCw className="w-3.5 h-3.5" />
@@ -238,16 +250,16 @@ export default function LeadsPage() {
           {/* WhatsApp Cloud API Ingestion Simulator Button */}
           <button
             onClick={() => setIsWhatsAppModalOpen(true)}
-            className="px-3 py-1.5 rounded-md bg-[#075E54] hover:bg-[#064e46] text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors font-mono"
+            className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs hover:shadow-md transition-all active:scale-95"
             title="Simulate incoming WhatsApp message webhook"
           >
-            <MessageSquare className="w-3.5 h-3.5 text-emerald-300" />
+            <MessageSquare className="w-3.5 h-3.5 text-emerald-200" />
             <span>WhatsApp Ingestion</span>
           </button>
 
           <button
             onClick={() => setIsNewLeadModalOpen(true)}
-            className="px-3 py-1.5 rounded-md bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors font-mono"
+            className="px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs hover:shadow-md transition-all active:scale-95"
           >
             <Plus className="w-3.5 h-3.5 text-emerald-400" />
             <span>New Lead</span>
@@ -256,9 +268,9 @@ export default function LeadsPage() {
       </div>
 
       {/* Kanban Board Container */}
-      <div className="flex-1 overflow-x-auto p-5 kanban-scroll">
+      <div className="flex-1 overflow-x-auto p-6 kanban-scroll">
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-          <div className="flex gap-4 h-full items-start min-w-max pb-4">
+          <div className="flex gap-5 h-full items-start min-w-max pb-4">
             {STAGES.map(({ stage, color }) => {
               const stageLeads = filteredLeads.filter((l) => l.pipelineStage === stage);
               return (
@@ -290,7 +302,10 @@ export default function LeadsPage() {
         isOpen={isNewLeadModalOpen}
         onClose={() => setIsNewLeadModalOpen(false)}
         onLeadCreated={(newLead) => {
-          setLeads((prev) => [newLead, ...prev]);
+          setLeads((prev) => {
+            if (prev.some((l) => l._id === newLead._id)) return prev;
+            return [newLead, ...prev];
+          });
         }}
       />
 
@@ -299,7 +314,10 @@ export default function LeadsPage() {
         isOpen={isWhatsAppModalOpen}
         onClose={() => setIsWhatsAppModalOpen(false)}
         onLeadIngested={(newLead) => {
-          setLeads((prev) => [newLead, ...prev]);
+          setLeads((prev) => {
+            if (prev.some((l) => l._id === newLead._id)) return prev;
+            return [newLead, ...prev];
+          });
         }}
       />
     </div>

@@ -10,3 +10,4 @@ router.post('/whatsapp', webhookController.handleIncomingWhatsApp);
 router.post('/whatsapp/simulate', webhookController.simulateIncomingWhatsApp);
 
 module.exports = router;
+

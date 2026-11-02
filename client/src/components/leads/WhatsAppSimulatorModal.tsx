@@ -297,3 +297,4 @@ export function WhatsAppSimulatorModal({ isOpen, onClose, onLeadIngested }: What
     </div>
   );
 }
+

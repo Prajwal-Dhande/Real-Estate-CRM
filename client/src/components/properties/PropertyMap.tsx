@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import "leaflet/dist/leaflet.css";
 import { Property } from "@/types";
 import { formatCurrencyLakhs } from "@/lib/utils";
 

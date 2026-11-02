@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { getSocket } from "@/lib/socket";
-import { Bell, Radio, Search, CheckCircle2, AlertCircle } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { Bell, Radio, Search, CheckCircle2, AlertCircle, ShieldCheck, UserCheck, Repeat } from "lucide-react";
 
 export function Header({ title, subtitle }: { title?: string; subtitle?: string }) {
+  const { user, isAdmin, isAgent, assignedLocalities, switchDemo } = useAuth();
   const [socketConnected, setSocketConnected] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<string[]>([]);
   const [showNotifications, setShowNotifications] = useState<boolean>(false);
@@ -56,6 +59,31 @@ export function Header({ title, subtitle }: { title?: string; subtitle?: string 
       </div>
 
       <div className="flex items-center gap-3">
+        {/* Active Role & Territory Context Badge */}
+        {isAdmin ? (
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200/80 text-[11px] font-mono text-emerald-800">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            <span className="font-semibold">Admin View:</span>
+            <span>All Nagpur</span>
+          </div>
+        ) : (
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200/80 text-[11px] font-mono text-blue-800">
+            <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+            <span className="font-semibold">{user?.name}:</span>
+            <span className="truncate max-w-[200px]">📍 {assignedLocalities.join(", ")}</span>
+          </div>
+        )}
+
+        {/* Quick Auth Switch Link */}
+        <Link
+          href="/login"
+          className="text-[11px] font-mono text-slate-600 hover:text-slate-900 px-2 py-1 rounded border border-slate-200 bg-slate-50 hover:bg-slate-100 flex items-center gap-1 transition-colors"
+          title="Switch User Context"
+        >
+          <Repeat className="w-3 h-3 text-slate-500" />
+          <span className="hidden md:inline">Switch Role</span>
+        </Link>
+
         {/* WebSocket Real-time Status */}
         <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-[11px] font-mono">
           <span className="relative flex h-2 w-2">
@@ -100,10 +128,10 @@ export function Header({ title, subtitle }: { title?: string; subtitle?: string 
                     No active alerts. Real-time events will appear here.
                   </div>
                 ) : (
-                  notifications.map((n, i) => (
-                    <div key={i} className="p-2.5 text-slate-700 hover:bg-slate-50 flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
-                      <span className="leading-snug">{n}</span>
+                  notifications.map((msg, idx) => (
+                    <div key={idx} className="p-3 hover:bg-slate-50 transition-colors">
+                      <p className="text-slate-700 text-xs">{msg}</p>
+                      <span className="text-[10px] text-slate-400 font-mono mt-1 block">Just now</span>
                     </div>
                   ))
                 )}

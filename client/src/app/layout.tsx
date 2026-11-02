@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Sidebar } from "@/components/Sidebar";
+import { ClientLayout } from "@/components/ClientLayout";
 
 export const metadata: Metadata = {
   title: "EstateIQ - AI-Driven Real Estate CRM",
@@ -23,10 +23,9 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans h-full bg-slate-50 flex overflow-hidden text-slate-900">
-        <Sidebar />
-        <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        <ClientLayout>
           {children}
-        </main>
+        </ClientLayout>
       </body>
     </html>
   );

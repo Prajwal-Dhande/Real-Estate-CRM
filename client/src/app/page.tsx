@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import { fetchDashboardMetrics, fetchLeads } from "@/lib/api";
 import { DashboardMetrics, Lead, PipelineStage } from "@/types";
 import { formatCurrencyLakhs, formatDate } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 import { 
   Users, 
   Building2, 
@@ -22,10 +23,13 @@ import {
   Layers,
   Percent,
   SlidersHorizontal,
-  Compass
+  Compass,
+  MapPin,
+  UserCheck
 } from "lucide-react";
 
 export default function DashboardPage() {
+  const { user, isAgent, isAdmin, assignedLocalities } = useAuth();
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [hotLeads, setHotLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -38,8 +42,22 @@ export default function DashboardPage() {
           fetchLeads()
         ]);
         setMetrics(m);
+
+        // Filter leads based on agent territory
+        let relevantLeads = leads;
+        if (isAgent && assignedLocalities.length > 0) {
+          relevantLeads = leads.filter(l =>
+            l.preferredLocalities.some(loc =>
+              assignedLocalities.some(al => al.toLowerCase() === loc.toLowerCase())
+            )
+          );
+        }
+
         // Filter hot leads sorted by aiScore desc
-        const hot = leads.filter(l => l.aiPriorityTag === "Hot").sort((a, b) => b.aiScore - a.aiScore).slice(0, 5);
+        const hot = relevantLeads
+          .filter(l => l.aiPriorityTag === "Hot")
+          .sort((a, b) => b.aiScore - a.aiScore)
+          .slice(0, 5);
         setHotLeads(hot);
       } catch (err) {
         console.error("Dashboard load error:", err);
@@ -48,7 +66,7 @@ export default function DashboardPage() {
       }
     }
     loadData();
-  }, []);
+  }, [user]);
 
   const STAGES: { stage: PipelineStage; color: string }[] = [
     { stage: "New Inquiry", color: "bg-slate-400" },

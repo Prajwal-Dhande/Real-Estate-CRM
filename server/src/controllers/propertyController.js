@@ -129,7 +129,14 @@ async function getProperties(req, res) {
 
     const filter = {};
 
-    if (locality) {
+    // Agent Territory Filtering: If logged in as agent, filter to assigned localities
+    if (req.user && req.user.role === 'agent' && req.user.assignedLocalities?.length > 0 && req.query.allBrokerage !== 'true') {
+      if (locality) {
+        filter.locality = new RegExp(locality, 'i');
+      } else {
+        filter.locality = { $in: req.user.assignedLocalities.map(l => new RegExp(l, 'i')) };
+      }
+    } else if (locality) {
       filter.locality = new RegExp(locality, 'i');
     }
     if (bhk) {

@@ -7,6 +7,7 @@ import { NewPropertyModal } from "@/components/properties/NewPropertyModal";
 import { Property } from "@/types";
 import { fetchProperties } from "@/lib/api";
 import { formatCurrencyLakhs } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 import { 
   Building2, 
   Plus, 
@@ -19,7 +20,8 @@ import {
   Filter,
   Layers,
   Map,
-  Grid3X3
+  Grid3X3,
+  UserCheck
 } from "lucide-react";
 
 // Dynamically import PropertyMap with SSR disabled to prevent Leaflet window errors
@@ -33,6 +35,7 @@ const PropertyMap = dynamic(() => import("@/components/properties/PropertyMap"),
 });
 
 export default function PropertiesPage() {
+  const { user, isAgent, isAdmin, assignedLocalities } = useAuth();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
@@ -40,6 +43,7 @@ export default function PropertiesPage() {
   const [localityFilter, setLocalityFilter] = useState<string>("All");
   const [viewMode, setViewMode] = useState<"split" | "map" | "grid">("split");
   const [isNewModalOpen, setIsNewModalOpen] = useState<boolean>(false);
+  const [territoryOnly, setTerritoryOnly] = useState<boolean>(true);
 
   const loadProperties = async () => {
     setLoading(true);
@@ -55,9 +59,9 @@ export default function PropertiesPage() {
 
   useEffect(() => {
     loadProperties();
-  }, []);
+  }, [user]);
 
-  // Filter properties
+  // Filter properties by search, locality and agent territory
   const filteredProperties = properties.filter((prop) => {
     const matchesSearch =
       prop.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -67,8 +71,18 @@ export default function PropertiesPage() {
     const matchesLocality =
       localityFilter === "All" || prop.locality.toLowerCase() === localityFilter.toLowerCase();
 
-    return matchesSearch && matchesLocality;
+    const matchesTerritory =
+      !isAgent ||
+      !territoryOnly ||
+      assignedLocalities.length === 0 ||
+      assignedLocalities.some((al) => al.toLowerCase() === prop.locality.toLowerCase());
+
+    return matchesSearch && matchesLocality && matchesTerritory;
   });
+
+  const territoryPropCount = properties.filter((prop) =>
+    assignedLocalities.some((al) => al.toLowerCase() === prop.locality.toLowerCase())
+  ).length;
 
   const getRatioBadge = (listed: number, estimated?: number) => {
     const aiEst = estimated || listed;
@@ -135,6 +149,27 @@ export default function PropertiesPage() {
               <option value="Trimurti Nagar">Trimurti Nagar</option>
             </select>
           </div>
+
+          {/* Agent Territory Switcher Pill */}
+          {isAgent && assignedLocalities.length > 0 && (
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-blue-50/80 border border-blue-200 text-xs font-mono shrink-0">
+              <span className="text-blue-900 font-semibold flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-blue-600" />
+                Territory: {assignedLocalities.join(", ")}
+              </span>
+              <button
+                type="button"
+                onClick={() => setTerritoryOnly(!territoryOnly)}
+                className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors ${
+                  territoryOnly
+                    ? "bg-blue-600 text-white"
+                    : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                }`}
+              >
+                {territoryOnly ? `My Scope (${territoryPropCount})` : "All Units"}
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-2.5">

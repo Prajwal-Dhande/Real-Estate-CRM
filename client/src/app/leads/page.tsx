@@ -15,7 +15,8 @@ import { NewLeadModal } from "@/components/leads/NewLeadModal";
 import { Lead, PipelineStage } from "@/types";
 import { fetchLeads, updateLeadStage } from "@/lib/api";
 import { getSocket } from "@/lib/socket";
-import { Plus, Search, Filter, RefreshCw, SlidersHorizontal } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { Plus, Search, Filter, RefreshCw, SlidersHorizontal, MapPin, UserCheck, ShieldCheck } from "lucide-react";
 
 const STAGES: { stage: PipelineStage; color: string }[] = [
   { stage: "New Inquiry", color: "bg-slate-400" },
@@ -27,12 +28,14 @@ const STAGES: { stage: PipelineStage; color: string }[] = [
 ];
 
 export default function LeadsPage() {
+  const { user, isAgent, isAdmin, assignedLocalities } = useAuth();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [priorityFilter, setPriorityFilter] = useState<string>("All");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isNewLeadModalOpen, setIsNewLeadModalOpen] = useState<boolean>(false);
+  const [territoryOnly, setTerritoryOnly] = useState<boolean>(true);
 
   // Configure pointer sensor for smooth dragging with a small distance threshold
   const sensors = useSensors(
@@ -57,7 +60,7 @@ export default function LeadsPage() {
 
   useEffect(() => {
     loadLeads();
-  }, []);
+  }, [user]);
 
   // Real-time Socket.io events
   useEffect(() => {
@@ -136,7 +139,7 @@ export default function LeadsPage() {
     }
   };
 
-  // Filter leads by search & priority tag
+  // Filter leads by search, priority tag & agent territory
   const filteredLeads = leads.filter((lead) => {
     const matchesSearch =
       lead.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -147,8 +150,23 @@ export default function LeadsPage() {
     const matchesPriority =
       priorityFilter === "All" || lead.aiPriorityTag === priorityFilter;
 
-    return matchesSearch && matchesPriority;
+    // Agent Territory Filter: When logged in as Agent in territory mode, only show leads matching assigned localities
+    const matchesTerritory =
+      !isAgent ||
+      !territoryOnly ||
+      assignedLocalities.length === 0 ||
+      lead.preferredLocalities.some((loc) =>
+        assignedLocalities.some((al) => al.toLowerCase() === loc.toLowerCase())
+      );
+
+    return matchesSearch && matchesPriority && matchesTerritory;
   });
+
+  const territoryLeadCount = leads.filter((lead) =>
+    lead.preferredLocalities.some((loc) =>
+      assignedLocalities.some((al) => al.toLowerCase() === loc.toLowerCase())
+    )
+  ).length;
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#F8FAFC]">
@@ -159,8 +177,8 @@ export default function LeadsPage() {
 
       {/* Top Filter and Action Toolbar */}
       <div className="px-6 py-2.5 bg-white border-b border-slate-200/90 flex flex-wrap items-center justify-between gap-3 shrink-0">
-        <div className="flex items-center gap-3 flex-1 max-w-lg">
-          <div className="relative w-full">
+        <div className="flex items-center gap-3 flex-1 max-w-2xl">
+          <div className="relative w-full max-w-sm">
             <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
             <input
               type="text"
@@ -183,6 +201,27 @@ export default function LeadsPage() {
               <option value="Cold">Cold (&lt;40 pts)</option>
             </select>
           </div>
+
+          {/* Agent Territory Switcher Pill */}
+          {isAgent && assignedLocalities.length > 0 && (
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-blue-50/80 border border-blue-200 text-xs font-mono shrink-0">
+              <span className="text-blue-900 font-semibold flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-blue-600" />
+                Territory: {assignedLocalities.join(", ")}
+              </span>
+              <button
+                type="button"
+                onClick={() => setTerritoryOnly(!territoryOnly)}
+                className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors ${
+                  territoryOnly
+                    ? "bg-blue-600 text-white"
+                    : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                }`}
+              >
+                {territoryOnly ? `My Scope (${territoryLeadCount})` : "All Leads"}
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-2">

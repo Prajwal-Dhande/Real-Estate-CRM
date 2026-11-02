@@ -5,6 +5,7 @@ const { authenticate } = require('../middleware/auth');
 
 router.post('/register', authController.register);
 router.post('/login', authController.login);
+router.post('/demo-switch', authController.demoSwitch);
 router.get('/me', authenticate, authController.getMe);
 router.get('/agents', authenticate, authController.getAgents);
 

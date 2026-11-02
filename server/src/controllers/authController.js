@@ -152,10 +152,78 @@ async function getAgents(req, res) {
   }
 }
 
+/**
+ * Switch to a demo account instantly (Admin or Agent)
+ */
+async function demoSwitch(req, res) {
+  try {
+    const { email } = req.body;
+    const targetEmail = (email || 'admin@estateiq.com').toLowerCase();
+
+    let user = await User.findOne({ email: targetEmail });
+
+    // Fallback if database hasn't been seeded yet
+    if (!user) {
+      const passwordHash = await User.hashPassword('Password123!');
+      if (targetEmail.includes('rahul')) {
+        user = new User({
+          name: 'Rahul Sharma',
+          email: 'rahul.sharma@estateiq.com',
+          passwordHash,
+          role: 'agent',
+          assignedLocalities: ['Vasudev Nagar', 'Dharampeth'],
+          activeLeadCount: 5,
+          isActive: true
+        });
+        await user.save();
+      } else if (targetEmail.includes('sneha')) {
+        user = new User({
+          name: 'Sneha Deshmukh',
+          email: 'sneha@estateiq.com',
+          passwordHash,
+          role: 'agent',
+          assignedLocalities: ['MIHAN', 'Manish Nagar', 'Trimurti Nagar'],
+          activeLeadCount: 7,
+          isActive: true
+        });
+        await user.save();
+      } else {
+        user = new User({
+          name: 'Prajwal Dhande',
+          email: 'admin@estateiq.com',
+          passwordHash,
+          role: 'admin',
+          assignedLocalities: ['Civil Lines', 'Dharampeth', 'Vasudev Nagar', 'MIHAN', 'Manish Nagar', 'Trimurti Nagar', 'Sadar'],
+          activeLeadCount: 0,
+          isActive: true
+        });
+        await user.save();
+      }
+    }
+
+    const token = generateToken(user);
+
+    return res.status(200).json({
+      success: true,
+      message: `Switched session to ${user.name} (${user.role})`,
+      token,
+      user
+    });
+  } catch (err) {
+    console.error('[Auth Controller] Demo switch error:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Demo switch failed',
+      error: err.message
+    });
+  }
+}
+
 module.exports = {
   register,
   login,
   getMe,
-  getAgents
+  getAgents,
+  demoSwitch
 };
 

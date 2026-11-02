@@ -241,9 +241,23 @@ async function getLeads(req, res) {
       ];
     }
 
-    // If logged in as agent, optionally restrict to their assigned leads or show all if permitted
-    if (req.user && req.user.role === 'agent' && req.query.myLeadsOnly === 'true') {
-      filter.assignedAgent = req.user._id;
+    // Agent Territory Filtering: If logged in as agent, show leads in their assigned localities or assigned directly
+    if (req.user && req.user.role === 'agent' && req.query.allBrokerage !== 'true') {
+      const agentConditions = [{ assignedAgent: req.user._id }];
+      if (req.user.assignedLocalities && req.user.assignedLocalities.length > 0) {
+        agentConditions.push({
+          preferredLocalities: { $in: req.user.assignedLocalities.map(l => new RegExp(l, 'i')) }
+        });
+      }
+      if (filter.$or) {
+        filter.$and = [
+          { $or: filter.$or },
+          { $or: agentConditions }
+        ];
+        delete filter.$or;
+      } else {
+        filter.$or = agentConditions;
+      }
     }
 
     const pageNum = Math.max(1, parseInt(page, 10));

@@ -28,9 +28,20 @@ async function getDashboardMetrics(req, res) {
       }
     }
 
-    // Filter by assigned agent if not admin
+    // Filter by assigned agent & territory if not admin
     const leadFilter = req.user && req.user.role === 'agent'
-      ? { assignedAgent: req.user._id }
+      ? {
+          $or: [
+            { assignedAgent: req.user._id },
+            ...(req.user.assignedLocalities?.length
+              ? [{ preferredLocalities: { $in: req.user.assignedLocalities.map(l => new RegExp(l, 'i')) } }]
+              : [])
+          ]
+        }
+      : {};
+
+    const propertyFilter = req.user && req.user.role === 'agent' && req.user.assignedLocalities?.length
+      ? { locality: { $in: req.user.assignedLocalities.map(l => new RegExp(l, 'i')) } }
       : {};
 
     const [
@@ -47,8 +58,8 @@ async function getDashboardMetrics(req, res) {
       Lead.countDocuments({ ...leadFilter, aiPriorityTag: 'Hot' }),
       Lead.countDocuments({ ...leadFilter, aiPriorityTag: 'Warm' }),
       Lead.countDocuments({ ...leadFilter, aiPriorityTag: 'Cold' }),
-      Property.countDocuments(),
-      Property.countDocuments({ status: 'Available' }),
+      Property.countDocuments(propertyFilter),
+      Property.countDocuments({ ...propertyFilter, status: 'Available' }),
       Lead.aggregate([
         { $match: leadFilter },
         { $group: { _id: '$pipelineStage', count: { $sum: 1 } } }

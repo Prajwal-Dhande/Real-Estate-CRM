@@ -76,33 +76,33 @@ async function runSeed() {
   const passwordHash = await User.hashPassword(defaultPassword);
 
   const admin = new User({
-    name: 'Prajwal Dhande (Admin)',
+    name: 'Prajwal Dhande',
     email: 'admin@estateiq.com',
     passwordHash,
     role: 'admin',
-    assignedLocalities: ['Civil Lines', 'Dharampeth', 'Sadar'],
+    assignedLocalities: ['Civil Lines', 'Dharampeth', 'Vasudev Nagar', 'MIHAN', 'Manish Nagar', 'Trimurti Nagar', 'Sadar'],
     activeLeadCount: 0,
     isActive: true
   });
   await admin.save();
 
   const agent1 = new User({
-    name: 'Sneha Deshmukh',
-    email: 'sneha@estateiq.com',
+    name: 'Rahul Sharma',
+    email: 'rahul.sharma@estateiq.com',
     passwordHash,
     role: 'agent',
-    assignedLocalities: ['Vasudev Nagar', 'Trimurti Nagar', 'Wardha Road'],
+    assignedLocalities: ['Vasudev Nagar', 'Dharampeth'],
     activeLeadCount: 10,
     isActive: true
   });
   await agent1.save();
 
   const agent2 = new User({
-    name: 'Rohan Kulkarni',
-    email: 'rohan@estateiq.com',
+    name: 'Sneha Deshmukh',
+    email: 'sneha@estateiq.com',
     passwordHash,
     role: 'agent',
-    assignedLocalities: ['MIHAN', 'Manish Nagar', 'Hingna'],
+    assignedLocalities: ['MIHAN', 'Manish Nagar', 'Trimurti Nagar'],
     activeLeadCount: 10,
     isActive: true
   });

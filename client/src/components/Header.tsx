@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getSocket } from "@/lib/socket";
 import { useAuth } from "@/context/AuthContext";
-import { Bell, ShieldCheck, UserCheck, Repeat, Activity } from "lucide-react";
+import { Bell, ShieldCheck, UserCheck, Repeat, Activity, Search } from "lucide-react";
 
 export function Header({ title, subtitle }: { title?: string; subtitle?: string }) {
   const { user, isAdmin, isAgent, assignedLocalities } = useAuth();
@@ -75,6 +75,20 @@ export function Header({ title, subtitle }: { title?: string; subtitle?: string 
 
       {/* Right Controls */}
       <div className="flex items-center gap-3">
+        {/* Raycast / Linear Style Command Palette Trigger (Priority 5) */}
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent("open-command-palette"))}
+          className="hidden md:flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-100/90 hover:bg-slate-200/80 border border-slate-200/90 text-xs text-slate-500 hover:text-slate-800 transition-all shadow-2xs font-mono group"
+          title="Open Command Palette (⌘K or Ctrl+K)"
+        >
+          <Search className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition-colors" />
+          <span className="font-sans text-slate-600 font-medium hidden lg:inline">Search leads, properties, localities...</span>
+          <span className="font-sans text-slate-600 font-medium lg:hidden">Search...</span>
+          <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-white text-slate-600 rounded border border-slate-200 shadow-2xs">
+            ⌘K
+          </kbd>
+        </button>
+
         {/* Active Role Capsule */}
         {isAdmin ? (
           <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-xs text-emerald-800 shadow-2xs">

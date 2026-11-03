@@ -115,3 +115,10 @@ export interface PredictPriceResult {
   confidenceScore: number;
 }
 
+export interface SearchResult {
+  leads: Lead[];
+  properties: Property[];
+  localities: string[];
+}
+
+

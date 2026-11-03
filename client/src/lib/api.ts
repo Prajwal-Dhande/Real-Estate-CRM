@@ -1,4 +1,4 @@
-import { Lead, Property, Activity, DashboardMetrics, PredictPriceResult, PipelineStage, User } from "@/types";
+import { Lead, Property, Activity, DashboardMetrics, PredictPriceResult, PipelineStage, User, SearchResult } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
@@ -1109,6 +1109,75 @@ export async function uploadPropertyDocument(
     };
   }
 }
+
+const NAGPUR_LOCALITIES = [
+  "Vasudev Nagar",
+  "Dharampeth",
+  "MIHAN",
+  "Manish Nagar",
+  "Civil Lines",
+  "Wardha Road",
+  "Hingna",
+  "Sadar",
+  "Laxmi Nagar",
+  "Trimurti Nagar",
+  "Besa Road",
+  "Medical Square",
+  "Ramdaspeth",
+  "Shankar Nagar"
+];
+
+/**
+ * Unified Global Search for Leads, Properties, and Localities (Priority 5)
+ */
+export async function searchGlobal(query: string): Promise<SearchResult> {
+  const q = query.trim().toLowerCase();
+  if (!q) {
+    return { leads: [], properties: [], localities: [] };
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(q)}`, {
+      headers: getHeaders(),
+      cache: "no-store"
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.results) {
+        return data.results;
+      }
+    }
+  } catch (err: any) {
+    console.warn("[API] Local fallback search:", err.message);
+  }
+
+  // Fallback in-memory search across mock leads, properties and localities
+  const matchedLeads = MOCK_LEADS.filter(l =>
+    l.fullName.toLowerCase().includes(q) ||
+    l.phone.includes(q) ||
+    l.preferredLocalities.some(loc => loc.toLowerCase().includes(q)) ||
+    l.rawRequirementText.toLowerCase().includes(q)
+  ).slice(0, 8);
+
+  const matchedProps = MOCK_PROPERTIES.filter(p =>
+    p.title.toLowerCase().includes(q) ||
+    p.locality.toLowerCase().includes(q) ||
+    p.address.toLowerCase().includes(q) ||
+    (p.builderName && p.builderName.toLowerCase().includes(q)) ||
+    (p.reraNumber && p.reraNumber.toLowerCase().includes(q))
+  ).slice(0, 8);
+
+  const matchedLocalities = NAGPUR_LOCALITIES.filter(loc =>
+    loc.toLowerCase().includes(q)
+  );
+
+  return {
+    leads: matchedLeads,
+    properties: matchedProps,
+    localities: matchedLocalities
+  };
+}
+
 
 
 

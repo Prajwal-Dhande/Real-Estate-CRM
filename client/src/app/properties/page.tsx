@@ -69,6 +69,28 @@ export default function PropertiesPage() {
     loadProperties();
   }, [user]);
 
+  // Deep-link integration from Global Command Palette (Priority 5)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const targetPropertyId = params.get("propertyId");
+    const targetLocality = params.get("locality");
+    const targetAction = params.get("action");
+
+    if (targetPropertyId && properties.length > 0) {
+      const found = properties.find((p) => p._id === targetPropertyId);
+      if (found) {
+        setSelectedProperty(found);
+      }
+    }
+    if (targetLocality) {
+      setLocalityFilter(targetLocality);
+    }
+    if (targetAction === "new-property") {
+      setIsNewModalOpen(true);
+    }
+  }, [properties]);
+
   // Filter properties by search, locality and agent territory
   const filteredProperties = properties.filter((prop) => {
     const matchesSearch =

@@ -83,6 +83,28 @@ export default function LeadsPage() {
     loadLeads();
   }, [user]);
 
+  // Deep-link integration from Global Command Palette (Priority 5)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const targetLeadId = params.get("leadId");
+    const targetAction = params.get("action");
+    const targetFilter = params.get("filter");
+
+    if (targetLeadId && leads.length > 0) {
+      const found = leads.find((l) => l._id === targetLeadId);
+      if (found) setSelectedLead(found);
+    }
+    if (targetAction === "new-lead") {
+      setIsNewLeadModalOpen(true);
+    } else if (targetAction === "simulate-whatsapp") {
+      setIsWhatsAppModalOpen(true);
+    }
+    if (targetFilter === "overdue") {
+      setSlaFilter("Overdue");
+    }
+  }, [leads]);
+
   // Real-time Socket.io events
   useEffect(() => {
     const s = getSocket();

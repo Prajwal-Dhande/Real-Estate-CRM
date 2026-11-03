@@ -80,7 +80,7 @@ export default function ValuationSandboxPage() {
         subtitle="Interactive Regression Ensemble Pipeline (XGBoost + RandomForest)"
       />
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 animate-fade-in-up">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Controls Column (7 Cols) */}
           <div className="lg:col-span-7 bg-white p-6 rounded-lg border border-slate-200/90 shadow-2xs space-y-5">

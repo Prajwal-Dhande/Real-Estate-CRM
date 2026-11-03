@@ -22,6 +22,7 @@ import {
   BedDouble,
   Activity,
   Megaphone,
+  MessageSquare,
   Search,
   Building,
   Home,
@@ -99,7 +100,7 @@ export default function DashboardPage() {
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#F8FAFC]">
       <Header title="Executive Overview" subtitle="Nagpur Brokerage Telemetry & AI Valuation Analytics" />
 
-      <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-7 kanban-scroll">
+      <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-7 kanban-scroll animate-fade-in-up">
         {/* Top 4 Elevated Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Card 1: Active Buyers */}
@@ -206,8 +207,11 @@ export default function DashboardPage() {
               </span>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <span className="font-mono text-[11px] text-slate-600">Port 8001</span>
-              <span className="text-[11px] font-medium text-slate-700">384-dim MiniLM-L6</span>
+              <span className="flex items-center gap-1.5 text-[11px] text-slate-700 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                FastAPI Copilot
+              </span>
+              <span className="text-[11px] font-mono text-slate-500">384d Embeddings</span>
             </div>
           </div>
         </div>
@@ -217,7 +221,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-sm font-bold text-slate-900 tracking-tight">
-                Pipeline Deal Distribution
+                Pipeline Deal Progression
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">Live progression across all 6 CRM pipeline milestones</p>
             </div>
@@ -249,17 +253,26 @@ export default function DashboardPage() {
           </div>
 
           {/* Interactive Legend Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-1">
             {STAGES.map((s) => {
               const count = metrics?.leads.byStage?.[s.stage] ?? 0;
+              const total = metrics?.leads.total || 1;
+              const pct = Math.round((count / total) * 100);
               return (
-                <div key={s.stage} className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50/70 border border-slate-100">
-                  <div className={`w-2.5 h-2.5 rounded-full ${s.color} shrink-0`} />
-                  <div className="min-w-0">
-                    <p className="text-[11px] text-slate-500 truncate">{s.stage}</p>
-                    <p className="text-sm font-bold text-slate-900">{count}</p>
+                <Link
+                  key={s.stage}
+                  href="/leads"
+                  className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50/70 hover:bg-slate-100/90 border border-slate-100 hover:border-slate-200 transition-all group cursor-pointer"
+                >
+                  <div className={`w-2.5 h-2.5 rounded-full ${s.color} shrink-0 ring-2 ring-white`} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[11px] text-slate-500 truncate group-hover:text-slate-800 transition-colors">{s.stage}</p>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{count}</span>
+                      <span className="text-[10px] text-slate-400 font-mono">({pct}%)</span>
+                    </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
@@ -275,8 +288,8 @@ export default function DashboardPage() {
               <div>
                 <h2 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
                   <span>Lead Source Attribution & Marketing ROAS</span>
-                  <span className="text-[10px] font-mono font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200">
-                    Priority 6 Telemetry
+                  <span className="text-[10px] font-mono font-bold bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-full border border-indigo-200">
+                    Attribution Telemetry
                   </span>
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -286,7 +299,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+              <span className="text-xs font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-2xs">
                 <Zap className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Top ROAS: {roiData?.topPerformingChannel || "WhatsApp Cloud API"}</span>
               </span>
@@ -302,56 +315,64 @@ export default function DashboardPage() {
 
           {/* Top 4 ROAS Headline KPI Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-3.5 rounded-xl bg-gradient-to-br from-indigo-50/50 to-white border border-indigo-100/80">
-              <span className="text-[11px] font-mono uppercase text-indigo-700 font-semibold block">Blended ROAS</span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-bold font-mono text-slate-900">
-                  {roiData?.overallRoas || "14.2"}x
-                </span>
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded-full">
-                  +3.8x YoY
-                </span>
+            <div className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:bg-white hover:shadow-2xs transition-all flex flex-col justify-between">
+              <div>
+                <span className="text-[11px] font-mono uppercase text-indigo-700 font-semibold block">Blended ROAS</span>
+                <div className="flex items-baseline gap-2 mt-1.5">
+                  <span className="text-2xl font-bold font-mono text-slate-900">
+                    {roiData?.overallRoas || "14.2"}x
+                  </span>
+                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100">
+                    +3.8x YoY
+                  </span>
+                </div>
               </div>
-              <p className="text-[10px] text-slate-400 mt-1 font-mono">Gross return on media spend</p>
+              <p className="text-[10px] text-slate-400 mt-2 font-mono">Gross return on media spend</p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-gradient-to-br from-emerald-50/50 to-white border border-emerald-100/80">
-              <span className="text-[11px] font-mono uppercase text-emerald-700 font-semibold block">Attributed Revenue</span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-bold font-mono text-slate-900">
-                  ₹{((roiData?.totalRevenueInInr || 10200000) / 100000).toFixed(1)}L
-                </span>
-                <span className="text-[10px] font-bold text-slate-500 font-mono">
-                  {roiData?.totalDealsClosed || 13} deals
-                </span>
+            <div className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:bg-white hover:shadow-2xs transition-all flex flex-col justify-between">
+              <div>
+                <span className="text-[11px] font-mono uppercase text-emerald-700 font-semibold block">Attributed Revenue</span>
+                <div className="flex items-baseline gap-2 mt-1.5">
+                  <span className="text-2xl font-bold font-mono text-slate-900">
+                    ₹{((roiData?.totalRevenueInInr || 10200000) / 100000).toFixed(1)}L
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-500 font-mono">
+                    {roiData?.totalDealsClosed || 13} deals
+                  </span>
+                </div>
               </div>
-              <p className="text-[10px] text-slate-400 mt-1 font-mono">1.5% avg Nagpur brokerage</p>
+              <p className="text-[10px] text-slate-400 mt-2 font-mono">1.5% avg Nagpur brokerage</p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-gradient-to-br from-blue-50/50 to-white border border-blue-100/80">
-              <span className="text-[11px] font-mono uppercase text-blue-700 font-semibold block">Total Ad Spend</span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-bold font-mono text-slate-900">
-                  ₹{(roiData?.totalSpendInr || 73500).toLocaleString("en-IN")}
-                </span>
-                <span className="text-[10px] font-bold text-blue-700 font-mono">
-                  {roiData?.totalLeads || 132} leads
-                </span>
+            <div className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:bg-white hover:shadow-2xs transition-all flex flex-col justify-between">
+              <div>
+                <span className="text-[11px] font-mono uppercase text-blue-700 font-semibold block">Total Ad Spend</span>
+                <div className="flex items-baseline gap-2 mt-1.5">
+                  <span className="text-2xl font-bold font-mono text-slate-900">
+                    ₹{(roiData?.totalSpendInr || 73500).toLocaleString("en-IN")}
+                  </span>
+                  <span className="text-[10px] font-bold text-blue-700 font-mono">
+                    {roiData?.totalLeads || 132} leads
+                  </span>
+                </div>
               </div>
-              <p className="text-[10px] text-slate-400 mt-1 font-mono">Portals + Meta + Google + WA</p>
+              <p className="text-[10px] text-slate-400 mt-2 font-mono">Portals + Meta + Google + WA</p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-gradient-to-br from-amber-50/50 to-white border border-amber-100/80">
-              <span className="text-[11px] font-mono uppercase text-amber-700 font-semibold block">Avg CPL (Cost / Lead)</span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-bold font-mono text-slate-900">
-                  ₹{roiData?.avgCplInr || 165}
-                </span>
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded-full">
-                  -18% CPL
-                </span>
+            <div className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:bg-white hover:shadow-2xs transition-all flex flex-col justify-between">
+              <div>
+                <span className="text-[11px] font-mono uppercase text-amber-700 font-semibold block">Avg CPL (Cost / Lead)</span>
+                <div className="flex items-baseline gap-2 mt-1.5">
+                  <span className="text-2xl font-bold font-mono text-slate-900">
+                    ₹{roiData?.avgCplInr || 165}
+                  </span>
+                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100">
+                    -18% CPL
+                  </span>
+                </div>
               </div>
-              <p className="text-[10px] text-slate-400 mt-1 font-mono">Lowest: WA ₹45 / High: Google ₹310</p>
+              <p className="text-[10px] text-slate-400 mt-2 font-mono">Lowest: WA ₹45 / High: Google ₹310</p>
             </div>
           </div>
 
@@ -383,15 +404,32 @@ export default function DashboardPage() {
               return (
                 <div
                   key={ch.source}
-                  className="p-3.5 rounded-xl border border-slate-200/90 bg-white hover:border-indigo-300 hover:shadow-xs transition-all space-y-2.5 group"
+                  className="p-4 rounded-xl border border-slate-200/90 bg-white hover:border-indigo-300 hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 space-y-3 group"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
+                    <div className="flex items-center gap-2.5 min-w-0">
                       <div
-                        className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 font-bold text-white text-xs"
-                        style={{ backgroundColor: ch.color }}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border shadow-2xs"
+                        style={{
+                          backgroundColor: `${ch.color}15`,
+                          borderColor: `${ch.color}30`
+                        }}
                       >
-                        {ch.source[0]}
+                        {ch.source === "WhatsApp" ? (
+                          <MessageSquare className="w-4 h-4 text-emerald-600" />
+                        ) : ch.source === "Meta Ads" ? (
+                          <Megaphone className="w-4 h-4 text-blue-600" />
+                        ) : ch.source === "Google Ads" ? (
+                          <Search className="w-4 h-4 text-rose-600" />
+                        ) : ch.source === "99acres" ? (
+                          <Building className="w-4 h-4 text-amber-600" />
+                        ) : ch.source === "MagicBricks" ? (
+                          <Home className="w-4 h-4 text-red-600" />
+                        ) : ch.source === "Referral" ? (
+                          <UserCheck className="w-4 h-4 text-cyan-600" />
+                        ) : (
+                          <Globe className="w-4 h-4 text-purple-600" />
+                        )}
                       </div>
                       <div className="min-w-0">
                         <h4 className="text-xs font-bold text-slate-900 truncate group-hover:text-indigo-600 transition-colors">
@@ -404,7 +442,7 @@ export default function DashboardPage() {
                     </div>
 
                     <span
-                      className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full shrink-0"
+                      className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full shrink-0 shadow-2xs"
                       style={{
                         backgroundColor: `${ch.color}15`,
                         color: ch.color,

@@ -63,6 +63,8 @@ export function Sidebar() {
         .toUpperCase()
     : "PD";
 
+  const cleanName = user?.name ? user.name.replace(/\s*\([^)]*\)/, "") : "Prajwal Dhande";
+
   const assignedText =
     isAgent && user?.assignedLocalities?.length
       ? user.assignedLocalities.slice(0, 2).join(", ")
@@ -285,8 +287,8 @@ export function Sidebar() {
             {initials}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-slate-200 truncate">
-              {user?.name || "Prajwal Dhande"}
+            <p className="text-xs font-semibold text-slate-100 truncate">
+              {cleanName}
             </p>
             <p className="text-[10px] text-slate-400 truncate mt-0.5">
               {assignedText}

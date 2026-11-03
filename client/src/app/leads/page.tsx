@@ -463,7 +463,7 @@ export default function LeadsPage() {
       </div>
 
       {/* Kanban Board Container */}
-      <div className="flex-1 overflow-x-auto p-5 kanban-scroll">
+      <div className="flex-1 overflow-x-auto p-5 kanban-scroll animate-fade-in-up">
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
           <div className="flex gap-4 h-full items-start min-w-max pb-4">
             {STAGES.map(({ stage, color }) => {

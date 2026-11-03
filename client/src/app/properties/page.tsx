@@ -245,7 +245,7 @@ export default function PropertiesPage() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-hidden p-5">
+      <div className="flex-1 overflow-hidden p-5 animate-fade-in-up">
         <div className="h-full flex gap-5">
           {/* MAP CONTAINER */}
           {(viewMode === "split" || viewMode === "map") && (

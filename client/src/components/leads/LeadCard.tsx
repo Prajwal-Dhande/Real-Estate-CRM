@@ -221,14 +221,16 @@ export function LeadCard({ lead, onClick, onFollowupUpdate }: LeadCardProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative bg-white rounded-2xl border transition-all duration-200 select-none p-4 ${
+      className={`group relative bg-white/95 backdrop-blur-sm rounded-2xl border transition-all duration-200 select-none p-4 overflow-hidden ${
         isOverdue
-          ? "border-rose-300/90 border-l-4 border-l-rose-500 shadow-xs ring-1 ring-rose-200/50 bg-gradient-to-br from-white to-rose-50/20"
+          ? "border-rose-300/90 border-l-4 border-l-rose-500 shadow-xs ring-1 ring-rose-200/50 bg-gradient-to-br from-white to-rose-50/20 hover:shadow-card-hover hover:-translate-y-1"
           : isDueSoon
-          ? "border-amber-300/90 border-l-4 border-l-amber-500 shadow-2xs bg-gradient-to-br from-white to-amber-50/20"
-          : "border-slate-200/80 shadow-2xs hover:shadow-card-hover hover:-translate-y-0.5"
+          ? "border-amber-300/90 border-l-4 border-l-amber-500 shadow-2xs bg-gradient-to-br from-white to-amber-50/20 hover:shadow-card-hover hover:-translate-y-1"
+          : "border-slate-200/80 shadow-2xs hover:border-indigo-300/80 hover:shadow-card-hover hover:-translate-y-1"
       } ${isDragging ? "ring-2 ring-indigo-500 shadow-xl opacity-50 scale-[1.02]" : ""}`}
     >
+      {/* 3D Top Specular Shine Line on Hover */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-indigo-400/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       {/* Top Card Row: Avatar, Name & Drag Handle */}
       <div className="flex items-start justify-between gap-3">
         <div

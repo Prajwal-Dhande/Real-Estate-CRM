@@ -153,24 +153,28 @@ export function Sidebar() {
       </div>
 
       {/* AI Telemetry & Engine Health Card */}
-      <div className="p-3.5 mx-3.5 mb-3.5 rounded-xl bg-slate-900/80 border border-slate-800/80 text-[11px] space-y-2.5 shadow-sm">
+      <div className="p-3.5 mx-3.5 mb-3.5 rounded-xl bg-gradient-to-b from-slate-900/95 to-slate-900/80 border border-slate-800/90 hover:border-indigo-500/30 text-[11px] space-y-2.5 shadow-md shadow-black/20 transition-all duration-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-slate-300 font-semibold">
             <Cpu className="w-3.5 h-3.5 text-indigo-400" />
             <span>AI Copilot Engine</span>
           </div>
-          <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-            <CircleDot className="w-2 h-2 animate-pulse text-emerald-400" /> 8001 Live
+          <span className="inline-flex items-center gap-1.5 text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            8001 Live
           </span>
         </div>
         <div className="text-[10px] text-slate-400 space-y-1 border-t border-slate-800/80 pt-2">
           <div className="flex justify-between items-center">
             <span>Valuation:</span>
-            <span className="text-slate-300 font-medium">XGBoost Ensemble</span>
+            <span className="text-slate-200 font-medium font-mono">XGBoost Ensemble</span>
           </div>
           <div className="flex justify-between items-center">
             <span>Semantic:</span>
-            <span className="text-slate-300 font-medium">MiniLM-L6 (384d)</span>
+            <span className="text-slate-200 font-medium font-mono">MiniLM-L6 (384d)</span>
           </div>
         </div>
       </div>

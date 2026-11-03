@@ -3,8 +3,10 @@ const nextConfig = {
   reactStrictMode: false,
   webpack: (config, { dev, isServer }) => {
     if (dev) {
-      // Completely disable Webpack's disk pack cache on Windows to prevent PackFileCacheStrategy ENOENT crashes
-      config.cache = false;
+      // Use in-memory cache instead of filesystem pack files to prevent Windows NTFS lock / ENOENT crashes
+      config.cache = {
+        type: 'memory',
+      };
     }
     if (isServer) {
       config.externals = [...(config.externals || []), 'leaflet'];

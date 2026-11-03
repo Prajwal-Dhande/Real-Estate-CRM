@@ -10,19 +10,14 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isLoginPage = pathname === "/login";
 
-  // Resilient chunk recovery: auto-reload when server chunks update or stale cache is detected
+  // Clean chunk recovery: only handle fatal ChunkLoadError from stale builds, never loop on dev chunks
   useEffect(() => {
     const handleChunkError = (e: ErrorEvent) => {
       const msg = e.message || "";
-      if (
-        msg.includes("Loading chunk") ||
-        msg.includes("ChunkLoadError") ||
-        msg.includes("app-pages-internals") ||
-        msg.includes("Failed to load resource")
-      ) {
+      if (msg.includes("ChunkLoadError") || msg.includes("Loading chunk")) {
         const lastReload = sessionStorage.getItem("estateiq_chunk_reload");
         const now = Date.now();
-        if (!lastReload || now - Number(lastReload) > 10000) {
+        if (!lastReload || now - Number(lastReload) > 15000) {
           sessionStorage.setItem("estateiq_chunk_reload", String(now));
           window.location.reload();
         }

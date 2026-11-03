@@ -20,23 +20,25 @@ import {
   CheckCircle2,
   Filter,
   Layers,
-  Map,
+  Map as MapIcon,
   Grid3X3,
-  UserCheck,
-  ShieldCheck,
+  Columns,
   Compass,
   Download,
   Calendar,
   ExternalLink,
-  Sparkles
+  Sparkles,
+  ShieldCheck,
+  ChevronDown
 } from "lucide-react";
 
 // Dynamically import PropertyMap with SSR disabled to prevent Leaflet window errors
 const PropertyMap = dynamic(() => import("@/components/properties/PropertyMap"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full min-h-[400px] rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 text-xs font-mono">
-      Initializing Leaflet Nagpur geospatial layer...
+    <div className="w-full h-full min-h-[420px] rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200/80 flex flex-col items-center justify-center text-slate-400 text-xs font-mono gap-2">
+      <div className="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
+      <span>Loading geospatial GIS satellite layers...</span>
     </div>
   )
 });
@@ -123,7 +125,7 @@ export default function PropertiesPage() {
     if (ratio < 0.95) {
       const diff = Math.round((1 - ratio) * 100);
       return (
-        <span className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/90 px-2 py-0.5 rounded-md">
+        <span className="inline-flex items-center gap-1 font-mono text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/90 px-2 py-0.5 rounded-lg shadow-2xs">
           <TrendingDown className="w-3 h-3 text-emerald-600" />
           {diff}% Undervalued
         </span>
@@ -131,7 +133,7 @@ export default function PropertiesPage() {
     } else if (ratio > 1.05) {
       const diff = Math.round((ratio - 1) * 100);
       return (
-        <span className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/90 px-2 py-0.5 rounded-md">
+        <span className="inline-flex items-center gap-1 font-mono text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200/90 px-2 py-0.5 rounded-lg shadow-2xs">
           <TrendingUp className="w-3 h-3 text-rose-600" />
           {diff}% Overpriced
         </span>
@@ -139,41 +141,43 @@ export default function PropertiesPage() {
     }
 
     return (
-      <span className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 rounded-md">
-        <CheckCircle2 className="w-3 h-3 text-slate-600" />
+      <span className="inline-flex items-center gap-1 font-mono text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 rounded-lg shadow-2xs">
+        <CheckCircle2 className="w-3 h-3 text-slate-500" />
         Fair Market
       </span>
     );
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#F8FAFC]">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-transparent">
       <Header
         title="Property Inventory"
         subtitle="Nagpur Asset Portfolio • MahaRERA Certified Documents & CAD Blueprints"
       />
 
-      {/* Toolbar */}
-      <div className="px-6 py-2.5 bg-white border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-3 shrink-0">
-        <div className="flex items-center gap-3 flex-1 max-w-lg">
+      {/* Top Toolbar */}
+      <div className="px-6 py-3 bg-white/80 backdrop-blur-md border-b border-slate-200/70 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="flex items-center gap-3 flex-1 max-w-xl">
+          {/* Search Bar */}
           <div className="relative w-full">
             <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
             <input
               type="text"
-              placeholder="Search properties by title, builder, RERA, or locality..."
+              placeholder="Search by title, builder, MahaRERA, locality..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-slate-900 focus:bg-white font-mono placeholder:text-slate-400 transition-all"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50/90 border border-slate-200/80 rounded-xl focus:outline-hidden focus:ring-1 focus:ring-indigo-500 focus:bg-white font-mono placeholder:text-slate-400 transition-all shadow-2xs text-slate-800"
             />
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
+          {/* Locality Filter Pill */}
+          <div className="relative shrink-0">
             <select
               value={localityFilter}
               onChange={(e) => setLocalityFilter(e.target.value)}
-              className="text-xs font-mono font-medium bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-hidden focus:ring-1 focus:ring-slate-900"
+              className="text-xs font-mono font-bold bg-slate-50/90 border border-slate-200/80 rounded-xl px-3 py-1.5 text-slate-700 focus:outline-hidden focus:ring-1 focus:ring-indigo-500 shadow-2xs cursor-pointer appearance-none pr-7"
             >
-              <option value="All">All Localities</option>
+              <option value="All">All Localities ({properties.length})</option>
               <option value="Vasudev Nagar">Vasudev Nagar</option>
               <option value="Dharampeth">Dharampeth</option>
               <option value="MIHAN">MIHAN</option>
@@ -181,21 +185,19 @@ export default function PropertiesPage() {
               <option value="Civil Lines">Civil Lines</option>
               <option value="Trimurti Nagar">Trimurti Nagar</option>
             </select>
+            <ChevronDown className="w-3 h-3 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" />
           </div>
 
-          {/* Agent Territory Switcher Pill */}
+          {/* Agent Territory Switcher */}
           {isAgent && assignedLocalities.length > 0 && (
-            <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-blue-50/80 border border-blue-200 text-xs font-mono shrink-0">
-              <span className="text-blue-900 font-semibold flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-blue-600" />
-                Territory: {assignedLocalities.join(", ")}
-              </span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50/80 border border-blue-200 text-xs font-mono shrink-0 shadow-2xs">
+              <MapPin className="w-3 h-3 text-blue-600" />
               <button
                 type="button"
                 onClick={() => setTerritoryOnly(!territoryOnly)}
-                className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors ${
+                className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all ${
                   territoryOnly
-                    ? "bg-blue-600 text-white"
+                    ? "bg-blue-600 text-white shadow-2xs"
                     : "bg-blue-100 text-blue-700 hover:bg-blue-200"
                 }`}
               >
@@ -205,38 +207,48 @@ export default function PropertiesPage() {
           )}
         </div>
 
+        {/* View Switcher & Add Property Button */}
         <div className="flex items-center gap-2.5">
-          {/* View Toggles */}
-          <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-mono">
+          {/* Segmented View Toggles */}
+          <div className="flex items-center bg-slate-100/90 p-0.5 rounded-xl border border-slate-200/70 text-xs font-mono shadow-2xs">
             <button
               onClick={() => setViewMode("split")}
-              className={`px-2.5 py-1 rounded-md transition-colors ${
-                viewMode === "split" ? "bg-white text-slate-900 font-semibold shadow-2xs" : "text-slate-500 hover:text-slate-800"
+              className={`px-3 py-1 rounded-lg font-bold flex items-center gap-1.5 transition-all ${
+                viewMode === "split" 
+                  ? "bg-white text-slate-900 shadow-xs" 
+                  : "text-slate-500 hover:text-slate-800"
               }`}
             >
-              Split
+              <Columns className="w-3 h-3" />
+              <span>Split</span>
             </button>
             <button
               onClick={() => setViewMode("map")}
-              className={`px-2.5 py-1 rounded-md transition-colors ${
-                viewMode === "map" ? "bg-white text-slate-900 font-semibold shadow-2xs" : "text-slate-500 hover:text-slate-800"
+              className={`px-3 py-1 rounded-lg font-bold flex items-center gap-1.5 transition-all ${
+                viewMode === "map" 
+                  ? "bg-white text-slate-900 shadow-xs" 
+                  : "text-slate-500 hover:text-slate-800"
               }`}
             >
-              Map
+              <MapIcon className="w-3 h-3" />
+              <span>Map</span>
             </button>
             <button
               onClick={() => setViewMode("grid")}
-              className={`px-2.5 py-1 rounded-md transition-colors ${
-                viewMode === "grid" ? "bg-white text-slate-900 font-semibold shadow-2xs" : "text-slate-500 hover:text-slate-800"
+              className={`px-3 py-1 rounded-lg font-bold flex items-center gap-1.5 transition-all ${
+                viewMode === "grid" 
+                  ? "bg-white text-slate-900 shadow-xs" 
+                  : "text-slate-500 hover:text-slate-800"
               }`}
             >
-              Grid
+              <Grid3X3 className="w-3 h-3" />
+              <span>Grid</span>
             </button>
           </div>
 
           <button
             onClick={() => setIsNewModalOpen(true)}
-            className="px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
+            className="px-4 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-bold flex items-center gap-1.5 shadow-sm hover:shadow-md transition-all active:scale-95"
           >
             <Plus className="w-3.5 h-3.5 text-emerald-400" />
             <span>Add Property</span>
@@ -245,9 +257,9 @@ export default function PropertiesPage() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-hidden p-5 animate-fade-in-up">
+      <div className="flex-1 overflow-hidden p-5 md:p-6 animate-fade-in-up">
         <div className="h-full flex gap-5">
-          {/* MAP CONTAINER */}
+          {/* GIS MAP CONTAINER */}
           {(viewMode === "split" || viewMode === "map") && (
             <div className={`h-full ${viewMode === "split" ? "w-1/2" : "w-full"} shrink-0 flex flex-col`}>
               <PropertyMap
@@ -258,22 +270,22 @@ export default function PropertiesPage() {
             </div>
           )}
 
-          {/* PROPERTY CARDS GRID / LIST */}
+          {/* PROPERTY CARDS SCROLLER */}
           {(viewMode === "split" || viewMode === "grid") && (
             <div
               className={`h-full ${
                 viewMode === "split" ? "w-1/2" : "w-full"
-              } overflow-y-auto space-y-3.5 kanban-scroll pr-1`}
+              } overflow-y-auto space-y-4 kanban-scroll pr-1`}
             >
               <div className="flex items-center justify-between text-xs text-slate-500 pb-1 font-mono">
-                <span className="font-semibold text-slate-700">
+                <span className="font-bold text-slate-800">
                   {filteredProperties.length} Properties in Nagpur
                 </span>
-                <span className="text-slate-400">Click card to focus coordinate pin</span>
+                <span className="text-slate-400">Click any card to focus coordinate pin</span>
               </div>
 
               <div
-                className={`grid gap-3.5 ${
+                className={`grid gap-4 ${
                   viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
                 }`}
               >
@@ -285,22 +297,25 @@ export default function PropertiesPage() {
                     <div
                       key={prop._id}
                       onClick={() => setSelectedProperty(prop)}
-                      className={`rounded-2xl bg-white border transition-all cursor-pointer overflow-hidden flex flex-col justify-between ${
+                      className={`group relative rounded-2xl bg-white/95 backdrop-blur-sm border transition-all duration-200 cursor-pointer overflow-hidden flex flex-col justify-between ${
                         isSelected
-                          ? "border-slate-900 ring-2 ring-slate-900 shadow-md"
-                          : "border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-xs"
+                          ? "border-indigo-600 ring-2 ring-indigo-500/40 shadow-xl scale-[1.008]"
+                          : "border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.04)] hover:border-indigo-300 hover:shadow-card-hover hover:-translate-y-1"
                       }`}
                     >
+                      {/* Top Specular Shine Line on Hover */}
+                      <div className="pointer-events-none absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-indigo-400/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+
                       {/* Optional Top Thumbnail / Image Preview */}
                       {hasImage && viewMode === "grid" && (
-                        <div className="relative h-36 w-full bg-slate-100 overflow-hidden border-b border-slate-100">
+                        <div className="relative h-40 w-full bg-slate-100 overflow-hidden border-b border-slate-100">
                           <img
                             src={prop.images![0]}
                             alt={prop.title}
-                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                           <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                            <span className="text-[10px] font-mono font-semibold px-2 py-0.5 bg-slate-900/80 backdrop-blur-xs text-white rounded-md shadow-2xs">
+                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-slate-900/80 backdrop-blur-md text-white rounded-md shadow-2xs">
                               {prop.status}
                             </span>
                           </div>
@@ -310,14 +325,16 @@ export default function PropertiesPage() {
                         </div>
                       )}
 
-                      <div className="p-4 space-y-2.5">
+                      <div className="p-4 space-y-3">
                         {/* Top Header */}
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                              <h3 className="text-xs font-bold text-slate-900 truncate">{prop.title}</h3>
+                              <h3 className="text-xs font-bold text-slate-900 truncate group-hover:text-indigo-600 transition-colors">
+                                {prop.title}
+                              </h3>
                               {(!hasImage || viewMode !== "grid") && (
-                                <span className="text-[10px] font-mono px-1.5 py-0.2 bg-slate-100 text-slate-600 rounded">
+                                <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md border border-slate-200/70">
                                   {prop.status}
                                 </span>
                               )}
@@ -333,9 +350,9 @@ export default function PropertiesPage() {
                         </div>
 
                         {/* Builder & MahaRERA Registration (Priority 3) */}
-                        <div className="flex flex-wrap items-center justify-between gap-1.5 text-[11px] font-mono text-slate-600 bg-slate-50/70 p-2 rounded-lg border border-slate-100">
-                          <div className="flex items-center gap-1 truncate font-medium text-slate-700">
-                            <Building2 className="w-3 h-3 text-slate-400 shrink-0" />
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-600 bg-slate-50/80 p-2.5 rounded-xl border border-slate-100">
+                          <div className="flex items-center gap-1.5 truncate font-bold text-slate-800">
+                            <Building2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
                             <span className="truncate">{prop.builderName || "Nagpur Premier Estates"}</span>
                           </div>
 
@@ -345,7 +362,7 @@ export default function PropertiesPage() {
                               target="_blank"
                               rel="noreferrer"
                               onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/90 hover:bg-blue-100 transition-colors shrink-0"
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors shrink-0 shadow-2xs"
                               title="Verify on Maharashtra RERA Official Portal"
                             >
                               <ShieldCheck className="w-3 h-3 text-blue-600" />
@@ -358,13 +375,13 @@ export default function PropertiesPage() {
                           {prop.description}
                         </p>
 
-                        {/* Specs */}
-                        <div className="flex items-center gap-2.5 text-xs text-slate-600 bg-slate-50/60 p-2 rounded-lg border border-slate-100 font-mono">
-                          <span className="flex items-center gap-1 text-slate-800 font-semibold">
-                            <BedDouble className="w-3 h-3 text-slate-500" /> {prop.bhk} BHK
+                        {/* Specs Capsules */}
+                        <div className="flex items-center gap-2 text-xs text-slate-700 bg-slate-50/80 p-2.5 rounded-xl border border-slate-100 font-mono">
+                          <span className="flex items-center gap-1 text-slate-900 font-bold bg-white px-2 py-0.5 rounded-md border border-slate-200/80 shadow-2xs">
+                            <BedDouble className="w-3 h-3 text-indigo-600" /> {prop.bhk} BHK
                           </span>
                           <span>•</span>
-                          <span>{prop.carpetAreaSqFt} sq.ft</span>
+                          <span className="font-semibold">{prop.carpetAreaSqFt} sq.ft</span>
                           <span>•</span>
                           <span>Floor {prop.floorNumber}/{prop.totalFloors}</span>
                           <span>•</span>
@@ -373,7 +390,7 @@ export default function PropertiesPage() {
 
                         {/* Possession Timeline & Interactive Document Actions (Priority 3) */}
                         <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 font-mono">
-                          <div className="flex items-center gap-1 text-[11px] text-slate-500">
+                          <div className="flex items-center gap-1 text-[11px] text-slate-500 font-medium">
                             <Calendar className="w-3 h-3 text-slate-400" />
                             <span className="truncate">{prop.possessionDate || "Ready to Move"}</span>
                           </div>
@@ -385,7 +402,7 @@ export default function PropertiesPage() {
                                 e.stopPropagation();
                                 setViewingBlueprintProperty(prop);
                               }}
-                              className="px-2 py-1 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/80 text-[11px] font-semibold flex items-center gap-1 transition-colors"
+                              className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-[11px] font-bold flex items-center gap-1 transition-all shadow-2xs"
                               title="View Architectural CAD Floor Plan"
                             >
                               <Compass className="w-3 h-3 text-indigo-600" />
@@ -398,7 +415,7 @@ export default function PropertiesPage() {
                                 target="_blank"
                                 rel="noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className="px-2 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold flex items-center gap-1 transition-colors"
+                                className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold flex items-center gap-1 transition-all shadow-2xs"
                                 title="Download Certified Project Brochure"
                               >
                                 <Download className="w-3 h-3 text-slate-500" />
@@ -409,19 +426,19 @@ export default function PropertiesPage() {
                         </div>
 
                         {/* Price vs AI Valuation Comparison */}
-                        <div className="pt-2 border-t border-slate-100 flex items-end justify-between font-mono">
+                        <div className="pt-2.5 border-t border-slate-100 flex items-end justify-between font-mono">
                           <div>
-                            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Listed Price</span>
-                            <span className="text-sm font-bold text-slate-900">
+                            <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Listed Price</span>
+                            <span className="text-sm font-black text-slate-900">
                               {formatCurrencyLakhs(prop.listedPriceInLakhs)}
                             </span>
                           </div>
 
                           <div className="text-right">
-                            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+                            <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">
                               AI Fair Value
                             </span>
-                            <span className="text-xs font-semibold text-slate-700">
+                            <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
                               {formatCurrencyLakhs(prop.aiEstimatedPriceInLakhs || prop.listedPriceInLakhs)}
                             </span>
                           </div>

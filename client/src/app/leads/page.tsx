@@ -307,29 +307,29 @@ export default function LeadsPage() {
       />
 
       {/* Top Filter and Action Toolbar */}
-      <div className="px-6 py-2.5 bg-white/90 backdrop-blur-md border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-3 shrink-0">
-        <div className="flex flex-wrap items-center gap-3 flex-1">
+      <div className="px-6 py-3 bg-white/80 backdrop-blur-md border-b border-slate-200/70 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="flex flex-wrap items-center gap-2.5 flex-1">
           {/* Search Bar */}
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full sm:w-60">
             <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
             <input
               type="text"
-              placeholder="Search leads, phone, locality..."
+              placeholder="Search by name, phone, locality..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200/80 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-slate-900 focus:bg-white transition-all placeholder:text-slate-400 text-slate-800 font-mono"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50/90 border border-slate-200/80 rounded-xl focus:outline-hidden focus:ring-1 focus:ring-indigo-500 focus:bg-white transition-all placeholder:text-slate-400 text-slate-800 font-mono shadow-2xs"
             />
           </div>
 
           {/* Segmented Priority Filter Pills */}
-          <div className="flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200/60 text-xs font-mono">
+          <div className="flex items-center p-0.5 rounded-xl bg-slate-100/90 border border-slate-200/70 text-xs font-mono shadow-2xs">
             {["All", "Hot", "Warm", "Cold"].map((tier) => (
               <button
                 key={tier}
                 onClick={() => setPriorityFilter(tier)}
-                className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${
                   priorityFilter === tier
-                    ? "bg-white text-slate-900 shadow-2xs"
+                    ? "bg-white text-slate-900 shadow-xs"
                     : "text-slate-500 hover:text-slate-800"
                 }`}
               >
@@ -338,75 +338,102 @@ export default function LeadsPage() {
             ))}
           </div>
 
-          {/* SLA Overdue Quick-Filter Toggle (Priority 4) */}
-          <div className="flex items-center gap-1.5 font-mono">
-            <button
-              type="button"
-              onClick={() => setSlaFilter(slaFilter === "Overdue" ? "All" : "Overdue")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-all ${
-                slaFilter === "Overdue"
-                  ? "bg-rose-600 text-white shadow-xs"
-                  : totalOverdueCount > 0
-                  ? "bg-rose-50 text-rose-700 border border-rose-200/90 hover:bg-rose-100"
-                  : "bg-slate-100 text-slate-500 hover:bg-slate-200"
-              }`}
-              title="Filter to overdue callbacks"
-            >
-              <AlertTriangle className={`w-3.5 h-3.5 ${slaFilter === "Overdue" ? "text-white" : "text-rose-600"}`} />
-              <span>{totalOverdueCount} Overdue</span>
-            </button>
+          {/* SLA Overdue Quick-Filter (Priority 4) */}
+          <button
+            type="button"
+            onClick={() => setSlaFilter(slaFilter === "Overdue" ? "All" : "Overdue")}
+            className={`px-3 py-1 rounded-xl text-[11px] font-bold font-mono flex items-center gap-1.5 transition-all shadow-2xs ${
+              slaFilter === "Overdue"
+                ? "bg-rose-600 text-white shadow-xs"
+                : totalOverdueCount > 0
+                ? "bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100"
+                : "bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-100"
+            }`}
+            title="Filter to overdue callbacks"
+          >
+            {totalOverdueCount > 0 ? (
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+              </span>
+            ) : (
+              <Clock className="w-3 h-3 text-slate-400" />
+            )}
+            <span>{totalOverdueCount} Overdue</span>
+          </button>
 
-            <button
-              type="button"
-              onClick={() => setSlaFilter(slaFilter === "DueSoon" ? "All" : "DueSoon")}
-              className={`px-2 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-all ${
-                slaFilter === "DueSoon"
-                  ? "bg-amber-600 text-white shadow-xs"
-                  : "bg-amber-50 text-amber-700 border border-amber-200/80 hover:bg-amber-100"
-              }`}
-              title="Filter to leads due within 2 hours"
-            >
-              <Clock className="w-3 h-3 text-amber-600" />
-              <span>Due Soon</span>
-            </button>
+          {/* Channel Dropdown / Filter Pill */}
+          <div className="flex items-center gap-1 overflow-x-auto text-[11px] font-mono">
+            {[
+              { id: "All", label: "All Sources" },
+              { id: "WhatsApp", label: "WhatsApp" },
+              { id: "Meta Ads", label: "Meta" },
+              { id: "Google Ads", label: "Google" },
+              { id: "Portals", label: "Portals" },
+              { id: "Referral", label: "Referral" }
+            ].map((ch) => {
+              const count = leads.filter((l) => {
+                if (ch.id === "All") return true;
+                if (ch.id === "Portals") return ["99acres", "MagicBricks", "Housing.com", "PropertyPortal"].includes(l.source);
+                return l.source === ch.id;
+              }).length;
+
+              if (ch.id !== "All" && count === 0) return null; // Don't clutter with zero-count channels
+
+              return (
+                <button
+                  key={ch.id}
+                  onClick={() => setSourceFilter(ch.id)}
+                  className={`px-2.5 py-1 rounded-lg transition-all shrink-0 flex items-center gap-1.5 shadow-2xs ${
+                    sourceFilter === ch.id
+                      ? "bg-indigo-600 text-white font-bold"
+                      : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200/80 hover:bg-slate-50"
+                  }`}
+                >
+                  <span>{ch.label}</span>
+                  <span className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${
+                    sourceFilter === ch.id ? "bg-indigo-700 text-indigo-100" : "bg-slate-100 text-slate-500"
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Agent Territory Switcher Pill */}
+          {/* Agent Territory Switcher */}
           {isAgent && assignedLocalities.length > 0 && (
-            <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-blue-50/80 border border-blue-200 text-xs shrink-0 font-mono">
-              <span className="text-blue-900 font-semibold flex items-center gap-1 text-[11px]">
-                <MapPin className="w-3 h-3 text-blue-600" />
-                {assignedLocalities.slice(0, 2).join(", ")}
-              </span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50/80 border border-blue-200 text-xs shrink-0 font-mono shadow-2xs">
+              <MapPin className="w-3 h-3 text-blue-600" />
               <button
                 type="button"
                 onClick={() => setTerritoryOnly(!territoryOnly)}
-                className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-all ${
+                className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all ${
                   territoryOnly
                     ? "bg-blue-600 text-white shadow-2xs"
                     : "bg-blue-100 text-blue-700 hover:bg-blue-200"
                 }`}
               >
-                {territoryOnly ? `My Scope (${territoryLeadCount})` : "All"}
+                {territoryOnly ? `My Scope (${territoryLeadCount})` : "All Nagpur"}
               </button>
             </div>
           )}
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <button
             onClick={loadLeads}
-            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-colors shadow-2xs"
+            className="p-2 rounded-xl border border-slate-200/80 hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-colors shadow-2xs bg-white"
             title="Refresh Leads"
           >
             <RefreshCw className="w-3.5 h-3.5" />
           </button>
 
-          {/* WhatsApp Cloud API Ingestion Simulator Button */}
+          {/* WhatsApp Cloud API Ingestion Simulator */}
           <button
             onClick={() => setIsWhatsAppModalOpen(true)}
-            className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs hover:shadow-md transition-all active:scale-95 font-mono"
+            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm hover:shadow-md transition-all active:scale-95 font-mono"
             title="Simulate incoming WhatsApp message webhook"
           >
             <MessageSquare className="w-3.5 h-3.5 text-emerald-200" />
@@ -415,51 +442,12 @@ export default function LeadsPage() {
 
           <button
             onClick={() => setIsNewLeadModalOpen(true)}
-            className="px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs hover:shadow-md transition-all active:scale-95 font-mono"
+            className="px-4 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm hover:shadow-md transition-all active:scale-95 font-mono"
           >
             <Plus className="w-3.5 h-3.5 text-emerald-400" />
             <span>New Lead</span>
           </button>
         </div>
-      </div>
-
-      {/* Channel Source Attribution Filter Strip (Priority 6) */}
-      <div className="px-6 py-1.5 bg-slate-50/90 border-b border-slate-200/60 flex items-center gap-2 overflow-x-auto text-[11px] font-mono shrink-0">
-        <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px] shrink-0">Channel:</span>
-        {[
-          { id: "All", label: "All Channels" },
-          { id: "WhatsApp", label: "WhatsApp" },
-          { id: "Meta Ads", label: "Meta Ads" },
-          { id: "Google Ads", label: "Google Ads" },
-          { id: "Portals", label: "99acres / Portals" },
-          { id: "Referral", label: "Referrals" },
-          { id: "Website", label: "Direct / SEO" },
-        ].map((ch) => {
-          const count = leads.filter((l) => {
-            if (ch.id === "All") return true;
-            if (ch.id === "Portals") return ["99acres", "MagicBricks", "Housing.com", "PropertyPortal"].includes(l.source);
-            return l.source === ch.id;
-          }).length;
-
-          return (
-            <button
-              key={ch.id}
-              onClick={() => setSourceFilter(ch.id)}
-              className={`px-2 py-0.5 rounded-md transition-all shrink-0 flex items-center gap-1.5 ${
-                sourceFilter === ch.id
-                  ? "bg-indigo-600 text-white font-bold shadow-2xs"
-                  : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200/80 hover:bg-slate-100"
-              }`}
-            >
-              <span>{ch.label}</span>
-              <span className={`px-1 py-0.1 rounded text-[9px] font-bold ${
-                sourceFilter === ch.id ? "bg-indigo-700 text-indigo-100" : "bg-slate-100 text-slate-500"
-              }`}>
-                {count}
-              </span>
-            </button>
-          );
-        })}
       </div>
 
       {/* Kanban Board Container */}

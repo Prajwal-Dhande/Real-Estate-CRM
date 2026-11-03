@@ -1,13 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  webpack: (config, { dev, isServer }) => {
-    if (dev) {
-      // Use in-memory cache instead of filesystem pack files to prevent Windows NTFS lock / ENOENT crashes
-      config.cache = {
-        type: 'memory',
-      };
-    }
+  webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals = [...(config.externals || []), 'leaflet'];
     }

@@ -8,6 +8,19 @@ export type PipelineStage =
 
 export type PriorityTag = 'Hot' | 'Warm' | 'Cold';
 
+export type LeadSource =
+  | 'Website'
+  | 'WhatsApp'
+  | 'Walk-in'
+  | 'Referral'
+  | 'Meta Ads'
+  | 'Google Ads'
+  | '99acres'
+  | 'MagicBricks'
+  | 'Housing.com'
+  | 'Print / Outdoor'
+  | 'PropertyPortal';
+
 export interface User {
   _id: string;
   name: string;
@@ -60,7 +73,12 @@ export interface Lead {
   fullName: string;
   phone: string;
   email?: string;
-  source: 'Website' | 'Walk-in' | 'Referral' | 'PropertyPortal' | 'WhatsApp';
+  source: LeadSource;
+  campaignName?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  acquisitionCostInInr?: number;
   rawRequirementText: string;
   preferredLocalities: string[];
   budgetMinInLakhs: number;
@@ -120,5 +138,34 @@ export interface SearchResult {
   properties: Property[];
   localities: string[];
 }
+
+export interface MarketingRoiChannel {
+  source: LeadSource;
+  displayName: string;
+  leadCount: number;
+  qualifiedCount: number;
+  siteVisits: number;
+  dealsClosed: number;
+  adSpendInr: number;
+  revenueInInr: number;
+  cplInr: number;
+  roas: number;
+  conversionRatePercent: number;
+  efficiencyBadge?: string;
+  color: string;
+  icon: string;
+}
+
+export interface MarketingRoiSummary {
+  totalSpendInr: number;
+  totalRevenueInInr: number;
+  totalLeads: number;
+  totalDealsClosed: number;
+  overallRoas: number;
+  avgCplInr: number;
+  topPerformingChannel: string;
+  channels: MarketingRoiChannel[];
+}
+
 
 

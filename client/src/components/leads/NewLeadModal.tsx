@@ -15,7 +15,8 @@ export function NewLeadModal({ isOpen, onClose, onLeadCreated }: NewLeadModalPro
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [source, setSource] = useState<Lead["source"]>("Website");
+  const [source, setSource] = useState<Lead["source"]>("Meta Ads");
+  const [campaignName, setCampaignName] = useState("");
   const [desiredBhk, setDesiredBhk] = useState<number>(3);
   const [budgetMin, setBudgetMin] = useState<number>(60);
   const [budgetMax, setBudgetMax] = useState<number>(85);
@@ -36,6 +37,7 @@ export function NewLeadModal({ isOpen, onClose, onLeadCreated }: NewLeadModalPro
         phone,
         email: email || undefined,
         source,
+        campaignName: campaignName || undefined,
         desiredBhk: Number(desiredBhk),
         budgetMinInLakhs: Number(budgetMin),
         budgetMaxInLakhs: Number(budgetMax),
@@ -50,6 +52,7 @@ export function NewLeadModal({ isOpen, onClose, onLeadCreated }: NewLeadModalPro
       setFullName("");
       setPhone("");
       setEmail("");
+      setCampaignName("");
       setRawText("");
     } catch (err: any) {
       alert(`Failed to create lead: ${err.message}`);
@@ -110,18 +113,37 @@ export function NewLeadModal({ isOpen, onClose, onLeadCreated }: NewLeadModalPro
             </div>
 
             <div>
-              <label className="text-[11px] font-mono font-medium text-slate-700 block mb-1">Inquiry Source</label>
+              <label className="text-[11px] font-mono font-medium text-slate-700 block mb-1">Inquiry Channel / Source</label>
               <select
                 value={source}
                 onChange={(e) => setSource(e.target.value as any)}
-                className="w-full text-xs font-mono p-2 border border-slate-200 rounded-md bg-white"
+                className="w-full text-xs font-mono p-2 border border-slate-200 rounded-md bg-white focus:ring-1 focus:ring-slate-900"
               >
-                <option value="Website">Website</option>
-                <option value="Walk-in">Walk-in</option>
-                <option value="Referral">Referral</option>
-                <option value="PropertyPortal">Property Portal (99acres/MagicBricks)</option>
+                <option value="Meta Ads">Meta Ads (Facebook & Instagram)</option>
+                <option value="Google Ads">Google Search Ads</option>
+                <option value="WhatsApp">WhatsApp Cloud Direct</option>
+                <option value="99acres">99acres Portal</option>
+                <option value="MagicBricks">MagicBricks</option>
+                <option value="Housing.com">Housing.com</option>
+                <option value="Referral">Client / Owner Referral</option>
+                <option value="Website">Website (Direct / SEO)</option>
+                <option value="Walk-in">Branch Walk-in</option>
+                <option value="Print / Outdoor">Print / Hoarding / Outdoor</option>
               </select>
             </div>
+          </div>
+
+          <div>
+            <label className="text-[11px] font-mono font-medium text-slate-700 block mb-1">
+              Campaign / UTM Tag <span className="text-slate-400 font-normal">(Optional for ROI tracking)</span>
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Manish Nagar Diwali Expo 2026 / Google Search 3BHK"
+              value={campaignName}
+              onChange={(e) => setCampaignName(e.target.value)}
+              className="w-full text-xs p-2 border border-slate-200 rounded-md bg-slate-50/70 focus:outline-hidden focus:ring-1 focus:ring-slate-900"
+            />
           </div>
 
           <div className="grid grid-cols-3 gap-3">

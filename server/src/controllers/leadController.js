@@ -45,6 +45,11 @@ async function createLead(req, res) {
       phone,
       email,
       source = 'Website',
+      campaignName = '',
+      utmSource = '',
+      utmMedium = '',
+      utmCampaign = '',
+      acquisitionCostInInr,
       rawRequirementText,
       preferredLocalities = [],
       budgetMinInLakhs,
@@ -144,12 +149,35 @@ async function createLead(req, res) {
       console.warn('[Lead Controller] Lead scoring warning:', scoreErr.message);
     }
 
+    // Default benchmark acquisition cost per source if not explicitly provided
+    const sourceCostMap = {
+      'WhatsApp': 45,
+      'Meta Ads': 175,
+      'Google Ads': 310,
+      '99acres': 220,
+      'MagicBricks': 240,
+      'Housing.com': 210,
+      'PropertyPortal': 220,
+      'Print / Outdoor': 450,
+      'Website': 35,
+      'Referral': 0,
+      'Walk-in': 0
+    };
+    const finalAcquisitionCost = acquisitionCostInInr !== undefined 
+      ? Number(acquisitionCostInInr) 
+      : (sourceCostMap[source] || 0);
+
     // 5. Save Lead
     const lead = new Lead({
       fullName,
       phone,
       email: email ? email.toLowerCase() : undefined,
       source,
+      campaignName: campaignName || (source === 'WhatsApp' ? 'WhatsApp Direct Inbound' : ''),
+      utmSource: utmSource || '',
+      utmMedium: utmMedium || '',
+      utmCampaign: utmCampaign || '',
+      acquisitionCostInInr: finalAcquisitionCost,
       rawRequirementText,
       preferredLocalities,
       budgetMinInLakhs: Number(budgetMinInLakhs),

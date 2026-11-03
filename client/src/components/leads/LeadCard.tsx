@@ -17,13 +17,83 @@ import {
   CheckCircle2, 
   Calendar, 
   ChevronDown,
-  RotateCcw
+  RotateCcw,
+  Megaphone,
+  Search,
+  Building,
+  Home,
+  Globe,
+  UserCheck
 } from "lucide-react";
 
 interface LeadCardProps {
   lead: Lead;
   onClick: (lead: Lead) => void;
   onFollowupUpdate?: (leadId: string, nextFollowUpAt?: string, reason?: string, markCompleted?: boolean) => void;
+}
+
+function renderSourceBadge(source: string, campaignName?: string) {
+  let badgeClasses = "bg-slate-50 text-slate-700 border-slate-200";
+  let label = source;
+  let Icon = Globe;
+
+  switch (source) {
+    case "WhatsApp":
+      badgeClasses = "bg-emerald-50 text-emerald-700 border-emerald-200";
+      label = "WA";
+      Icon = MessageSquare;
+      break;
+    case "Meta Ads":
+      badgeClasses = "bg-blue-50 text-blue-700 border-blue-200";
+      label = "Meta";
+      Icon = Megaphone;
+      break;
+    case "Google Ads":
+      badgeClasses = "bg-rose-50 text-rose-700 border-rose-200";
+      label = "Google";
+      Icon = Search;
+      break;
+    case "99acres":
+    case "PropertyPortal":
+      badgeClasses = "bg-amber-50 text-amber-700 border-amber-200";
+      label = "99acres";
+      Icon = Building;
+      break;
+    case "MagicBricks":
+      badgeClasses = "bg-red-50 text-red-700 border-red-200";
+      label = "MagicBricks";
+      Icon = Home;
+      break;
+    case "Housing.com":
+      badgeClasses = "bg-violet-50 text-violet-700 border-violet-200";
+      label = "Housing";
+      Icon = Building;
+      break;
+    case "Referral":
+      badgeClasses = "bg-cyan-50 text-cyan-700 border-cyan-200";
+      label = "Referral";
+      Icon = UserCheck;
+      break;
+    case "Website":
+      badgeClasses = "bg-indigo-50 text-indigo-700 border-indigo-200";
+      label = "Web";
+      Icon = Globe;
+      break;
+    default:
+      badgeClasses = "bg-slate-50 text-slate-600 border-slate-200";
+      label = source;
+      Icon = Globe;
+  }
+
+  return (
+    <span 
+      className={`inline-flex items-center gap-0.5 text-[9px] font-semibold border px-1.5 py-0.2 rounded-full shrink-0 ${badgeClasses}`}
+      title={campaignName ? `Channel: ${source} • Campaign: ${campaignName}` : `Channel: ${source}`}
+    >
+      <Icon className="w-2.5 h-2.5 shrink-0" />
+      <span>{label}</span>
+    </span>
+  );
 }
 
 export function LeadCard({ lead, onClick, onFollowupUpdate }: LeadCardProps) {
@@ -173,16 +243,11 @@ export function LeadCard({ lead, onClick, onFollowupUpdate }: LeadCardProps) {
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
               <h4 className="text-xs font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
                 {lead.fullName}
               </h4>
-              {lead.source === "WhatsApp" && (
-                <span className="inline-flex items-center gap-0.5 text-[9px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.2 rounded-full shrink-0">
-                  <MessageSquare className="w-2.5 h-2.5 text-emerald-600" />
-                  WA
-                </span>
-              )}
+              {renderSourceBadge(lead.source, lead.campaignName)}
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5 truncate flex items-center gap-1 font-mono">
               <Phone className="w-2.5 h-2.5 text-slate-300" />

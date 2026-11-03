@@ -225,6 +225,8 @@ async function processIncomingMessage({ senderPhone, senderName, messageText }) 
     fullName: name,
     phone: cleanedPhone,
     source: 'WhatsApp',
+    campaignName: 'WhatsApp Cloud Inbound',
+    acquisitionCostInInr: 45,
     rawRequirementText: messageText,
     preferredLocalities: parsed.preferredLocalities,
     budgetMinInLakhs: parsed.budgetMinInLakhs,

@@ -1,4 +1,4 @@
-import { Lead, Property, Activity, DashboardMetrics, PredictPriceResult, PipelineStage, User, SearchResult } from "@/types";
+import { Lead, Property, Activity, DashboardMetrics, PredictPriceResult, PipelineStage, User, SearchResult, MarketingRoiSummary, MarketingRoiChannel, LeadSource } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
@@ -9,7 +9,12 @@ export const MOCK_LEADS: Lead[] = [
     fullName: "Rahul Verma",
     phone: "+91 98230 11223",
     email: "rahul.verma@example.com",
-    source: "Website",
+    source: "Meta Ads",
+    campaignName: "Meta Ads - Manish Nagar Diwali Expo",
+    utmSource: "instagram",
+    utmMedium: "paid_social",
+    utmCampaign: "diwali_expo_2026",
+    acquisitionCostInInr: 175,
     rawRequirementText: "Looking for a 3BHK flat near metro station in Vasudev Nagar under 85 Lakhs.",
     preferredLocalities: ["Vasudev Nagar", "Wardha Road"],
     budgetMinInLakhs: 70,
@@ -60,6 +65,9 @@ export const MOCK_LEADS: Lead[] = [
     phone: "+91 97654 44556",
     email: "anita.kulkarni@example.com",
     source: "Referral",
+    campaignName: "Existing Owner Referral (Tech Corridor)",
+    utmSource: "referral",
+    acquisitionCostInInr: 0,
     rawRequirementText: "Need 2BHK flat close to IT corridor in MIHAN, budget 45L to 52L.",
     preferredLocalities: ["MIHAN"],
     budgetMinInLakhs: 45,
@@ -108,7 +116,12 @@ export const MOCK_LEADS: Lead[] = [
     fullName: "Vikramaditya Rao",
     phone: "+91 99887 77665",
     email: "vikram.rao@example.com",
-    source: "PropertyPortal",
+    source: "Google Ads",
+    campaignName: "Google Search - Nagpur Luxury 4BHK Dharampeth",
+    utmSource: "google",
+    utmMedium: "cpc",
+    utmCampaign: "luxury_villas_nagpur",
+    acquisitionCostInInr: 310,
     rawRequirementText: "Interested in luxury villa in Dharampeth or Civil Lines with private lawn.",
     preferredLocalities: ["Dharampeth", "Civil Lines"],
     budgetMinInLakhs: 180,
@@ -157,7 +170,10 @@ export const MOCK_LEADS: Lead[] = [
     fullName: "Pooja Deshmukh",
     phone: "+91 94221 88990",
     email: "pooja.d@example.com",
-    source: "Walk-in",
+    source: "99acres",
+    campaignName: "99acres Premium Listing - Hingna Corridors",
+    utmSource: "99acres",
+    acquisitionCostInInr: 220,
     rawRequirementText: "Looking for 1BHK or compact 2BHK near Hingna MIDC under 30L.",
     preferredLocalities: ["Hingna"],
     budgetMinInLakhs: 22,
@@ -184,6 +200,9 @@ export const MOCK_LEADS: Lead[] = [
     phone: "+91 93710 55443",
     email: "amitabh.b@example.com",
     source: "Website",
+    campaignName: "Organic Google Search - Duplex Penthouse Nagpur",
+    utmSource: "google_organic",
+    acquisitionCostInInr: 35,
     rawRequirementText: "3BHK duplex penthouse in Manish Nagar near Besa Square.",
     preferredLocalities: ["Manish Nagar"],
     budgetMinInLakhs: 90,
@@ -206,6 +225,9 @@ export const MOCK_LEADS: Lead[] = [
     phone: "+91 98230 44551",
     email: "amit.sharma@example.com",
     source: "WhatsApp",
+    campaignName: "WhatsApp Cloud Click-to-Chat Inbound",
+    utmSource: "whatsapp",
+    acquisitionCostInInr: 45,
     rawRequirementText: "Need 3BHK in Manish Nagar budget around 75L.",
     preferredLocalities: ["Manish Nagar"],
     budgetMinInLakhs: 70,
@@ -229,7 +251,10 @@ export const MOCK_LEADS: Lead[] = [
     fullName: "Meenakshi Iyer",
     phone: "+91 98228 11888",
     email: "meenakshi.iyer@example.com",
-    source: "Website",
+    source: "MagicBricks",
+    campaignName: "MagicBricks Verified Buyer Match",
+    utmSource: "magicbricks",
+    acquisitionCostInInr: 240,
     rawRequirementText: "Need 3BHK apartment in Manish Nagar close to airport with modern gymnasium and security under 90L",
     preferredLocalities: ["Manish Nagar"],
     budgetMinInLakhs: 80,
@@ -246,6 +271,85 @@ export const MOCK_LEADS: Lead[] = [
     nextFollowUpAt: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
     slaDeadline: new Date(Date.now() + 86400000).toISOString(),
     createdAt: new Date(Date.now() - 86400000 * 2).toISOString()
+  },
+  {
+    _id: "lead-8",
+    fullName: "Suresh Agrawal",
+    phone: "+91 98222 33441",
+    email: "suresh.agrawal@example.com",
+    source: "Google Ads",
+    campaignName: "Google Search - Civil Lines Bungalow High Intent",
+    utmSource: "google",
+    utmMedium: "search_cpc",
+    acquisitionCostInInr: 310,
+    rawRequirementText: "Independent bungalow in Civil Lines or Ramdaspeth, min 3000 sq.ft plot, budget around 2.2 Cr.",
+    preferredLocalities: ["Civil Lines", "Ramdaspeth"],
+    budgetMinInLakhs: 180,
+    budgetMaxInLakhs: 230,
+    desiredBhk: 4,
+    minCarpetAreaSqFt: 3000,
+    pipelineStage: "Site Visit Scheduled",
+    aiScore: 91,
+    aiPriorityTag: "Hot",
+    aiScoreFactors: [
+      "High net worth buyer searching prime zone",
+      "Confirmed Sunday site walkthrough"
+    ],
+    nextFollowUpAt: new Date(Date.now() + 3600000 * 5).toISOString(),
+    slaDeadline: new Date(Date.now() + 3600000 * 5).toISOString(),
+    createdAt: new Date(Date.now() - 86400000 * 2).toISOString()
+  },
+  {
+    _id: "lead-9",
+    fullName: "Tanvi Joshi",
+    phone: "+91 97640 12399",
+    email: "tanvi.joshi@example.com",
+    source: "Meta Ads",
+    campaignName: "Instagram Video Walkthrough - Besa Manish Nagar",
+    utmSource: "instagram",
+    utmMedium: "video_ad",
+    acquisitionCostInInr: 175,
+    rawRequirementText: "Looking for 2BHK or 3BHK flat near Besa Square with gym and kids play area under 68L.",
+    preferredLocalities: ["Manish Nagar"],
+    budgetMinInLakhs: 58,
+    budgetMaxInLakhs: 68,
+    desiredBhk: 2,
+    minCarpetAreaSqFt: 1050,
+    pipelineStage: "Contacted",
+    aiScore: 72,
+    aiPriorityTag: "Warm",
+    aiScoreFactors: [
+      "Engaged via Instagram video carousel ad",
+      "Requested brochure download"
+    ],
+    nextFollowUpAt: new Date(Date.now() + 3600000 * 8).toISOString(),
+    slaDeadline: new Date(Date.now() + 3600000 * 8).toISOString(),
+    createdAt: new Date(Date.now() - 86400000 * 1).toISOString()
+  },
+  {
+    _id: "lead-10",
+    fullName: "Dr. Harish Gokhale",
+    phone: "+91 94228 99887",
+    email: "dr.gokhale@example.com",
+    source: "Referral",
+    campaignName: "Medical Association / Doctor Referral Network",
+    utmSource: "doctor_referral",
+    acquisitionCostInInr: 0,
+    rawRequirementText: "3BHK premium apartment in Dharampeth near VIP Road for clinic & residence.",
+    preferredLocalities: ["Dharampeth"],
+    budgetMinInLakhs: 110,
+    budgetMaxInLakhs: 130,
+    desiredBhk: 3,
+    minCarpetAreaSqFt: 1650,
+    pipelineStage: "Closed Won",
+    aiScore: 96,
+    aiPriorityTag: "Hot",
+    aiScoreFactors: [
+      "Direct referral from Dr. Deshpande",
+      "Registration done at sub-registrar office"
+    ],
+    lastContactedAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+    createdAt: new Date(Date.now() - 86400000 * 12).toISOString()
   }
 ];
 
@@ -676,6 +780,11 @@ export async function createLead(payload: Partial<Lead>): Promise<Lead> {
       phone: payload.phone || "+91 90000 00000",
       email: payload.email,
       source: payload.source || "Website",
+      campaignName: payload.campaignName || "",
+      utmSource: payload.utmSource || "",
+      acquisitionCostInInr: payload.acquisitionCostInInr !== undefined 
+        ? payload.acquisitionCostInInr 
+        : (payload.source === "Meta Ads" ? 175 : payload.source === "Google Ads" ? 310 : payload.source === "WhatsApp" ? 45 : payload.source === "99acres" ? 220 : 0),
       rawRequirementText: payload.rawRequirementText || "",
       preferredLocalities: payload.preferredLocalities || [],
       budgetMinInLakhs: payload.budgetMinInLakhs || 50,
@@ -1175,6 +1284,160 @@ export async function searchGlobal(query: string): Promise<SearchResult> {
     leads: matchedLeads,
     properties: matchedProps,
     localities: matchedLocalities
+  };
+}
+
+/**
+ * Fetch Marketing ROI & Lead Attribution Telemetry (Priority 6)
+ */
+export async function fetchMarketingRoiMetrics(): Promise<MarketingRoiSummary> {
+  try {
+    const res = await fetch(`${API_BASE}/dashboard/marketing-roi`, {
+      headers: getHeaders(),
+      cache: "no-store"
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.roiSummary && data.roiSummary.channels?.length > 0) {
+        return data.roiSummary;
+      }
+    }
+  } catch (err: any) {
+    console.warn("[API] Using local fallback for marketing ROI:", err.message);
+  }
+
+  // Realistic fallback metrics derived from real estate acquisition data
+  const fallbackChannels: MarketingRoiChannel[] = [
+    {
+      source: "WhatsApp",
+      displayName: "WhatsApp Cloud API",
+      leadCount: 18,
+      qualifiedCount: 15,
+      siteVisits: 8,
+      dealsClosed: 3,
+      adSpendInr: 4500,
+      revenueInInr: 1450000,
+      cplInr: 45,
+      roas: 32.2,
+      conversionRatePercent: 16.7,
+      efficiencyBadge: "⭐ Highest ROAS (32.2x)",
+      color: "#10B981",
+      icon: "MessageSquare"
+    },
+    {
+      source: "Referral",
+      displayName: "Client & Owner Referrals",
+      leadCount: 9,
+      qualifiedCount: 9,
+      siteVisits: 7,
+      dealsClosed: 3,
+      adSpendInr: 0,
+      revenueInInr: 2800000,
+      cplInr: 0,
+      roas: 99.9,
+      conversionRatePercent: 33.3,
+      efficiencyBadge: "🤝 ₹0 CAC / 33% Close",
+      color: "#06B6D4",
+      icon: "UserCheck"
+    },
+    {
+      source: "Google Ads",
+      displayName: "Google Search Ads",
+      leadCount: 22,
+      qualifiedCount: 18,
+      siteVisits: 10,
+      dealsClosed: 2,
+      adSpendInr: 24800,
+      revenueInInr: 1950000,
+      cplInr: 310,
+      roas: 7.8,
+      conversionRatePercent: 9.1,
+      efficiencyBadge: "🎯 High Intent / Luxury",
+      color: "#EA4335",
+      icon: "Search"
+    },
+    {
+      source: "Meta Ads",
+      displayName: "Meta Ads (IG & FB)",
+      leadCount: 38,
+      qualifiedCount: 24,
+      siteVisits: 11,
+      dealsClosed: 2,
+      adSpendInr: 18500,
+      revenueInInr: 1150000,
+      cplInr: 175,
+      roas: 6.2,
+      conversionRatePercent: 5.3,
+      efficiencyBadge: "🔥 Highest Lead Volume",
+      color: "#3B82F6",
+      icon: "Megaphone"
+    },
+    {
+      source: "99acres",
+      displayName: "99acres Portal",
+      leadCount: 16,
+      qualifiedCount: 11,
+      siteVisits: 5,
+      dealsClosed: 1,
+      adSpendInr: 14000,
+      revenueInInr: 850000,
+      cplInr: 220,
+      roas: 6.1,
+      conversionRatePercent: 6.3,
+      efficiencyBadge: "🏢 Steady Portal Traffic",
+      color: "#F59E0B",
+      icon: "Building"
+    },
+    {
+      source: "MagicBricks",
+      displayName: "MagicBricks",
+      leadCount: 14,
+      qualifiedCount: 9,
+      siteVisits: 4,
+      dealsClosed: 1,
+      adSpendInr: 12500,
+      revenueInInr: 750000,
+      cplInr: 240,
+      roas: 6.0,
+      conversionRatePercent: 7.1,
+      efficiencyBadge: "🏡 Verified Buyer Pack",
+      color: "#EF4444",
+      icon: "Home"
+    },
+    {
+      source: "Website",
+      displayName: "Organic Search & Direct",
+      leadCount: 15,
+      qualifiedCount: 10,
+      siteVisits: 6,
+      dealsClosed: 1,
+      adSpendInr: 3200,
+      revenueInInr: 950000,
+      cplInr: 35,
+      roas: 29.7,
+      conversionRatePercent: 6.7,
+      efficiencyBadge: "🌐 High Margin Inbound",
+      color: "#8B5CF6",
+      icon: "Globe"
+    }
+  ];
+
+  const totalSpendInr = fallbackChannels.reduce((acc, c) => acc + c.adSpendInr, 0);
+  const totalRevenueInInr = fallbackChannels.reduce((acc, c) => acc + c.revenueInInr, 0);
+  const totalLeads = fallbackChannels.reduce((acc, c) => acc + c.leadCount, 0);
+  const totalDealsClosed = fallbackChannels.reduce((acc, c) => acc + c.dealsClosed, 0);
+  const overallRoas = Number((totalRevenueInInr / (totalSpendInr || 1)).toFixed(1));
+  const avgCplInr = Math.round(totalSpendInr / (totalLeads || 1));
+
+  return {
+    totalSpendInr,
+    totalRevenueInInr,
+    totalLeads,
+    totalDealsClosed,
+    overallRoas,
+    avgCplInr,
+    topPerformingChannel: "WhatsApp Cloud API",
+    channels: fallbackChannels
   };
 }
 

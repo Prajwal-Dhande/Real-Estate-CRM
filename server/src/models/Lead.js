@@ -4,7 +4,28 @@ const leadSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   phone: { type: String, required: true, unique: true },
   email: { type: String, lowercase: true },
-  source: { type: String, enum: ['Website', 'Walk-in', 'Referral', 'PropertyPortal', 'WhatsApp'], default: 'Website' },
+  source: { 
+    type: String, 
+    enum: [
+      'Website', 
+      'WhatsApp', 
+      'Walk-in', 
+      'Referral', 
+      'Meta Ads', 
+      'Google Ads', 
+      '99acres', 
+      'MagicBricks', 
+      'Housing.com', 
+      'Print / Outdoor',
+      'PropertyPortal'
+    ], 
+    default: 'Website' 
+  },
+  campaignName: { type: String, default: '' },
+  utmSource: { type: String, default: '' },
+  utmMedium: { type: String, default: '' },
+  utmCampaign: { type: String, default: '' },
+  acquisitionCostInInr: { type: Number, default: 0 },
   rawRequirementText: { type: String, required: true }, // e.g., "Need 3BHK near metro station under 75L"
   preferredLocalities: [{ type: String }],
   budgetMinInLakhs: { type: Number, required: true },

@@ -20,7 +20,11 @@ import {
   Copy,
   Check,
   ExternalLink,
-  Bot
+  Bot,
+  Megaphone,
+  Globe,
+  UserCheck,
+  Target
 } from "lucide-react";
 
 interface LeadDetailDrawerProps {
@@ -318,6 +322,49 @@ export function LeadDetailDrawer({ lead, onClose, onLeadUpdated }: LeadDetailDra
                     <p className="text-xs text-slate-400">No score factors calculated yet.</p>
                   )}
                 </div>
+              </div>
+
+              {/* Lead Source Attribution & Marketing ROI Telemetry (Priority 6) */}
+              <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/90 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-[11px] font-mono font-semibold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <Target className="w-3.5 h-3.5 text-indigo-600" />
+                    Channel Attribution & Marketing ROI
+                  </h4>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold">
+                    {lead.source}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                  <div className="p-2 bg-white rounded border border-slate-200">
+                    <span className="text-[10px] text-slate-400 block">Acquisition Cost (CPL)</span>
+                    <span className="font-bold text-slate-900">
+                      {lead.acquisitionCostInInr ? `₹${lead.acquisitionCostInInr}` : lead.source === 'Referral' ? '₹0 (Referral)' : '₹175 (Est)'}
+                    </span>
+                  </div>
+                  <div className="p-2 bg-white rounded border border-slate-200">
+                    <span className="text-[10px] text-slate-400 block">Est. Brokerage (1.5%)</span>
+                    <span className="font-bold text-emerald-600">
+                      ₹{((lead.budgetMaxInLakhs * 100000 * 0.015) / 100000).toFixed(2)} Lakhs
+                    </span>
+                  </div>
+                </div>
+
+                {lead.campaignName && (
+                  <div className="p-2 bg-white rounded border border-slate-200 text-xs">
+                    <span className="text-[10px] font-mono text-slate-400 block mb-0.5">Campaign Name</span>
+                    <p className="font-medium text-slate-800 break-words">{lead.campaignName}</p>
+                  </div>
+                )}
+
+                {(lead.utmSource || lead.utmMedium || lead.utmCampaign) && (
+                  <div className="text-[10px] font-mono text-slate-500 bg-white p-2 rounded border border-slate-200 flex flex-wrap gap-2">
+                    {lead.utmSource && <span>utm_source: <b className="text-slate-800">{lead.utmSource}</b></span>}
+                    {lead.utmMedium && <span>utm_medium: <b className="text-slate-800">{lead.utmMedium}</b></span>}
+                    {lead.utmCampaign && <span>utm_campaign: <b className="text-slate-800">{lead.utmCampaign}</b></span>}
+                  </div>
+                )}
               </div>
             </div>
           )}

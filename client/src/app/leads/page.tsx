@@ -47,6 +47,7 @@ export default function LeadsPage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [priorityFilter, setPriorityFilter] = useState<string>("All");
   const [slaFilter, setSlaFilter] = useState<"All" | "Overdue" | "DueSoon">("All");
+  const [sourceFilter, setSourceFilter] = useState<string>("All");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isNewLeadModalOpen, setIsNewLeadModalOpen] = useState<boolean>(false);
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
@@ -102,6 +103,10 @@ export default function LeadsPage() {
     }
     if (targetFilter === "overdue") {
       setSlaFilter("Overdue");
+    }
+    const targetSource = params.get("source");
+    if (targetSource) {
+      setSourceFilter(targetSource);
     }
   }, [leads]);
 
@@ -244,6 +249,13 @@ export default function LeadsPage() {
     const matchesPriority =
       priorityFilter === "All" || lead.aiPriorityTag === priorityFilter;
 
+    // Acquisition Source / Channel Filter (Priority 6)
+    const matchesSource =
+      sourceFilter === "All" ||
+      (sourceFilter === "Portals"
+        ? (lead.source === "99acres" || lead.source === "MagicBricks" || lead.source === "Housing.com" || lead.source === "PropertyPortal")
+        : lead.source === sourceFilter);
+
     // SLA Overdue / Due Soon filter
     let matchesSla = true;
     if (slaFilter === "Overdue") {
@@ -278,7 +290,7 @@ export default function LeadsPage() {
         assignedLocalities.some((al) => al.toLowerCase() === loc.toLowerCase())
       );
 
-    return matchesSearch && matchesPriority && matchesSla && matchesTerritory;
+    return matchesSearch && matchesPriority && matchesSla && matchesTerritory && matchesSource;
   });
 
   const territoryLeadCount = leads.filter((lead) =>
@@ -409,6 +421,45 @@ export default function LeadsPage() {
             <span>New Lead</span>
           </button>
         </div>
+      </div>
+
+      {/* Channel Source Attribution Filter Strip (Priority 6) */}
+      <div className="px-6 py-1.5 bg-slate-50/90 border-b border-slate-200/60 flex items-center gap-2 overflow-x-auto text-[11px] font-mono shrink-0">
+        <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px] shrink-0">Channel:</span>
+        {[
+          { id: "All", label: "All Channels" },
+          { id: "WhatsApp", label: "WhatsApp" },
+          { id: "Meta Ads", label: "Meta Ads" },
+          { id: "Google Ads", label: "Google Ads" },
+          { id: "Portals", label: "99acres / Portals" },
+          { id: "Referral", label: "Referrals" },
+          { id: "Website", label: "Direct / SEO" },
+        ].map((ch) => {
+          const count = leads.filter((l) => {
+            if (ch.id === "All") return true;
+            if (ch.id === "Portals") return ["99acres", "MagicBricks", "Housing.com", "PropertyPortal"].includes(l.source);
+            return l.source === ch.id;
+          }).length;
+
+          return (
+            <button
+              key={ch.id}
+              onClick={() => setSourceFilter(ch.id)}
+              className={`px-2 py-0.5 rounded-md transition-all shrink-0 flex items-center gap-1.5 ${
+                sourceFilter === ch.id
+                  ? "bg-indigo-600 text-white font-bold shadow-2xs"
+                  : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200/80 hover:bg-slate-100"
+              }`}
+            >
+              <span>{ch.label}</span>
+              <span className={`px-1 py-0.1 rounded text-[9px] font-bold ${
+                sourceFilter === ch.id ? "bg-indigo-700 text-indigo-100" : "bg-slate-100 text-slate-500"
+              }`}>
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Kanban Board Container */}

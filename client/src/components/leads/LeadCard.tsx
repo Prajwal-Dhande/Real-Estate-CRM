@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { Lead } from "@/types";
+import { Lead, PipelineStage } from "@/types";
 import { formatCurrencyLakhs } from "@/lib/utils";
 import { diagnoseStalledDeal } from "@/lib/genAiCopilot";
 import { 
@@ -31,7 +31,17 @@ interface LeadCardProps {
   lead: Lead;
   onClick: (lead: Lead) => void;
   onFollowupUpdate?: (leadId: string, nextFollowUpAt?: string, reason?: string, markCompleted?: boolean) => void;
+  onStageAdvance?: (leadId: string, nextStage: PipelineStage) => void;
 }
+
+const NEXT_STAGE_MAP: Record<PipelineStage, PipelineStage | null> = {
+  "New Inquiry": "Contacted",
+  "Contacted": "Site Visit Scheduled",
+  "Site Visit Scheduled": "Negotiation",
+  "Negotiation": "Closed Won",
+  "Closed Won": null,
+  "Closed Lost": null,
+};
 
 function renderSourceBadge(source: string, campaignName?: string) {
   let badgeClasses = "bg-slate-50 text-slate-700 border-slate-200";
@@ -97,7 +107,7 @@ function renderSourceBadge(source: string, campaignName?: string) {
   );
 }
 
-export function LeadCard({ lead, onClick, onFollowupUpdate }: LeadCardProps) {
+export function LeadCard({ lead, onClick, onFollowupUpdate, onStageAdvance }: LeadCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: lead._id,
     data: { lead }
@@ -466,6 +476,22 @@ Would you like me to share their MahaRERA registered CAD floor plans and video w
             <ArrowRight className="w-2.5 h-2.5" />
           </span>
         </div>
+      )}
+
+      {/* Mobile One-Tap Stage Advancement */}
+      {onStageAdvance && NEXT_STAGE_MAP[lead.pipelineStage] && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            const next = NEXT_STAGE_MAP[lead.pipelineStage];
+            if (next) onStageAdvance(lead._id, next);
+          }}
+          className="mt-2.5 w-full py-1.5 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-mono font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-98 cursor-pointer"
+        >
+          <span>Advance to {NEXT_STAGE_MAP[lead.pipelineStage]}</span>
+          <ArrowRight className="w-3 h-3 text-emerald-400" />
+        </button>
       )}
 
       {/* Bottom Footer: Clean Baseline with Budget & AI Match Score */}

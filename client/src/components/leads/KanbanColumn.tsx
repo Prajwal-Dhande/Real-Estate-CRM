@@ -12,6 +12,8 @@ interface KanbanColumnProps {
   color: string;
   onLeadClick: (lead: Lead) => void;
   onFollowupUpdate?: (leadId: string, nextFollowUpAt?: string, reason?: string, markCompleted?: boolean) => void;
+  isFullWidth?: boolean;
+  onStageAdvance?: (leadId: string, nextStage: PipelineStage) => void;
 }
 
 const STAGE_THEMES: Record<PipelineStage, { topGradient: string; dotGlow: string; bgTint: string }> = {
@@ -52,7 +54,9 @@ export function KanbanColumn({
   leads, 
   color, 
   onLeadClick,
-  onFollowupUpdate 
+  onFollowupUpdate,
+  isFullWidth = false,
+  onStageAdvance
 }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: stage
@@ -80,7 +84,7 @@ export function KanbanColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`w-[330px] shrink-0 flex flex-col bg-white/70 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.03)] transition-all duration-200 overflow-hidden ${
+      className={`${isFullWidth ? "w-full" : "w-[330px] shrink-0"} flex flex-col bg-white/70 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.03)] transition-all duration-200 overflow-hidden ${
         isOver 
           ? "bg-indigo-50/50 border-indigo-400 ring-2 ring-indigo-400/30 scale-[1.01] shadow-lg" 
           : "hover:border-slate-300"
@@ -130,6 +134,7 @@ export function KanbanColumn({
               lead={lead} 
               onClick={onLeadClick} 
               onFollowupUpdate={onFollowupUpdate}
+              onStageAdvance={onStageAdvance}
             />
           ))
         )}

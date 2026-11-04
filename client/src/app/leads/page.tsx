@@ -28,7 +28,11 @@ import {
   ShieldCheck, 
   MessageSquare,
   AlertTriangle,
-  Clock
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+  Smartphone,
+  Monitor
 } from "lucide-react";
 
 const STAGES: { stage: PipelineStage; color: string }[] = [
@@ -52,6 +56,7 @@ export default function LeadsPage() {
   const [isNewLeadModalOpen, setIsNewLeadModalOpen] = useState<boolean>(false);
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
   const [territoryOnly, setTerritoryOnly] = useState<boolean>(true);
+  const [selectedStageIdx, setSelectedStageIdx] = useState<number>(0);
 
   // Configure pointer sensor for smooth dragging with a small distance threshold
   const sensors = useSensors(
@@ -223,6 +228,19 @@ export default function LeadsPage() {
       await updateLeadFollowup(leadId, nextFollowUpAt, reason, markCompleted);
     } catch (err) {
       console.error("Failed to update follow-up SLA:", err);
+      loadLeads();
+    }
+  };
+
+  const handleStageAdvance = async (leadId: string, nextStage: PipelineStage) => {
+    // Optimistic UI update
+    setLeads((prev) =>
+      prev.map((l) => (l._id === leadId ? { ...l, pipelineStage: nextStage } : l))
+    );
+    try {
+      await updateLeadStage(leadId, nextStage, "Advanced via Mobile Touch 1-Tap Action");
+    } catch (err: any) {
+      console.error("Failed to advance stage:", err);
       loadLeads();
     }
   };
@@ -450,8 +468,84 @@ export default function LeadsPage() {
         </div>
       </div>
 
-      {/* Kanban Board Container */}
-      <div className="flex-1 overflow-x-auto p-5 kanban-scroll animate-fade-in-up">
+      {/* Mobile Stage Selector Pill Tabs (Touch Scrollable) */}
+      <div className="md:hidden px-4 py-2.5 bg-white/90 dark:bg-slate-900/90 border-b border-slate-200/80 dark:border-slate-800 flex items-center gap-2 overflow-x-auto kanban-scroll shrink-0 font-mono text-xs">
+        {STAGES.map(({ stage, color }, idx) => {
+          const count = filteredLeads.filter((l) => l.pipelineStage === stage).length;
+          const isSelected = selectedStageIdx === idx;
+
+          return (
+            <button
+              key={stage}
+              onClick={() => setSelectedStageIdx(idx)}
+              className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
+                isSelected
+                  ? "bg-slate-900 dark:bg-indigo-600 text-white font-bold shadow-xs scale-102"
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200"
+              }`}
+            >
+              <span className={`w-2 h-2 rounded-full ${color}`} />
+              <span className="truncate">{stage}</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                isSelected ? "bg-white/20 text-white" : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+              }`}>
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Mobile Stage Stepper & Quick Navigator */}
+      <div className="md:hidden px-4 py-2 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200/70 dark:border-slate-800 flex items-center justify-between text-xs font-mono text-slate-600 dark:text-slate-300 shrink-0">
+        <button
+          onClick={() => setSelectedStageIdx((prev) => Math.max(0, prev - 1))}
+          disabled={selectedStageIdx === 0}
+          className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none flex items-center gap-0.5 font-bold cursor-pointer"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          <span>Prev</span>
+        </button>
+
+        <div className="text-center">
+          <span className="font-bold text-slate-900 dark:text-white">{STAGES[selectedStageIdx].stage}</span>
+          <span className="text-[10px] text-slate-400 block">
+            Stage {selectedStageIdx + 1} of {STAGES.length} • {filteredLeads.filter((l) => l.pipelineStage === STAGES[selectedStageIdx].stage).length} Deals
+          </span>
+        </div>
+
+        <button
+          onClick={() => setSelectedStageIdx((prev) => Math.min(STAGES.length - 1, prev + 1))}
+          disabled={selectedStageIdx === STAGES.length - 1}
+          className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none flex items-center gap-0.5 font-bold cursor-pointer"
+        >
+          <span>Next</span>
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Mobile Single-Column Touch Focus View */}
+      <div className="md:hidden flex-1 overflow-y-auto p-4 animate-fade-in-up">
+        {(() => {
+          const currentStage = STAGES[selectedStageIdx];
+          const stageLeads = filteredLeads.filter((l) => l.pipelineStage === currentStage.stage);
+          return (
+            <KanbanColumn
+              key={currentStage.stage}
+              stage={currentStage.stage}
+              leads={stageLeads}
+              color={currentStage.color}
+              onLeadClick={(lead) => setSelectedLead(lead)}
+              onFollowupUpdate={handleFollowupUpdate}
+              isFullWidth={true}
+              onStageAdvance={handleStageAdvance}
+            />
+          );
+        })()}
+      </div>
+
+      {/* Desktop Multi-Column Kanban Board Container */}
+      <div className="hidden md:flex flex-1 overflow-x-auto p-5 kanban-scroll animate-fade-in-up">
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
           <div className="flex gap-4 h-full items-start min-w-max pb-4">
             {STAGES.map(({ stage, color }) => {
@@ -464,6 +558,7 @@ export default function LeadsPage() {
                   color={color}
                   onLeadClick={(lead) => setSelectedLead(lead)}
                   onFollowupUpdate={handleFollowupUpdate}
+                  onStageAdvance={handleStageAdvance}
                 />
               );
             })}

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { AuthProvider } from "@/context/AuthContext";
 import { Sidebar } from "@/components/Sidebar";
 import { CommandPalette } from "@/components/CommandPalette";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -43,11 +44,12 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
               <div className="absolute -bottom-[20%] left-[25%] w-[40vw] h-[40vw] rounded-full bg-gradient-to-tr from-emerald-100/20 via-indigo-100/15 to-transparent blur-[120px] animate-aurora-3" />
             </div>
           )}
-          <main className={`relative z-10 flex-1 flex flex-col min-w-0 h-full ${isPublicClientView ? "overflow-y-auto" : "overflow-hidden"}`}>
+          <main className={`relative z-10 flex-1 flex flex-col min-w-0 h-full ${isPublicClientView ? "overflow-y-auto" : "overflow-hidden"} pb-14 md:pb-0`}>
             {children}
           </main>
         </div>
         {!isMinimalLayout && <CommandPalette />}
+        {!isMinimalLayout && <MobileBottomNav />}
       </div>
     </AuthProvider>
   );

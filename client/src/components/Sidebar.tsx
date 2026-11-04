@@ -71,7 +71,7 @@ export function Sidebar() {
       : "Managing Broker";
 
   return (
-    <aside className="w-64 bg-[#0A0F1D] text-slate-300 flex flex-col shrink-0 border-r border-slate-800/60 select-none relative z-30">
+    <aside className="hidden md:flex w-64 bg-[#0A0F1D] text-slate-300 flex-col shrink-0 border-r border-slate-800/60 select-none relative z-30">
       {/* Brand & Workspace Header */}
       <div className="h-16 px-6 flex items-center justify-between border-b border-slate-800/60">
         <Link href="/" className="flex items-center gap-3 group">

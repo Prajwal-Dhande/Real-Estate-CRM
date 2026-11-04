@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getSocket } from "@/lib/socket";
 import { useAuth } from "@/context/AuthContext";
 import { Bell, ShieldCheck, UserCheck, Repeat, Activity, Search } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Header({ title, subtitle }: { title?: string; subtitle?: string }) {
   const { user, isAdmin, isAgent, assignedLocalities } = useAuth();
@@ -130,6 +131,9 @@ export function Header({ title, subtitle }: { title?: string; subtitle?: string 
             {socketConnected ? "Live Sync" : "Syncing..."}
           </span>
         </div>
+
+        {/* Luxury Dark/Light Mode Switcher */}
+        <ThemeToggle />
 
         {/* Notifications Dropdown */}
         <div className="relative">

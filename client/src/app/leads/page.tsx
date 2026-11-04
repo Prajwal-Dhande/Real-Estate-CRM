@@ -32,7 +32,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Smartphone,
-  Monitor
+  Monitor,
+  Flame,
+  X
 } from "lucide-react";
 
 const STAGES: { stage: PipelineStage; color: string }[] = [
@@ -55,7 +57,7 @@ export default function LeadsPage() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isNewLeadModalOpen, setIsNewLeadModalOpen] = useState<boolean>(false);
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
-  const [territoryOnly, setTerritoryOnly] = useState<boolean>(true);
+  const [territoryOnly, setTerritoryOnly] = useState<boolean>(false);
   const [selectedStageIdx, setSelectedStageIdx] = useState<number>(0);
 
   // Configure pointer sensor for smooth dragging with a small distance threshold
@@ -103,6 +105,44 @@ export default function LeadsPage() {
     };
   }, []);
 
+  // Solution 3: Listen for instant filter events dispatched from Sidebar Smart Filters
+  useEffect(() => {
+    const handleFilterEvent = (e: any) => {
+      const filter = e.detail?.filter;
+      if (filter === "hot") {
+        setPriorityFilter("Hot");
+        setSlaFilter("All");
+        setSourceFilter("All");
+        setTerritoryOnly(false);
+      } else if (filter === "overdue") {
+        setSlaFilter("Overdue");
+        setPriorityFilter("All");
+        setSourceFilter("All");
+        setTerritoryOnly(false);
+      } else if (filter === "whatsapp") {
+        setSourceFilter("WhatsApp");
+        setPriorityFilter("All");
+        setSlaFilter("All");
+        setTerritoryOnly(false);
+      } else if (filter === "territory") {
+        setTerritoryOnly(true);
+        setPriorityFilter("All");
+        setSlaFilter("All");
+        setSourceFilter("All");
+      } else if (filter === "all") {
+        setPriorityFilter("All");
+        setSlaFilter("All");
+        setSourceFilter("All");
+        setTerritoryOnly(false);
+      }
+    };
+
+    window.addEventListener("apply-lead-filter", handleFilterEvent);
+    return () => {
+      window.removeEventListener("apply-lead-filter", handleFilterEvent);
+    };
+  }, []);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
@@ -119,9 +159,30 @@ export default function LeadsPage() {
     } else if (targetAction === "simulate-whatsapp") {
       setIsWhatsAppModalOpen(true);
     }
-    if (targetFilter === "overdue") {
+
+    // Solution 3: Deep-link parameter parsing for Smart Filters
+    if (targetFilter === "hot") {
+      setPriorityFilter("Hot");
+      setSlaFilter("All");
+      setSourceFilter("All");
+      setTerritoryOnly(false);
+    } else if (targetFilter === "overdue") {
       setSlaFilter("Overdue");
+      setPriorityFilter("All");
+      setSourceFilter("All");
+      setTerritoryOnly(false);
+    } else if (targetFilter === "whatsapp") {
+      setSourceFilter("WhatsApp");
+      setPriorityFilter("All");
+      setSlaFilter("All");
+      setTerritoryOnly(false);
+    } else if (targetFilter === "territory") {
+      setTerritoryOnly(true);
+      setPriorityFilter("All");
+      setSlaFilter("All");
+      setSourceFilter("All");
     }
+
     const targetSource = params.get("source");
     if (targetSource) {
       setSourceFilter(targetSource);
@@ -278,7 +339,9 @@ export default function LeadsPage() {
       lead.rawRequirementText.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesPriority =
-      priorityFilter === "All" || lead.aiPriorityTag === priorityFilter;
+      priorityFilter === "All" ||
+      lead.aiPriorityTag === priorityFilter ||
+      (priorityFilter === "Hot" && (lead.aiPriorityTag === "Hot" || (typeof lead.aiScore === "number" && lead.aiScore >= 80)));
 
     // Acquisition Source / Channel Filter (Priority 6)
     const matchesSource =
@@ -312,23 +375,52 @@ export default function LeadsPage() {
       }
     }
 
-    // Agent Territory Filter: When logged in as Agent in territory mode, only show leads matching assigned localities
+    // Territory Filter: When active, filter by assigned localities (or core Nagpur)
+    const targetLocalities =
+      assignedLocalities.length > 0
+        ? assignedLocalities
+        : ["Dharampeth", "Besa", "MIHAN", "Vasudev Nagar", "Manish Nagar", "Civil Lines"];
+
     const matchesTerritory =
-      !isAgent ||
       !territoryOnly ||
-      assignedLocalities.length === 0 ||
       lead.preferredLocalities.some((loc) =>
-        assignedLocalities.some((al) => al.toLowerCase() === loc.toLowerCase())
+        targetLocalities.some((al) => al.toLowerCase() === loc.toLowerCase())
       );
 
     return matchesSearch && matchesPriority && matchesSla && matchesTerritory && matchesSource;
   });
 
+  const targetLocalities =
+    assignedLocalities.length > 0
+      ? assignedLocalities
+      : ["Dharampeth", "Besa", "MIHAN", "Vasudev Nagar", "Manish Nagar", "Civil Lines"];
+
   const territoryLeadCount = leads.filter((lead) =>
     lead.preferredLocalities.some((loc) =>
-      assignedLocalities.some((al) => al.toLowerCase() === loc.toLowerCase())
+      targetLocalities.some((al) => al.toLowerCase() === loc.toLowerCase())
     )
   ).length;
+
+  const resetAllFilters = () => {
+    setSearchQuery("");
+    setPriorityFilter("All");
+    setSlaFilter("All");
+    setSourceFilter("All");
+    setTerritoryOnly(false);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("filter");
+      url.searchParams.delete("source");
+      window.history.replaceState({}, "", url.toString());
+      window.dispatchEvent(new CustomEvent("apply-lead-filter", { detail: { filter: "all" } }));
+    }
+  };
+
+  const isSmartFilterActive =
+    priorityFilter === "Hot" ||
+    slaFilter === "Overdue" ||
+    sourceFilter === "WhatsApp" ||
+    territoryOnly;
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-transparent">
@@ -336,6 +428,52 @@ export default function LeadsPage() {
         title="Lead Pipeline"
         subtitle="Live Deal Flow • SLA Follow-up Telemetry & Autonomous AI Scoring"
       />
+
+      {/* Solution 3: Active Smart Filter Banner */}
+      {isSmartFilterActive && (
+        <div className="px-6 py-2 bg-gradient-to-r from-indigo-950/70 via-slate-900/80 to-indigo-950/70 border-b border-indigo-500/30 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-indigo-300 font-bold bg-indigo-500/20 px-2 py-0.5 rounded border border-indigo-500/30">
+              Active Radar View
+            </span>
+            <div className="flex items-center gap-2 text-slate-200 font-medium">
+              {priorityFilter === "Hot" && (
+                <span className="flex items-center gap-1.5 text-amber-300 font-bold">
+                  <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400/20" />
+                  Hot Conversion Radar (AI Score 80+)
+                </span>
+              )}
+              {slaFilter === "Overdue" && (
+                <span className="flex items-center gap-1.5 text-rose-300 font-bold">
+                  <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+                  Urgent SLA Callbacks (15m SLA Overdue)
+                </span>
+              )}
+              {sourceFilter === "WhatsApp" && (
+                <span className="flex items-center gap-1.5 text-emerald-300 font-bold">
+                  <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                  WhatsApp Fresh Inquiries (Meta Cloud API)
+                </span>
+              )}
+              {territoryOnly && (
+                <span className="flex items-center gap-1.5 text-sky-300 font-bold">
+                  <MapPin className="w-3.5 h-3.5 text-sky-400" />
+                  Territory Radar: {targetLocalities.slice(0, 3).join(", ")}
+                </span>
+              )}
+              <span className="text-slate-400">• Showing {filteredLeads.length} of {leads.length} leads</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={resetAllFilters}
+            className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-300 hover:text-white px-2.5 py-1 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-slate-700 transition-colors cursor-pointer"
+          >
+            <X className="w-3 h-3 text-slate-400" />
+            <span>Reset View</span>
+          </button>
+        </div>
+      )}
 
       {/* Top Filter and Action Toolbar */}
       <div className="px-6 py-3 bg-white/80 dark:bg-[#0E1528]/90 backdrop-blur-md border-b border-slate-200/70 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
@@ -432,17 +570,17 @@ export default function LeadsPage() {
             })}
           </div>
 
-          {/* Agent Territory Switcher */}
-          {isAgent && assignedLocalities.length > 0 && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50/80 border border-blue-200 text-xs shrink-0 font-mono shadow-2xs">
-              <MapPin className="w-3 h-3 text-blue-600" />
+          {/* Territory Switcher */}
+          {(isAgent || territoryOnly) && (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50/80 dark:bg-sky-500/10 border border-blue-200 dark:border-sky-500/30 text-xs shrink-0 font-mono shadow-2xs">
+              <MapPin className="w-3 h-3 text-blue-600 dark:text-sky-400" />
               <button
                 type="button"
                 onClick={() => setTerritoryOnly(!territoryOnly)}
                 className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all ${
                   territoryOnly
-                    ? "bg-blue-600 text-white shadow-2xs"
-                    : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                    ? "bg-blue-600 dark:bg-sky-500 text-white shadow-2xs"
+                    : "bg-blue-100 dark:bg-slate-800 text-blue-700 dark:text-sky-300 hover:bg-blue-200"
                 }`}
               >
                 {territoryOnly ? `My Scope (${territoryLeadCount})` : "All Nagpur"}

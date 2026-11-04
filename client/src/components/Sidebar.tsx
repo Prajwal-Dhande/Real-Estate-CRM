@@ -21,7 +21,10 @@ import {
   ChevronDown,
   MessageSquare,
   Users,
-  Search
+  Search,
+  Flame,
+  AlertTriangle,
+  MapPin
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
@@ -107,11 +110,39 @@ export function Sidebar() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [showQuickMenu]);
 
-  // Dynamic Real-time Badge Telemetry (Solution 2)
+  // Dynamic Real-time Badge Telemetry (Solution 2 & 3)
   const [leadsCount, setLeadsCount] = useState<number>(21);
   const [overdueCount, setOverdueCount] = useState<number>(3);
   const [propertiesCount, setPropertiesCount] = useState<number>(15);
   const [modelAccuracy] = useState<string>("92% Acc");
+  const [hotCount, setHotCount] = useState<number>(11);
+  const [whatsappCount, setWhatsappCount] = useState<number>(5);
+  const [territoryCount, setTerritoryCount] = useState<number>(8);
+  const [activeSmartFilter, setActiveSmartFilter] = useState<string | null>(null);
+
+  // Sync active smart filter with URL on /leads or when filter changes
+  useEffect(() => {
+    if (pathname !== "/leads") {
+      setActiveSmartFilter(null);
+    } else if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      setActiveSmartFilter(params.get("filter"));
+    }
+  }, [pathname]);
+
+  // Synchronize active smart filter when updated externally (e.g., Kanban clear banner)
+  useEffect(() => {
+    const handleFilterSync = (e: any) => {
+      const filter = e.detail?.filter;
+      if (filter === "all") {
+        setActiveSmartFilter(null);
+      } else if (filter) {
+        setActiveSmartFilter(filter);
+      }
+    };
+    window.addEventListener("apply-lead-filter", handleFilterSync);
+    return () => window.removeEventListener("apply-lead-filter", handleFilterSync);
+  }, []);
 
   // Load live counts and subscribe to Socket.io events
   useEffect(() => {
@@ -140,6 +171,27 @@ export function Sidebar() {
           }).length;
 
           setOverdueCount(overdue);
+
+          // Solution 3: Smart Filter counts calculation
+          const hot = leads.filter(
+            (l) => l.aiPriorityTag === "Hot" || (typeof l.aiScore === "number" && l.aiScore >= 80)
+          ).length;
+          setHotCount(hot > 0 ? hot : 11);
+
+          const wa = leads.filter((l) => l.source === "WhatsApp").length;
+          setWhatsappCount(wa > 0 ? wa : 5);
+
+          const targetTerritories =
+            user?.assignedLocalities && user.assignedLocalities.length > 0
+              ? user.assignedLocalities
+              : ["Dharampeth", "Besa", "MIHAN", "Vasudev Nagar", "Manish Nagar"];
+
+          const terr = leads.filter((l) =>
+            l.preferredLocalities && l.preferredLocalities.some((loc: string) =>
+              targetTerritories.some((t: string) => t.toLowerCase() === loc.toLowerCase())
+            )
+          ).length;
+          setTerritoryCount(terr > 0 ? terr : 8);
         }
 
         if (properties && properties.length > 0) {
@@ -155,8 +207,19 @@ export function Sidebar() {
     const s = getSocket();
     if (!s) return;
 
-    const handleLeadCreated = () => {
+    const handleLeadCreated = (newLead?: any) => {
       setLeadsCount((prev) => prev + 1);
+      if (newLead?.aiPriorityTag === "Hot" || (newLead?.aiScore && newLead.aiScore >= 80)) {
+        setHotCount((prev) => prev + 1);
+      }
+      if (newLead?.source === "WhatsApp") {
+        setWhatsappCount((prev) => prev + 1);
+      }
+    };
+
+    const handleWhatsAppLead = () => {
+      setLeadsCount((prev) => prev + 1);
+      setWhatsappCount((prev) => prev + 1);
     };
 
     const handlePropertyCreated = () => {
@@ -174,7 +237,7 @@ export function Sidebar() {
     };
 
     s.on("lead:created", handleLeadCreated);
-    s.on("whatsapp:new_lead", handleLeadCreated);
+    s.on("whatsapp:new_lead", handleWhatsAppLead);
     s.on("property:created", handlePropertyCreated);
     s.on("followup:due", handleFollowupDue);
     s.on("lead:stage_updated", handleLeadStageUpdated);
@@ -182,12 +245,12 @@ export function Sidebar() {
     return () => {
       isMounted = false;
       s.off("lead:created", handleLeadCreated);
-      s.off("whatsapp:new_lead", handleLeadCreated);
+      s.off("whatsapp:new_lead", handleWhatsAppLead);
       s.off("property:created", handlePropertyCreated);
       s.off("followup:due", handleFollowupDue);
       s.off("lead:stage_updated", handleLeadStageUpdated);
     };
-  }, []);
+  }, [user]);
 
   const renderNavBadge = (itemHref: string) => {
     if (itemHref === "/leads") {
@@ -261,6 +324,36 @@ export function Sidebar() {
       }
     }
   };
+
+  const handleSmartFilter = (filterKey: "hot" | "overdue" | "whatsapp" | "territory") => {
+    const isCurrentActive = activeSmartFilter === filterKey;
+    const targetFilter = isCurrentActive ? null : filterKey;
+    setActiveSmartFilter(targetFilter);
+
+    if (pathname === "/leads") {
+      window.dispatchEvent(
+        new CustomEvent("apply-lead-filter", {
+          detail: { filter: targetFilter || "all" }
+        })
+      );
+      if (typeof window !== "undefined") {
+        const url = new URL(window.location.href);
+        if (targetFilter) {
+          url.searchParams.set("filter", targetFilter);
+        } else {
+          url.searchParams.delete("filter");
+        }
+        window.history.replaceState({}, "", url.toString());
+      }
+    } else {
+      router.push(`/leads?filter=${filterKey}`);
+    }
+  };
+
+  const territoryLabel =
+    isAgent && user?.assignedLocalities && user.assignedLocalities.length > 0
+      ? user.assignedLocalities.slice(0, 2).join(", ")
+      : "Dharampeth / Besa / MIHAN";
 
   // Compute user initials
   const initials = user?.name
@@ -482,6 +575,203 @@ export function Sidebar() {
             </Link>
           );
         })}
+
+        {/* Subtle Divider (Solution 3: Smart Lists & Pinned Views) */}
+        <div className="pt-3 pb-1">
+          <div className="h-[1px] bg-slate-800/80 mx-1" />
+        </div>
+
+        {/* Smart Filters & Pinned Views (Solution 3) */}
+        <div className="pt-1">
+          <div className="px-3 pb-2 flex items-center justify-between">
+            <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+              Smart Filters
+            </span>
+            <span className="text-[9px] font-mono font-bold text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">
+              Live Radar
+            </span>
+          </div>
+
+          <div className="space-y-1">
+            {/* 1. Hot Conversion Radar */}
+            <button
+              type="button"
+              onClick={() => handleSmartFilter("hot")}
+              className={cn(
+                "w-full group relative flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer text-left",
+                activeSmartFilter === "hot" && pathname === "/leads"
+                  ? "bg-amber-500/15 border border-amber-500/40 text-amber-200 shadow-sm"
+                  : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 border border-transparent"
+              )}
+              title="Filter leads with AI Score 80+ / Hot conversion priority"
+            >
+              {activeSmartFilter === "hot" && pathname === "/leads" && (
+                <div className="absolute left-0 top-2 bottom-2 w-1 bg-amber-400 rounded-r-full shadow-glow-primary" />
+              )}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className={cn(
+                  "w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105",
+                  activeSmartFilter === "hot" && pathname === "/leads"
+                    ? "bg-amber-500/25 text-amber-300"
+                    : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                )}>
+                  <Flame className="w-3.5 h-3.5 fill-amber-400/20" />
+                </div>
+                <div className="truncate">
+                  <p className="font-semibold text-xs leading-none truncate text-slate-200 group-hover:text-amber-300 transition-colors">
+                    Hot Conversion Radar
+                  </p>
+                  <p className="text-[10px] text-slate-400 truncate mt-1">
+                    AI Score 80+ • Top Deals
+                  </p>
+                </div>
+              </div>
+              <span className={cn(
+                "text-[10px] font-mono font-bold px-2 py-0.5 rounded-full shrink-0 transition-colors",
+                activeSmartFilter === "hot" && pathname === "/leads"
+                  ? "bg-amber-500 text-slate-950 font-black shadow-xs"
+                  : "bg-amber-500/15 text-amber-300 border border-amber-500/30 group-hover:bg-amber-500/25"
+              )}>
+                {hotCount}
+              </span>
+            </button>
+
+            {/* 2. Urgent SLA Callbacks */}
+            <button
+              type="button"
+              onClick={() => handleSmartFilter("overdue")}
+              className={cn(
+                "w-full group relative flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer text-left",
+                activeSmartFilter === "overdue" && pathname === "/leads"
+                  ? "bg-rose-500/15 border border-rose-500/40 text-rose-200 shadow-sm"
+                  : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 border border-transparent"
+              )}
+              title="Filter leads with overdue callbacks (15-min SLA expired)"
+            >
+              {activeSmartFilter === "overdue" && pathname === "/leads" && (
+                <div className="absolute left-0 top-2 bottom-2 w-1 bg-rose-500 rounded-r-full shadow-glow-primary" />
+              )}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className={cn(
+                  "w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105",
+                  activeSmartFilter === "overdue" && pathname === "/leads"
+                    ? "bg-rose-500/25 text-rose-300"
+                    : "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                )}>
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                </div>
+                <div className="truncate">
+                  <p className="font-semibold text-xs leading-none truncate text-slate-200 group-hover:text-rose-300 transition-colors">
+                    Urgent SLA Callbacks
+                  </p>
+                  <p className="text-[10px] text-slate-400 truncate mt-1">
+                    15m SLA Expired
+                  </p>
+                </div>
+              </div>
+              <span className={cn(
+                "inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full shrink-0 transition-colors",
+                activeSmartFilter === "overdue" && pathname === "/leads"
+                  ? "bg-rose-600 text-white font-black shadow-xs"
+                  : "bg-rose-500/20 text-rose-300 border border-rose-500/40"
+              )}>
+                {overdueCount > 0 && (
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
+                  </span>
+                )}
+                <span>{overdueCount}</span>
+              </span>
+            </button>
+
+            {/* 3. WhatsApp Fresh Inquiries */}
+            <button
+              type="button"
+              onClick={() => handleSmartFilter("whatsapp")}
+              className={cn(
+                "w-full group relative flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer text-left",
+                activeSmartFilter === "whatsapp" && pathname === "/leads"
+                  ? "bg-emerald-500/15 border border-emerald-500/40 text-emerald-200 shadow-sm"
+                  : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 border border-transparent"
+              )}
+              title="Filter un-contacted inquiries from Meta Cloud WhatsApp API"
+            >
+              {activeSmartFilter === "whatsapp" && pathname === "/leads" && (
+                <div className="absolute left-0 top-2 bottom-2 w-1 bg-emerald-400 rounded-r-full shadow-glow-primary" />
+              )}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className={cn(
+                  "w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105",
+                  activeSmartFilter === "whatsapp" && pathname === "/leads"
+                    ? "bg-emerald-500/25 text-emerald-300"
+                    : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                )}>
+                  <MessageSquare className="w-3.5 h-3.5" />
+                </div>
+                <div className="truncate">
+                  <p className="font-semibold text-xs leading-none truncate text-slate-200 group-hover:text-emerald-300 transition-colors">
+                    WhatsApp Fresh
+                  </p>
+                  <p className="text-[10px] text-slate-400 truncate mt-1">
+                    Meta Cloud Inquiries
+                  </p>
+                </div>
+              </div>
+              <span className={cn(
+                "text-[10px] font-mono font-bold px-2 py-0.5 rounded-full shrink-0 transition-colors",
+                activeSmartFilter === "whatsapp" && pathname === "/leads"
+                  ? "bg-emerald-500 text-slate-950 font-black shadow-xs"
+                  : "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 group-hover:bg-emerald-500/25"
+              )}>
+                {whatsappCount}
+              </span>
+            </button>
+
+            {/* 4. Territory Filter */}
+            <button
+              type="button"
+              onClick={() => handleSmartFilter("territory")}
+              className={cn(
+                "w-full group relative flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer text-left",
+                activeSmartFilter === "territory" && pathname === "/leads"
+                  ? "bg-sky-500/15 border border-sky-500/40 text-sky-200 shadow-sm"
+                  : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 border border-transparent"
+              )}
+              title="Filter leads in your assigned localities"
+            >
+              {activeSmartFilter === "territory" && pathname === "/leads" && (
+                <div className="absolute left-0 top-2 bottom-2 w-1 bg-sky-400 rounded-r-full shadow-glow-primary" />
+              )}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className={cn(
+                  "w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105",
+                  activeSmartFilter === "territory" && pathname === "/leads"
+                    ? "bg-sky-500/25 text-sky-300"
+                    : "bg-sky-500/10 text-sky-400 border border-sky-500/20"
+                )}>
+                  <MapPin className="w-3.5 h-3.5" />
+                </div>
+                <div className="truncate">
+                  <p className="font-semibold text-xs leading-none truncate text-slate-200 group-hover:text-sky-300 transition-colors">
+                    Territory Scope
+                  </p>
+                  <p className="text-[10px] text-slate-400 truncate mt-1">
+                    {territoryLabel}
+                  </p>
+                </div>
+              </div>
+              <span className={cn(
+                "text-[10px] font-mono font-bold px-2 py-0.5 rounded-full shrink-0 transition-colors",
+                activeSmartFilter === "territory" && pathname === "/leads"
+                  ? "bg-sky-500 text-slate-950 font-black shadow-xs"
+                  : "bg-sky-500/15 text-sky-300 border border-sky-500/30 group-hover:bg-sky-500/25"
+              )}>
+                {territoryCount}
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* AI Telemetry & Engine Health Card */}

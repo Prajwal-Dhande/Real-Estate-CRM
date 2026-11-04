@@ -33,12 +33,12 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthProvider>
-      <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC]">
+      <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC] dark:bg-[#0B132B] transition-colors duration-200">
         {!isMinimalLayout && <Sidebar />}
         <div className="relative flex-1 flex flex-col min-w-0 h-full overflow-hidden">
           {/* Subtle Ambient 3D Aurora Mesh Orbs (Living Background) */}
           {!isMinimalLayout && (
-            <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
+            <div className="pointer-events-none fixed inset-0 overflow-hidden z-0 dark:opacity-15 transition-opacity duration-300">
               <div className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-br from-indigo-200/25 via-purple-100/20 to-transparent blur-[120px] animate-aurora-1" />
               <div className="absolute top-[30%] -right-[15%] w-[45vw] h-[45vw] rounded-full bg-gradient-to-bl from-cyan-200/20 via-sky-100/20 to-transparent blur-[120px] animate-aurora-2" />
               <div className="absolute -bottom-[20%] left-[25%] w-[40vw] h-[40vw] rounded-full bg-gradient-to-tr from-emerald-100/20 via-indigo-100/15 to-transparent blur-[120px] animate-aurora-3" />

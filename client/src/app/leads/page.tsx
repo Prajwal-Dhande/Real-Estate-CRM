@@ -318,14 +318,14 @@ export default function LeadsPage() {
   ).length;
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#F8FAFC]">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-transparent">
       <Header
         title="Lead Pipeline"
         subtitle="Live Deal Flow • SLA Follow-up Telemetry & Autonomous AI Scoring"
       />
 
       {/* Top Filter and Action Toolbar */}
-      <div className="px-6 py-3 bg-white/80 backdrop-blur-md border-b border-slate-200/70 flex flex-wrap items-center justify-between gap-3 shrink-0">
+      <div className="px-6 py-3 bg-white/80 dark:bg-[#0E1528]/90 backdrop-blur-md border-b border-slate-200/70 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
         <div className="flex flex-wrap items-center gap-2.5 flex-1">
           {/* Search Bar */}
           <div className="relative w-full sm:w-60">

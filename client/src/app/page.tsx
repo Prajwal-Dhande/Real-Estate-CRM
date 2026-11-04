@@ -146,30 +146,30 @@ export default function DashboardPage() {
             className="p-5"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
                 Active Buyers
               </span>
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-50 to-indigo-100/70 text-indigo-600 flex items-center justify-center border border-indigo-200/60 shadow-2xs">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-50 to-indigo-100/70 dark:from-indigo-950/80 dark:to-indigo-900/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-200/60 dark:border-indigo-800/60 shadow-2xs">
                 <Users className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-4 flex items-baseline gap-2.5">
-              <span className="text-3xl font-black bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 bg-clip-text text-transparent tracking-tight">
+              <span className="text-3xl font-black bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-800 dark:from-white dark:via-indigo-200 dark:to-slate-100 bg-clip-text text-transparent tracking-tight">
                 {metrics?.leads.total ?? "--"}
               </span>
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80 shadow-2xs">
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/80 dark:border-emerald-800/60 shadow-2xs">
                 <TrendingUp className="w-3 h-3" /> +14.2% MoM
               </span>
             </div>
-            <div className="mt-4 pt-3 border-t border-slate-100/80 flex items-center gap-2 text-xs">
-              <span className="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 font-bold text-[11px] border border-rose-200/60 shadow-2xs">
+            <div className="mt-4 pt-3 border-t border-slate-100/80 dark:border-slate-800 flex items-center gap-2 text-xs">
+              <span className="px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 font-bold text-[11px] border border-rose-200/60 dark:border-rose-800/60 shadow-2xs">
                 {metrics?.leads.hot ?? 0} Hot
               </span>
-              <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-medium text-[11px] border border-amber-200/60 shadow-2xs">
+              <span className="px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-medium text-[11px] border border-amber-200/60 dark:border-amber-800/60 shadow-2xs">
                 {metrics?.leads.warm ?? 0} Warm
               </span>
-              <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium text-[11px] border border-slate-200/60">
+              <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium text-[11px] border border-slate-200/60 dark:border-slate-700">
                 {metrics?.leads.cold ?? 0} Cold
               </span>
             </div>
@@ -181,25 +181,25 @@ export default function DashboardPage() {
             className="p-5"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
                 Live Inventory
               </span>
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-50 to-sky-100/70 text-sky-600 flex items-center justify-center border border-sky-200/60 shadow-2xs">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-50 to-sky-100/70 dark:from-sky-950/80 dark:to-sky-900/60 text-sky-600 dark:text-sky-400 flex items-center justify-center border border-sky-200/60 dark:border-sky-800/60 shadow-2xs">
                 <Building2 className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-4 flex items-baseline gap-2.5">
-              <span className="text-3xl font-black bg-gradient-to-br from-slate-900 via-sky-950 to-slate-800 bg-clip-text text-transparent tracking-tight">
+              <span className="text-3xl font-black bg-gradient-to-br from-slate-900 via-sky-950 to-slate-800 dark:from-white dark:via-sky-200 dark:to-slate-100 bg-clip-text text-transparent tracking-tight">
                 {metrics?.properties.total ?? "--"}
               </span>
-              <span className="text-xs text-slate-500 font-semibold">Units listed</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Units listed</span>
             </div>
-            <div className="mt-4 pt-3 border-t border-slate-100/80 flex items-center gap-2 text-xs">
-              <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[11px] border border-emerald-200/60 shadow-2xs">
+            <div className="mt-4 pt-3 border-t border-slate-100/80 dark:border-slate-800 flex items-center gap-2 text-xs">
+              <span className="px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-[11px] border border-emerald-200/60 dark:border-emerald-800/60 shadow-2xs">
                 {metrics?.properties.available ?? 0} Available
               </span>
-              <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium text-[11px] border border-slate-200/60">
+              <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium text-[11px] border border-slate-200/60 dark:border-slate-700">
                 {Math.max(0, (metrics?.properties.total ?? 0) - (metrics?.properties.available ?? 0))} In Contract
               </span>
             </div>
@@ -211,27 +211,27 @@ export default function DashboardPage() {
             className="p-5"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                 Deal Conversion
               </span>
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-50 to-emerald-100/70 text-emerald-600 flex items-center justify-center border border-emerald-200/60 shadow-2xs">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-50 to-emerald-100/70 dark:from-emerald-950/80 dark:to-emerald-900/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-200/60 dark:border-emerald-800/60 shadow-2xs">
                 <Percent className="w-4 h-4" />
               </div>
             </div>
             <div className="mt-4 flex items-baseline gap-2.5">
-              <span className="text-3xl font-black bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-800 bg-clip-text text-transparent tracking-tight">
+              <span className="text-3xl font-black bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-800 dark:from-white dark:via-emerald-200 dark:to-slate-100 bg-clip-text text-transparent tracking-tight">
                 {metrics?.leads.byStage?.["Closed Won"] ?? 0}
               </span>
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80 shadow-2xs">
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/80 dark:border-emerald-800/60 shadow-2xs">
                 Won Deals
               </span>
             </div>
-            <div className="mt-4 pt-3 border-t border-slate-100/80 flex items-center gap-2 text-xs">
-              <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-medium text-[11px] border border-indigo-200/60 shadow-2xs">
+            <div className="mt-4 pt-3 border-t border-slate-100/80 dark:border-slate-800 flex items-center gap-2 text-xs">
+              <span className="px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-medium text-[11px] border border-indigo-200/60 dark:border-indigo-800/60 shadow-2xs">
                 {metrics?.leads.byStage?.["Site Visit Scheduled"] ?? 0} Visits
               </span>
-              <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-medium text-[11px] border border-amber-200/60 shadow-2xs">
+              <span className="px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-medium text-[11px] border border-amber-200/60 dark:border-amber-800/60 shadow-2xs">
                 {metrics?.leads.byStage?.["Negotiation"] ?? 0} In Talk
               </span>
             </div>
@@ -243,31 +243,31 @@ export default function DashboardPage() {
             className="p-5"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
                 AI Telemetry
               </span>
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-50 to-purple-100/70 text-purple-600 flex items-center justify-center border border-purple-200/60 shadow-2xs">
-                <Sparkles className="w-4 h-4 text-purple-600" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-50 to-purple-100/70 dark:from-purple-950/80 dark:to-purple-900/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-200/60 dark:border-purple-800/60 shadow-2xs">
+                <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               </div>
             </div>
             <div className="mt-4 flex items-baseline gap-2.5">
-              <span className="text-3xl font-black bg-gradient-to-br from-slate-900 via-purple-950 to-slate-800 bg-clip-text text-transparent tracking-tight">
+              <span className="text-3xl font-black bg-gradient-to-br from-slate-900 via-purple-950 to-slate-800 dark:from-white dark:via-purple-200 dark:to-slate-100 bg-clip-text text-transparent tracking-tight">
                 99.8%
               </span>
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200/80 shadow-2xs">
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded-full border border-purple-200/80 dark:border-purple-800/60 shadow-2xs">
                 SLA Uptime
               </span>
             </div>
-            <div className="mt-4 pt-3 border-t border-slate-100/80 flex items-center justify-between text-xs text-slate-500">
-              <span className="flex items-center gap-2 text-[11px] text-slate-700 font-semibold">
+            <div className="mt-4 pt-3 border-t border-slate-100/80 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-2 text-[11px] text-slate-700 dark:text-slate-300 font-semibold">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
                 FastAPI Copilot
               </span>
-              <span className="text-[11px] font-mono font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200/60">
+              <span className="text-[11px] font-mono font-medium text-slate-500 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200/60 dark:border-slate-700">
                 384d Embeddings
               </span>
             </div>
@@ -281,22 +281,22 @@ export default function DashboardPage() {
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-50 to-blue-50 text-indigo-600 flex items-center justify-center border border-indigo-200/60 shadow-2xs">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-50 to-blue-50 dark:from-indigo-950/80 dark:to-blue-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-200/60 dark:border-indigo-800/60 shadow-2xs">
                 <Layers className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                   <span>Pipeline Deal Progression</span>
-                  <span className="text-[10px] font-mono font-bold bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-full border border-indigo-200/80">
+                  <span className="text-[10px] font-mono font-bold bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 px-2.5 py-0.5 rounded-full border border-indigo-200/80 dark:border-indigo-800/60">
                     Active Funnel
                   </span>
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">Live progression across all 6 CRM pipeline milestones</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Live progression across all 6 CRM pipeline milestones</p>
               </div>
             </div>
             <Link
               href="/leads"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50/70 hover:bg-indigo-100/80 px-3 py-1.5 rounded-xl border border-indigo-200/70 transition-all shadow-2xs group"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-300 hover:text-indigo-700 dark:hover:text-white bg-indigo-50/70 hover:bg-indigo-100/80 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/80 px-3 py-1.5 rounded-xl border border-indigo-200/70 dark:border-indigo-800/60 transition-all shadow-2xs group"
             >
               <span>Open Kanban</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -304,7 +304,7 @@ export default function DashboardPage() {
           </div>
 
           {/* 3D Glass Stadium Track Bar */}
-          <div className="relative p-1 rounded-full bg-slate-100/90 border border-slate-200/80 shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)] overflow-hidden">
+          <div className="relative p-1 rounded-full bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)] dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] overflow-hidden">
             <div className="h-4 w-full flex gap-1 rounded-full overflow-hidden">
               {STAGES.map((s) => {
                 const count = metrics?.leads.byStage?.[s.stage] ?? 0;
@@ -336,19 +336,19 @@ export default function DashboardPage() {
                 <Link
                   key={s.stage}
                   href="/leads"
-                  className="relative p-3 rounded-xl bg-white/60 hover:bg-white border border-slate-200/70 hover:border-indigo-300 shadow-2xs hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 group cursor-pointer block"
+                  className="relative p-3 rounded-xl bg-white/60 hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800 border border-slate-200/70 hover:border-indigo-300 dark:border-slate-700/80 dark:hover:border-indigo-500/50 shadow-2xs hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 group cursor-pointer block"
                 >
                   <div className="flex items-center gap-2 mb-1.5">
                     <div className={`w-2.5 h-2.5 rounded-full bg-gradient-to-r ${s.color} shrink-0 ring-2 ${s.ringColor}`} />
-                    <p className="text-[11px] font-semibold text-slate-500 truncate group-hover:text-slate-900 transition-colors">
+                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                       {s.stage}
                     </p>
                   </div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-base font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                    <span className="text-base font-extrabold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                       {count}
                     </span>
-                    <span className="text-[10px] text-slate-400 font-mono font-semibold">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-400 font-mono font-semibold">
                       {pct}%
                     </span>
                   </div>
@@ -363,32 +363,32 @@ export default function DashboardPage() {
           spotlightColor="rgba(79, 70, 229, 0.15)"
           className="p-6 md:p-7 space-y-6"
         >
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/70 pb-5">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/70 dark:border-slate-800 pb-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-50 to-purple-50 text-indigo-600 flex items-center justify-center border border-indigo-200/80 shadow-2xs">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-50 to-purple-50 dark:from-indigo-950/80 dark:to-purple-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-200/80 dark:border-indigo-800/60 shadow-2xs">
                 <Target className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                   <span>Lead Source Attribution & Marketing ROAS</span>
-                  <span className="text-[10px] font-mono font-bold bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-full border border-indigo-200/80">
+                  <span className="text-[10px] font-mono font-bold bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 px-2.5 py-0.5 rounded-full border border-indigo-200/80 dark:border-indigo-800/60">
                     Attribution Telemetry
                   </span>
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Cost Per Lead (CPL), Attributed Brokerage Revenue & Return on Ad Spend per Acquisition Channel
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2.5">
-              <span className="text-xs font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-2xs">
-                <Zap className="w-3.5 h-3.5 text-emerald-600" />
+              <span className="text-xs font-mono font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-2xs">
+                <Zap className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span>Top ROAS: {roiData?.topPerformingChannel || "WhatsApp Cloud API"}</span>
               </span>
               <Link
                 href="/leads"
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-white hover:bg-indigo-50/70 flex items-center gap-1 px-3 py-1.5 rounded-xl border border-indigo-200/80 transition-all shadow-2xs"
+                className="text-xs font-bold text-indigo-600 dark:text-indigo-300 hover:text-indigo-700 dark:hover:text-white bg-white hover:bg-indigo-50/70 dark:bg-slate-800/80 dark:hover:bg-slate-800 flex items-center gap-1 px-3 py-1.5 rounded-xl border border-indigo-200/80 dark:border-slate-700/80 transition-all shadow-2xs"
               >
                 <span>Pipeline View</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -398,74 +398,74 @@ export default function DashboardPage() {
 
           {/* Top 4 ROAS Headline KPI Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 rounded-xl bg-white/70 border border-slate-200/80 hover:border-indigo-300 hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
+            <div className="p-4 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700/80 hover:border-indigo-300 dark:hover:border-indigo-500/50 hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
               <div>
-                <span className="text-[11px] font-mono uppercase text-indigo-700 font-bold block">Blended ROAS</span>
+                <span className="text-[11px] font-mono uppercase text-indigo-700 dark:text-indigo-400 font-bold block">Blended ROAS</span>
                 <div className="flex items-baseline gap-2 mt-1.5">
-                  <span className="text-2xl font-black font-mono text-slate-900">
+                  <span className="text-2xl font-black font-mono text-slate-900 dark:text-white">
                     {roiData?.overallRoas || "14.2"}x
                   </span>
-                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-200/80">
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/70 px-1.5 py-0.5 rounded-full border border-emerald-200/80 dark:border-emerald-800/60">
                     +3.8x YoY
                   </span>
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400 mt-2 font-mono">Gross return on media spend</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-2 font-mono">Gross return on media spend</p>
             </div>
 
-            <div className="p-4 rounded-xl bg-white/70 border border-slate-200/80 hover:border-emerald-300 hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
+            <div className="p-4 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700/80 hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
               <div>
-                <span className="text-[11px] font-mono uppercase text-emerald-700 font-bold block">Attributed Revenue</span>
+                <span className="text-[11px] font-mono uppercase text-emerald-700 dark:text-emerald-400 font-bold block">Attributed Revenue</span>
                 <div className="flex items-baseline gap-2 mt-1.5">
-                  <span className="text-2xl font-black font-mono text-slate-900">
+                  <span className="text-2xl font-black font-mono text-slate-900 dark:text-white">
                     ₹{((roiData?.totalRevenueInInr || 10200000) / 100000).toFixed(1)}L
                   </span>
-                  <span className="text-[10px] font-bold text-slate-500 font-mono bg-slate-100 px-1.5 py-0.5 rounded-md">
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300 font-mono bg-slate-100 dark:bg-slate-900 px-1.5 py-0.5 rounded-md border border-slate-200/60 dark:border-slate-700">
                     {roiData?.totalDealsClosed || 13} deals
                   </span>
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400 mt-2 font-mono">1.5% avg Nagpur brokerage</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-2 font-mono">1.5% avg Nagpur brokerage</p>
             </div>
 
-            <div className="p-4 rounded-xl bg-white/70 border border-slate-200/80 hover:border-blue-300 hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
+            <div className="p-4 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700/80 hover:border-blue-300 dark:hover:border-sky-500/50 hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
               <div>
-                <span className="text-[11px] font-mono uppercase text-blue-700 font-bold block">Total Ad Spend</span>
+                <span className="text-[11px] font-mono uppercase text-blue-700 dark:text-sky-400 font-bold block">Total Ad Spend</span>
                 <div className="flex items-baseline gap-2 mt-1.5">
-                  <span className="text-2xl font-black font-mono text-slate-900">
+                  <span className="text-2xl font-black font-mono text-slate-900 dark:text-white">
                     ₹{(roiData?.totalSpendInr || 73500).toLocaleString("en-IN")}
                   </span>
-                  <span className="text-[10px] font-bold text-blue-700 font-mono bg-blue-50 px-1.5 py-0.5 rounded-md border border-blue-100">
+                  <span className="text-[10px] font-bold text-blue-700 dark:text-sky-300 font-mono bg-blue-50 dark:bg-blue-950/70 px-1.5 py-0.5 rounded-md border border-blue-100 dark:border-blue-900">
                     {roiData?.totalLeads || 132} leads
                   </span>
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400 mt-2 font-mono">Portals + Meta + Google + WA</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-2 font-mono">Portals + Meta + Google + WA</p>
             </div>
 
-            <div className="p-4 rounded-xl bg-white/70 border border-slate-200/80 hover:border-amber-300 hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
+            <div className="p-4 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700/80 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
               <div>
-                <span className="text-[11px] font-mono uppercase text-amber-700 font-bold block">Avg CPL (Cost / Lead)</span>
+                <span className="text-[11px] font-mono uppercase text-amber-700 dark:text-amber-400 font-bold block">Avg CPL (Cost / Lead)</span>
                 <div className="flex items-baseline gap-2 mt-1.5">
-                  <span className="text-2xl font-black font-mono text-slate-900">
+                  <span className="text-2xl font-black font-mono text-slate-900 dark:text-white">
                     ₹{roiData?.avgCplInr || 165}
                   </span>
-                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-200/80">
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/70 px-1.5 py-0.5 rounded-full border border-emerald-200/80 dark:border-emerald-800/60">
                     -18% CPL
                   </span>
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400 mt-2 font-mono">Lowest: WA ₹45 / High: Google ₹310</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-2 font-mono">Lowest: WA ₹45 / High: Google ₹310</p>
             </div>
           </div>
 
           {/* Visual Channel Share Breakdown Stadium Bar */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-slate-500 font-bold uppercase text-[10px] tracking-wider">Channel Inbound Share</span>
+              <span className="text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px] tracking-wider">Channel Inbound Share</span>
               <span className="text-slate-400 text-[10px]">{roiData?.totalLeads || 132} Total Attributed Inquiries</span>
             </div>
-            <div className="h-3 w-full bg-slate-100/90 rounded-full overflow-hidden flex p-0.5 gap-1 border border-slate-200/70 shadow-inner">
+            <div className="h-3 w-full bg-slate-100/90 dark:bg-slate-800/90 rounded-full overflow-hidden flex p-0.5 gap-1 border border-slate-200/70 dark:border-slate-700/80 shadow-inner">
               {(roiData?.channels || []).map((ch) => {
                 const total = roiData?.totalLeads || 100;
                 const pct = Math.max(3, (ch.leadCount / total) * 100);
@@ -487,7 +487,7 @@ export default function DashboardPage() {
               return (
                 <div
                   key={ch.source}
-                  className="p-4 rounded-xl border border-slate-200/90 bg-white/80 hover:bg-white hover:border-indigo-300 hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 space-y-3 group"
+                  className="p-4 rounded-xl border border-slate-200/90 dark:border-slate-700/80 bg-white/80 dark:bg-slate-800/70 hover:bg-white dark:hover:bg-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500/50 hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 space-y-3 group"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -515,7 +515,7 @@ export default function DashboardPage() {
                         )}
                       </div>
                       <div className="min-w-0">
-                        <h4 className="text-xs font-bold text-slate-900 truncate group-hover:text-indigo-600 transition-colors">
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                           {ch.displayName}
                         </h4>
                         <span className="text-[10px] font-mono text-slate-400 block truncate">
@@ -537,34 +537,34 @@ export default function DashboardPage() {
                   </div>
 
                   {ch.efficiencyBadge && (
-                    <div className="text-[10px] font-semibold text-slate-600 bg-slate-50 border border-slate-200/70 px-2 py-0.5 rounded-md truncate">
+                    <div className="text-[10px] font-semibold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/70 border border-slate-200/70 dark:border-slate-700/80 px-2 py-0.5 rounded-md truncate">
                       {ch.efficiencyBadge}
                     </div>
                   )}
 
                   {/* Channel Metrics Mini Grid */}
-                  <div className="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-100 text-center font-mono">
-                    <div className="p-1 rounded bg-slate-50/70">
+                  <div className="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-100 dark:border-slate-700/60 text-center font-mono">
+                    <div className="p-1 rounded bg-slate-50/70 dark:bg-slate-900/60">
                       <span className="text-[9px] text-slate-400 block">Leads</span>
-                      <span className="text-xs font-bold text-slate-800">{ch.leadCount}</span>
+                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{ch.leadCount}</span>
                     </div>
-                    <div className="p-1 rounded bg-slate-50/70">
+                    <div className="p-1 rounded bg-slate-50/70 dark:bg-slate-900/60">
                       <span className="text-[9px] text-slate-400 block">CPL</span>
-                      <span className="text-xs font-bold text-slate-800">{ch.cplInr === 0 ? "₹0" : `₹${ch.cplInr}`}</span>
+                      <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{ch.cplInr === 0 ? "₹0" : `₹${ch.cplInr}`}</span>
                     </div>
-                    <div className="p-1 rounded bg-slate-50/70">
+                    <div className="p-1 rounded bg-slate-50/70 dark:bg-slate-900/60">
                       <span className="text-[9px] text-slate-400 block">Won</span>
-                      <span className="text-xs font-bold text-emerald-700">{ch.dealsClosed}</span>
+                      <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400">{ch.dealsClosed}</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-100 font-mono">
-                    <div className="text-[10px] text-slate-500">
-                      Rev: <b className="text-slate-900 font-bold">₹{((ch.revenueInInr || 0) / 100000).toFixed(1)}L</b>
+                  <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-100 dark:border-slate-700/60 font-mono">
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                      Rev: <b className="text-slate-900 dark:text-white font-bold">₹{((ch.revenueInInr || 0) / 100000).toFixed(1)}L</b>
                     </div>
                     <Link
                       href={`/leads?source=${encodeURIComponent(ch.source)}`}
-                      className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-0.5"
+                      className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 flex items-center gap-0.5"
                     >
                       <span>Filter</span>
                       <ChevronRight className="w-3 h-3" />
@@ -583,26 +583,26 @@ export default function DashboardPage() {
             spotlightColor="rgba(244, 63, 94, 0.12)"
             className="lg:col-span-7 p-0 flex flex-col overflow-hidden"
           >
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                  <span className="p-1.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200/60 shadow-2xs">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                  <span className="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/70 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-800/60 shadow-2xs">
                     <Flame className="w-4 h-4" />
                   </span>
                   High-Probability Conversion Radar
                 </h3>
-                <p className="text-xs text-slate-500 mt-0.5">Top buyer leads scored by ML conversion propensity</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Top buyer leads scored by ML conversion propensity</p>
               </div>
               <Link
                 href="/leads"
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50/70 hover:bg-indigo-100/80 px-3 py-1.5 rounded-xl border border-indigo-200/70 flex items-center gap-1 group transition-all shadow-2xs"
+                className="text-xs font-bold text-indigo-600 dark:text-indigo-300 hover:text-indigo-700 dark:hover:text-white bg-indigo-50/70 hover:bg-indigo-100/80 dark:bg-indigo-950/70 dark:hover:bg-indigo-900/80 px-3 py-1.5 rounded-xl border border-indigo-200/70 dark:border-indigo-800/60 flex items-center gap-1 group transition-all shadow-2xs"
               >
                 <span>View All</span>
                 <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             </div>
 
-            <div className="divide-y divide-slate-100/80 flex-1">
+            <div className="divide-y divide-slate-100/80 dark:divide-slate-800 flex-1">
               {loading ? (
                 <div className="p-8 text-center text-xs text-slate-400">Loading telemetry...</div>
               ) : hotLeads.length === 0 ? (
@@ -619,29 +619,29 @@ export default function DashboardPage() {
                   return (
                     <div
                       key={lead._id}
-                      className="p-4 hover:bg-slate-50/90 transition-all flex items-center justify-between gap-4 group"
+                      className="p-4 hover:bg-slate-50/90 dark:hover:bg-slate-800/60 transition-all flex items-center justify-between gap-4 group"
                     >
                       <div className="flex items-center gap-3 min-w-0 flex-1">
                         {/* Avatar */}
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-rose-100 to-rose-50 text-rose-700 font-bold text-xs flex items-center justify-center shrink-0 border border-rose-200/80 shadow-2xs group-hover:scale-105 transition-transform">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-rose-100 to-rose-50 dark:from-rose-950/80 dark:to-rose-900/60 text-rose-700 dark:text-rose-300 font-bold text-xs flex items-center justify-center shrink-0 border border-rose-200/80 dark:border-rose-800/60 shadow-2xs group-hover:scale-105 transition-transform">
                           {leadInitials}
                         </div>
 
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-xs text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
+                            <span className="font-bold text-xs text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
                               {lead.fullName}
                             </span>
-                            <span className="text-[10px] font-bold px-2 py-0.5 bg-rose-50 text-rose-700 border border-rose-200/80 rounded-full shadow-2xs">
+                            <span className="text-[10px] font-bold px-2 py-0.5 bg-rose-50 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border border-rose-200/80 dark:border-rose-800/60 rounded-full shadow-2xs">
                               HOT • {lead.aiScore} pts
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-500 truncate mt-0.5 flex items-center gap-2">
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 flex items-center gap-2">
                             <span>{lead.desiredBhk} BHK</span>
                             <span>•</span>
                             <span>{lead.preferredLocalities?.join(", ") || "Nagpur"}</span>
                             <span>•</span>
-                            <span className="font-bold text-slate-800">
+                            <span className="font-bold text-slate-800 dark:text-slate-200">
                               {formatCurrencyLakhs(lead.budgetMaxInLakhs)}
                             </span>
                           </p>
@@ -649,12 +649,12 @@ export default function DashboardPage() {
                       </div>
 
                       <div className="flex items-center gap-3 shrink-0">
-                        <span className="text-[11px] font-medium text-slate-600 bg-slate-100/80 border border-slate-200/60 px-2.5 py-1 rounded-full">
+                        <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300 bg-slate-100/80 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 px-2.5 py-1 rounded-full">
                           {lead.pipelineStage}
                         </span>
                         <Link
                           href="/leads"
-                          className="text-xs font-bold text-indigo-600 hover:text-white hover:bg-indigo-600 px-3.5 py-1.5 rounded-xl border border-indigo-200/80 transition-all shadow-2xs"
+                          className="text-xs font-bold text-indigo-600 dark:text-indigo-300 hover:text-white hover:bg-indigo-600 dark:hover:bg-indigo-600 dark:hover:text-white px-3.5 py-1.5 rounded-xl border border-indigo-200/80 dark:border-indigo-700/80 transition-all shadow-2xs"
                         >
                           Engage
                         </Link>
@@ -672,21 +672,21 @@ export default function DashboardPage() {
             className="lg:col-span-5 p-5 flex flex-col justify-between"
           >
             <div>
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 rounded-lg bg-sky-50 text-sky-600 border border-sky-200/60 shadow-2xs">
+                  <div className="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/70 text-sky-600 dark:text-sky-400 border border-sky-200/60 dark:border-sky-800/60 shadow-2xs">
                     <Activity className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900 tracking-tight">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                       Sub-Market Benchmarks
                     </h3>
-                    <p className="text-xs text-slate-500">Nagpur average price per sq.ft valuations</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Nagpur average price per sq.ft valuations</p>
                   </div>
                 </div>
                 <Link
                   href="/valuation"
-                  className="text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50/70 hover:bg-indigo-100/80 px-2.5 py-1 rounded-lg border border-indigo-200/70 flex items-center gap-0.5 shadow-2xs transition-all"
+                  className="text-xs font-bold text-indigo-600 dark:text-indigo-300 hover:text-indigo-700 dark:hover:text-white bg-indigo-50/70 hover:bg-indigo-100/80 dark:bg-indigo-950/70 dark:hover:bg-indigo-900/80 px-2.5 py-1 rounded-lg border border-indigo-200/70 dark:border-indigo-800/60 flex items-center gap-0.5 shadow-2xs transition-all"
                 >
                   Model <ArrowUpRight className="w-3.5 h-3.5" />
                 </Link>
@@ -695,21 +695,21 @@ export default function DashboardPage() {
               {/* Benchmark List with Visual Demand Meters */}
               <div className="mt-4 space-y-3.5">
                 {LOCALITY_DATA.map((loc) => (
-                  <div key={loc.name} className="space-y-1.5 p-2 rounded-xl hover:bg-slate-50/90 transition-colors">
+                  <div key={loc.name} className="space-y-1.5 p-2 rounded-xl hover:bg-slate-50/90 dark:hover:bg-slate-800/60 transition-colors">
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-slate-900">{loc.name}</span>
-                        <span className="text-[10px] text-slate-400 font-medium">({loc.grade})</span>
+                        <span className="font-bold text-slate-900 dark:text-white">{loc.name}</span>
+                        <span className="text-[10px] text-slate-400 dark:text-slate-400 font-medium">({loc.grade})</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-extrabold text-slate-900">{loc.benchmark}</span>
-                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded-full border border-emerald-200/60">
+                        <span className="font-extrabold text-slate-900 dark:text-white">{loc.benchmark}</span>
+                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/70 px-1.5 py-0.2 rounded-full border border-emerald-200/60 dark:border-emerald-800/60">
                           {loc.trend}
                         </span>
                       </div>
                     </div>
                     {/* Micro Demand Progress Bar */}
-                    <div className="h-2 w-full bg-slate-100/90 rounded-full overflow-hidden p-0.5 border border-slate-200/60 shadow-inner">
+                    <div className="h-2 w-full bg-slate-100/90 dark:bg-slate-800/90 rounded-full overflow-hidden p-0.5 border border-slate-200/60 dark:border-slate-700/80 shadow-inner">
                       <div
                         style={{ width: `${loc.demandPct}%` }}
                         className="h-full bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-400 rounded-full transition-all duration-500"
@@ -720,12 +720,12 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="mt-5 p-3 rounded-xl bg-slate-50/80 border border-slate-200/70 flex items-center justify-between text-xs text-slate-600">
+            <div className="mt-5 p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/80 flex items-center justify-between text-xs text-slate-600 dark:text-slate-300">
               <span className="flex items-center gap-1.5 font-medium">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                 Auto-synced with XGBoost ML
               </span>
-              <span className="text-[11px] font-mono font-bold text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200/70 shadow-2xs">
+              <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-300 bg-white dark:bg-slate-900 px-2 py-0.5 rounded-md border border-slate-200/70 dark:border-slate-700 shadow-2xs">
                 92% accuracy
               </span>
             </div>

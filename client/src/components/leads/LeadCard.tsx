@@ -268,12 +268,12 @@ Would you like me to share their MahaRERA registered CAD floor plans and video w
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative bg-white rounded-2xl border transition-all duration-200 select-none p-4 overflow-hidden ${
+      className={`group relative bg-white dark:bg-slate-900/90 rounded-2xl border transition-all duration-200 select-none p-4 overflow-hidden ${
         isOverdue
-          ? "border-rose-300/90 border-l-4 border-l-rose-500 shadow-[0_4px_16px_-4px_rgba(244,63,94,0.12)] hover:shadow-card-hover hover:-translate-y-1"
+          ? "border-rose-300/90 dark:border-rose-800/90 border-l-4 border-l-rose-500 shadow-[0_4px_16px_-4px_rgba(244,63,94,0.12)] hover:shadow-card-hover hover:-translate-y-1"
           : isDueSoon
-          ? "border-amber-300/90 border-l-4 border-l-amber-500 shadow-[0_4px_16px_-4px_rgba(245,158,11,0.12)] hover:shadow-card-hover hover:-translate-y-1"
-          : "border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.04)] hover:border-indigo-300/80 hover:shadow-card-hover hover:-translate-y-1"
+          ? "border-amber-300/90 dark:border-amber-800/90 border-l-4 border-l-amber-500 shadow-[0_4px_16px_-4px_rgba(245,158,11,0.12)] hover:shadow-card-hover hover:-translate-y-1"
+          : "border-slate-200/80 dark:border-slate-800 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.04)] hover:border-indigo-300/80 dark:hover:border-indigo-500/50 hover:shadow-card-hover hover:-translate-y-1"
       } ${isDragging ? "ring-2 ring-indigo-500 shadow-2xl opacity-60 scale-[1.02] cursor-grabbing" : ""}`}
     >
       {/* 3D Top Specular Shine Line on Hover */}
@@ -294,23 +294,23 @@ Would you like me to share their MahaRERA registered CAD floor plans and video w
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 justify-between">
-              <h4 className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
+              <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
                 {lead.fullName}
               </h4>
               {renderSourceBadge(lead.source, lead.campaignName)}
             </div>
             <div className="flex items-center justify-between gap-1 mt-0.5">
-              <p className="text-[10px] text-slate-400 truncate flex items-center gap-1 font-mono">
-                <Phone className="w-2.5 h-2.5 text-slate-300 shrink-0" />
+              <p className="text-[10px] text-slate-400 dark:text-slate-400 truncate flex items-center gap-1 font-mono">
+                <Phone className="w-2.5 h-2.5 text-slate-300 dark:text-slate-500 shrink-0" />
                 <span>{lead.phone}</span>
               </p>
               <button
                 type="button"
                 onClick={handleDirectWhatsApp}
-                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/80 text-[9px] font-mono font-bold transition-all shadow-2xs hover:scale-105 active:scale-95 shrink-0"
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/70 dark:hover:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 text-[9px] font-mono font-bold transition-all shadow-2xs hover:scale-105 active:scale-95 shrink-0"
                 title={`Launch 1-click WhatsApp chat with ${lead.fullName}`}
               >
-                <MessageSquare className="w-2.5 h-2.5 text-emerald-600" />
+                <MessageSquare className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400" />
                 <span>WA</span>
               </button>
             </div>
@@ -321,7 +321,7 @@ Would you like me to share their MahaRERA registered CAD floor plans and video w
         <div
           {...listeners}
           {...attributes}
-          className="p-1 -mr-1 -mt-1 text-slate-300 hover:text-slate-600 cursor-grab active:cursor-grabbing rounded-md hover:bg-slate-100 transition-colors shrink-0"
+          className="p-1 -mr-1 -mt-1 text-slate-300 hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-300 cursor-grab active:cursor-grabbing rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
           title="Drag to advance pipeline milestone"
         >
           <GripVertical className="w-3.5 h-3.5" />
@@ -330,19 +330,19 @@ Would you like me to share their MahaRERA registered CAD floor plans and video w
 
       {/* Requirement Snippet Capsule */}
       <div onClick={() => onClick(lead)} className="mt-2.5 cursor-pointer">
-        <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed bg-slate-50/70 p-2 rounded-xl border border-slate-100/90 font-sans">
+        <p className="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed bg-slate-50/70 dark:bg-slate-800/60 p-2 rounded-xl border border-slate-100/90 dark:border-slate-700/60 font-sans">
           {lead.rawRequirementText}
         </p>
 
         {/* Feature Pills: BHK & Localities */}
         <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-indigo-50/80 text-indigo-700 font-bold border border-indigo-100/70 text-[10px]">
-            <BedDouble className="w-3 h-3 text-indigo-500" />
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-indigo-50/80 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-100/70 dark:border-indigo-800/60 text-[10px]">
+            <BedDouble className="w-3 h-3 text-indigo-500 dark:text-indigo-400" />
             {lead.desiredBhk} BHK
           </span>
           {lead.preferredLocalities && lead.preferredLocalities.length > 0 && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 text-[10px] font-semibold border border-slate-200/60 truncate max-w-[150px]">
-              <MapPin className="w-2.5 h-2.5 text-slate-400 shrink-0" />
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-semibold border border-slate-200/60 dark:border-slate-700 truncate max-w-[150px]">
+              <MapPin className="w-2.5 h-2.5 text-slate-400 dark:text-slate-400 shrink-0" />
               <span className="truncate">{lead.preferredLocalities.join(", ")}</span>
             </span>
           )}
@@ -463,15 +463,15 @@ Would you like me to share their MahaRERA registered CAD floor plans and video w
             if (clean.length === 10) clean = `91${clean}`;
             window.open(`https://wa.me/${clean}?text=${encodeURIComponent(stalledDiagnosis.suggestedReengagementPitch)}`, "_blank");
           }}
-          className="mt-2.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-900 border border-amber-200/90 flex items-center justify-between text-[10px] font-mono transition-all cursor-pointer shadow-2xs group/stalled"
+          className="mt-2.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/70 dark:to-orange-950/60 hover:from-amber-100 hover:to-orange-100 dark:hover:from-amber-900/80 dark:hover:to-orange-900/70 text-amber-900 dark:text-amber-200 border border-amber-200/90 dark:border-amber-800/60 flex items-center justify-between text-[10px] font-mono transition-all cursor-pointer shadow-2xs group/stalled"
           title={stalledDiagnosis.reason}
         >
           <span className="flex items-center gap-1.5 font-bold truncate">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
-            <span className="text-amber-800">⚠️ Stalled ({stalledDiagnosis.daysInactive}d):</span>
-            <span className="text-amber-700 truncate font-normal">Re-engage lead</span>
+            <span className="text-amber-800 dark:text-amber-300">⚠️ Stalled ({stalledDiagnosis.daysInactive}d):</span>
+            <span className="text-amber-700 dark:text-amber-400 truncate font-normal">Re-engage lead</span>
           </span>
-          <span className="text-[9px] font-bold text-amber-900 bg-amber-200/80 group-hover/stalled:bg-amber-300 px-1.5 py-0.5 rounded-md shrink-0 flex items-center gap-0.5 transition-colors">
+          <span className="text-[9px] font-bold text-amber-900 dark:text-amber-100 bg-amber-200/80 dark:bg-amber-800/80 group-hover/stalled:bg-amber-300 dark:group-hover/stalled:bg-amber-700 px-1.5 py-0.5 rounded-md shrink-0 flex items-center gap-0.5 transition-colors">
             <span>Nudge</span>
             <ArrowRight className="w-2.5 h-2.5" />
           </span>
@@ -487,7 +487,7 @@ Would you like me to share their MahaRERA registered CAD floor plans and video w
             const next = NEXT_STAGE_MAP[lead.pipelineStage];
             if (next) onStageAdvance(lead._id, next);
           }}
-          className="mt-2.5 w-full py-1.5 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-mono font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-98 cursor-pointer"
+          className="mt-2.5 w-full py-1.5 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white text-[10px] font-mono font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-98 cursor-pointer"
         >
           <span>Advance to {NEXT_STAGE_MAP[lead.pipelineStage]}</span>
           <ArrowRight className="w-3 h-3 text-emerald-400" />
@@ -495,9 +495,9 @@ Would you like me to share their MahaRERA registered CAD floor plans and video w
       )}
 
       {/* Bottom Footer: Clean Baseline with Budget & AI Match Score */}
-      <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between">
+      <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
         <div>
-          <span className="text-[12px] font-black text-slate-900 tracking-tight font-mono">
+          <span className="text-[12px] font-black text-slate-900 dark:text-white tracking-tight font-mono">
             {formatCurrencyLakhs(lead.budgetMaxInLakhs)}
           </span>
         </div>
@@ -509,7 +509,7 @@ Would you like me to share their MahaRERA registered CAD floor plans and video w
             {lead.aiPriorityTag}
           </span>
 
-          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-slate-900 text-white px-2 py-0.5 rounded-md shadow-2xs">
+          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold bg-slate-900 dark:bg-slate-800 text-white px-2 py-0.5 rounded-md shadow-2xs border border-transparent dark:border-slate-700">
             <Sparkles className="w-2.5 h-2.5 text-amber-300" />
             <span>{lead.aiScore}</span>
           </span>

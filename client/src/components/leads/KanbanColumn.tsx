@@ -84,35 +84,35 @@ export function KanbanColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`${isFullWidth ? "w-full" : "w-[330px] shrink-0"} flex flex-col bg-white/70 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.03)] transition-all duration-200 overflow-hidden ${
+      className={`${isFullWidth ? "w-full" : "w-[330px] shrink-0"} flex flex-col bg-white/70 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.03)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4)] transition-all duration-200 overflow-hidden ${
         isOver 
-          ? "bg-indigo-50/50 border-indigo-400 ring-2 ring-indigo-400/30 scale-[1.01] shadow-lg" 
-          : "hover:border-slate-300"
+          ? "bg-indigo-50/50 dark:bg-indigo-950/40 border-indigo-400 ring-2 ring-indigo-400/30 scale-[1.01] shadow-lg" 
+          : "hover:border-slate-300 dark:hover:border-slate-700"
       }`}
     >
       {/* 3D Top Luminous Accent Stripe */}
       <div className={`h-[3px] w-full bg-gradient-to-r ${theme.topGradient}`} />
 
       {/* Column Header */}
-      <div className="p-3.5 flex items-center justify-between border-b border-slate-200/70 bg-white/80">
+      <div className="p-3.5 flex items-center justify-between border-b border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-slate-900/90">
         <div className="flex items-center gap-2 min-w-0">
           <span className={`w-2.5 h-2.5 rounded-full ${color} shrink-0 ring-2 ${theme.dotGlow}`} />
-          <h3 className="text-xs font-bold text-slate-900 tracking-tight truncate">
+          <h3 className="text-xs font-bold text-slate-900 dark:text-white tracking-tight truncate">
             {stage}
           </h3>
           {overdueCount > 0 && (
-            <span className="text-[10px] font-mono font-bold text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.2 rounded-full flex items-center gap-1 shadow-2xs shrink-0">
-              <AlertTriangle className="w-2.5 h-2.5 text-rose-600" />
+            <span className="text-[10px] font-mono font-bold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/70 border border-rose-200 dark:border-rose-800/60 px-1.5 py-0.2 rounded-full flex items-center gap-1 shadow-2xs shrink-0">
+              <AlertTriangle className="w-2.5 h-2.5 text-rose-600 dark:text-rose-400" />
               {overdueCount}
             </span>
           )}
         </div>
 
         <div className="flex items-center gap-1.5 font-mono shrink-0">
-          <span className="text-[11px] font-bold text-slate-700 bg-slate-100/90 border border-slate-200/60 px-2 py-0.5 rounded-lg">
+          <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100/90 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 px-2 py-0.5 rounded-lg">
             {formattedVolume}
           </span>
-          <span className="text-xs font-extrabold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100/80 shadow-2xs">
+          <span className="text-xs font-extrabold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/70 px-2 py-0.5 rounded-lg border border-indigo-100/80 dark:border-indigo-800/60 shadow-2xs">
             {leads.length}
           </span>
         </div>
@@ -121,8 +121,8 @@ export function KanbanColumn({
       {/* Cards Scroll Container */}
       <div className="flex-1 p-3 space-y-3 overflow-y-auto kanban-scroll max-h-[calc(100vh-230px)] min-h-[220px]">
         {leads.length === 0 ? (
-          <div className="h-40 border-2 border-dashed border-slate-200/80 rounded-2xl flex flex-col items-center justify-center text-slate-400 gap-2 p-4 text-center font-mono bg-slate-50/40">
-            <Inbox className="w-6 h-6 text-slate-300" />
+          <div className="h-40 border-2 border-dashed border-slate-200/80 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 gap-2 p-4 text-center font-mono bg-slate-50/40 dark:bg-slate-900/40">
+            <Inbox className="w-6 h-6 text-slate-300 dark:text-slate-600" />
             <span className="text-xs font-semibold text-slate-500">No deals in this stage</span>
             <span className="text-[10px] text-slate-400">Drag deals here to advance pipeline</span>
           </div>

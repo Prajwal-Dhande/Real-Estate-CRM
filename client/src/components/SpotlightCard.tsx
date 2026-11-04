@@ -68,7 +68,7 @@ export function SpotlightCard({
           : "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1)"
       }}
       className={cn(
-        "relative rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.05),0_1px_3px_rgba(15,23,42,0.03)] hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.12),0_10px_20px_-10px_rgba(15,23,42,0.06)] hover:border-indigo-300/60 overflow-hidden transform-gpu will-change-transform",
+        "relative rounded-2xl bg-white/90 dark:bg-[#101827]/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.05),0_1px_3px_rgba(15,23,42,0.03)] dark:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.12),0_10px_20px_-10px_rgba(15,23,42,0.06)] hover:border-indigo-300/60 dark:hover:border-indigo-500/40 overflow-hidden transform-gpu will-change-transform",
         className
       )}
       {...props}

@@ -98,7 +98,7 @@ export default function ValuationSandboxPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#F8FAFC]">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-transparent">
       <Header
         title="AI Valuation Sandbox"
         subtitle="Interactive Regression Ensemble Pipeline (XGBoost + RandomForest)"

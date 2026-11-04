@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Property, PredictPriceResult } from "@/types";
 import { createProperty, predictPrice, uploadPropertyDocument } from "@/lib/api";
 import { formatCurrencyLakhs } from "@/lib/utils";
+import { AiMarketingCopyModal } from "@/components/properties/AiMarketingCopyModal";
 import { 
   X, 
   Building2, 
@@ -18,7 +19,8 @@ import {
   AlertCircle, 
   Sparkles,
   Eye,
-  Download
+  Download,
+  Bot
 } from "lucide-react";
 
 interface NewPropertyModalProps {
@@ -97,6 +99,9 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
   const [estimating, setEstimating] = useState<boolean>(false);
   const [aiValuation, setAiValuation] = useState<PredictPriceResult | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
+
+  // GenAI Marketing Copywriter State
+  const [isAiCopyModalOpen, setIsAiCopyModalOpen] = useState<boolean>(false);
 
   if (!isOpen) return null;
 
@@ -402,14 +407,24 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
           </div>
 
           <div>
-            <label className="text-[11px] font-mono font-medium text-slate-700 block mb-1">Description *</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-[11px] font-mono font-medium text-slate-700 block">Description *</label>
+              <button
+                type="button"
+                onClick={() => setIsAiCopyModalOpen(true)}
+                className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 px-2 py-0.5 rounded-lg transition-all shadow-2xs cursor-pointer active:scale-95"
+              >
+                <Sparkles className="w-3 h-3 text-indigo-600" />
+                <span>✨ Generate AI Marketing Pitch (WhatsApp / 99acres / IG)</span>
+              </button>
+            </div>
             <textarea
               required
-              rows={2}
+              rows={3}
               placeholder="Spacious apartment with modular kitchen, private balcony, and covered parking..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full text-xs p-2.5 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-slate-900 bg-slate-50/70"
+              className="w-full text-xs p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-900 bg-slate-50/70"
             />
           </div>
 
@@ -601,6 +616,29 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
           </div>
         </form>
       </div>
+
+      {/* GenAI Marketing Copywriter Modal */}
+      {isAiCopyModalOpen && (
+        <AiMarketingCopyModal
+          isOpen={isAiCopyModalOpen}
+          onClose={() => setIsAiCopyModalOpen(false)}
+          onApplyDescription={(text) => {
+            setDescription(text);
+          }}
+          params={{
+            title: title || `${bhk} BHK Luxury Flat in ${locality}`,
+            locality,
+            bhk,
+            carpetAreaSqFt,
+            furnishing,
+            amenities: selectedAmenities,
+            listedPriceInLakhs,
+            builderName,
+            reraNumber,
+            possessionDate
+          }}
+        />
+      )}
     </div>
   );
 }

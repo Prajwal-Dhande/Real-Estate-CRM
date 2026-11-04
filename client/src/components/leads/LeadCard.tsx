@@ -5,6 +5,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { Lead } from "@/types";
 import { formatCurrencyLakhs } from "@/lib/utils";
+import { diagnoseStalledDeal } from "@/lib/genAiCopilot";
 import { 
   MapPin, 
   BedDouble, 
@@ -22,7 +23,8 @@ import {
   Building,
   Home,
   Globe,
-  UserCheck
+  UserCheck,
+  ArrowRight
 } from "lucide-react";
 
 interface LeadCardProps {
@@ -237,6 +239,21 @@ Would you like me to share their MahaRERA registered CAD floor plans and video w
     window.open(`https://wa.me/${cleanDigits}?text=${encodeURIComponent(message)}`, "_blank");
   };
 
+  // Feature 2: AI Stalled Deal Prediction & Proactive Re-engagement Nudge
+  const stalledDiagnosis = diagnoseStalledDeal({
+    leadId: lead._id,
+    fullName: lead.fullName,
+    phone: lead.phone,
+    pipelineStage: lead.pipelineStage,
+    createdAt: lead.createdAt,
+    updatedAt: lead.updatedAt,
+    lastContactedAt: lead.lastContactedAt,
+    desiredBhk: lead.desiredBhk,
+    budgetMaxInLakhs: lead.budgetMaxInLakhs,
+    preferredLocalities: lead.preferredLocalities,
+    rawRequirementText: lead.rawRequirementText,
+  });
+
   return (
     <div
       ref={setNodeRef}
@@ -424,6 +441,30 @@ Would you like me to share their MahaRERA registered CAD floor plans and video w
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* AI Stalled Deal Nudge Capsule */}
+      {!isClosed && stalledDiagnosis.isStalled && (
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            let clean = lead.phone.replace(/[^\d]/g, "");
+            if (clean.length === 10) clean = `91${clean}`;
+            window.open(`https://wa.me/${clean}?text=${encodeURIComponent(stalledDiagnosis.suggestedReengagementPitch)}`, "_blank");
+          }}
+          className="mt-2.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-900 border border-amber-200/90 flex items-center justify-between text-[10px] font-mono transition-all cursor-pointer shadow-2xs group/stalled"
+          title={stalledDiagnosis.reason}
+        >
+          <span className="flex items-center gap-1.5 font-bold truncate">
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
+            <span className="text-amber-800">⚠️ Stalled ({stalledDiagnosis.daysInactive}d):</span>
+            <span className="text-amber-700 truncate font-normal">Re-engage lead</span>
+          </span>
+          <span className="text-[9px] font-bold text-amber-900 bg-amber-200/80 group-hover/stalled:bg-amber-300 px-1.5 py-0.5 rounded-md shrink-0 flex items-center gap-0.5 transition-colors">
+            <span>Nudge</span>
+            <ArrowRight className="w-2.5 h-2.5" />
+          </span>
         </div>
       )}
 

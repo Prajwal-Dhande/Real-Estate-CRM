@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Lead, Activity, PipelineStage } from "@/types";
 import { formatCurrencyLakhs, formatDate } from "@/lib/utils";
 import { fetchActivitiesByLead, createActivity, updateLeadStage } from "@/lib/api";
+import { diagnoseStalledDeal } from "@/lib/genAiCopilot";
 import { 
   X, 
   Sparkles, 
@@ -24,7 +25,12 @@ import {
   Megaphone,
   Globe,
   UserCheck,
-  Target
+  Target,
+  AlertTriangle,
+  ArrowRight,
+  Zap,
+  ShieldAlert,
+  Lightbulb
 } from "lucide-react";
 
 interface LeadDetailDrawerProps {
@@ -46,6 +52,7 @@ export function LeadDetailDrawer({ lead, onClose, onLeadUpdated }: LeadDetailDra
   const [submittingActivity, setSubmittingActivity] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<"ai" | "properties" | "activities" | "whatsapp">("ai");
   const [copiedPitch, setCopiedPitch] = useState<boolean>(false);
+  const [copiedNudge, setCopiedNudge] = useState<boolean>(false);
 
   const STAGES: PipelineStage[] = [
     "New Inquiry",
@@ -130,6 +137,21 @@ export function LeadDetailDrawer({ lead, onClose, onLeadUpdated }: LeadDetailDra
     setCopiedPitch(true);
     setTimeout(() => setCopiedPitch(false), 2000);
   };
+
+  // AI Stalled Deal Prediction & Proactive Diagnostics
+  const stalledDiagnosis = diagnoseStalledDeal({
+    leadId: lead._id,
+    fullName: lead.fullName,
+    phone: lead.phone,
+    pipelineStage: lead.pipelineStage,
+    createdAt: lead.createdAt,
+    updatedAt: lead.updatedAt,
+    lastContactedAt: lead.lastContactedAt,
+    desiredBhk: lead.desiredBhk,
+    budgetMaxInLakhs: lead.budgetMaxInLakhs,
+    preferredLocalities: lead.preferredLocalities,
+    rawRequirementText: lead.rawRequirementText,
+  });
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/40 backdrop-blur-xs flex justify-end animate-in fade-in duration-150">
@@ -277,6 +299,94 @@ export function LeadDetailDrawer({ lead, onClose, onLeadUpdated }: LeadDetailDra
           {/* TAB 1: AI Score Breakdown */}
           {activeTab === "ai" && (
             <div className="space-y-4 animate-in fade-in duration-150">
+              {/* AI Stalled Deal Diagnostics & Actionable Copilot Nudge */}
+              {stalledDiagnosis.isStalled && lead.pipelineStage !== "Closed Won" && lead.pipelineStage !== "Closed Lost" && (
+                <div className={`p-4 rounded-xl border space-y-3 ${
+                  stalledDiagnosis.urgencyLevel === "Critical"
+                    ? "bg-rose-50/90 border-rose-300 text-rose-950"
+                    : stalledDiagnosis.urgencyLevel === "High"
+                    ? "bg-amber-50/90 border-amber-300 text-amber-950"
+                    : "bg-slate-50 border-amber-200 text-slate-900"
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2.5 h-2.5 rounded-full ${
+                        stalledDiagnosis.urgencyLevel === "Critical" ? "bg-rose-600 animate-ping" : "bg-amber-500 animate-pulse"
+                      }`} />
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                        AI Stalled Deal Diagnostics
+                      </span>
+                    </div>
+
+                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                      stalledDiagnosis.urgencyLevel === "Critical"
+                        ? "bg-rose-100 text-rose-800 border-rose-300"
+                        : "bg-amber-100 text-amber-800 border-amber-300"
+                    }`}>
+                      {stalledDiagnosis.urgencyLevel} Urgency • {stalledDiagnosis.daysInactive}d Inactive
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-700 leading-relaxed">
+                    <span className="font-bold text-slate-900 font-mono">Status: </span>
+                    {stalledDiagnosis.reason}
+                  </p>
+
+                  <div className="p-3 rounded-lg bg-white/90 border border-amber-200/80 space-y-2">
+                    <div className="flex items-center gap-1.5 text-amber-800 font-mono font-semibold text-[11px]">
+                      <Lightbulb className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Actionable Smart Nudge</span>
+                    </div>
+                    <p className="text-xs text-slate-800 leading-relaxed font-medium">
+                      "{stalledDiagnosis.smartNudge}"
+                    </p>
+                    <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                      <span className="text-[10px] font-mono text-slate-500">Strategy:</span>
+                      <span className="text-[10px] font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
+                        {stalledDiagnosis.actionStrategy}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 1-Click WhatsApp Re-engagement Nudge Action */}
+                  <div className="flex items-center gap-2 pt-1">
+                    <a
+                      href={getCleanWhatsAppUrl(lead.phone, stalledDiagnosis.suggestedReengagementPitch)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-mono font-bold transition-all shadow-xs active:scale-98"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      <span>Send Nudge on WhatsApp</span>
+                    </a>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(stalledDiagnosis.suggestedReengagementPitch);
+                        setCopiedNudge(true);
+                        setTimeout(() => setCopiedNudge(false), 2000);
+                      }}
+                      className="px-3 py-2 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-mono font-medium transition-colors inline-flex items-center gap-1"
+                      title="Copy re-engagement pitch text"
+                    >
+                      {copiedNudge ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          <span className="text-emerald-700 font-bold">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5 text-slate-500" />
+                          <span>Copy Pitch</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Score Metric Card */}
               <div className="p-4 rounded-lg bg-slate-900 text-white space-y-3">
                 <div className="flex items-center justify-between text-xs font-mono">

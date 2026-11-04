@@ -161,3 +161,4 @@ export function formatIndianDenomination(amountInr: number): string {
   }
   return formatInr(amountInr);
 }
+

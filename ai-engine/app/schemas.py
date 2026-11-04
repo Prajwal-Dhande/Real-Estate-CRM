@@ -90,3 +90,50 @@ class MatchPropertiesRequest(BaseModel):
 
 class MatchPropertiesResponse(BaseModel):
     matches: list[MatchedProperty]
+
+
+# ──────────────────────────────────────────────
+# POST /generate-marketing-copy
+# ──────────────────────────────────────────────
+
+class GenerateMarketingCopyRequest(BaseModel):
+    locality: str
+    bhk: int
+    carpetAreaSqFt: float
+    furnishing: str = "Semi-Furnished"
+    amenities: list[str] = Field(default_factory=list)
+    listedPriceInLakhs: float
+    builderName: Optional[str] = "Nagpur Premier Estates"
+    reraNumber: Optional[str] = "P50500028192"
+    possessionDate: Optional[str] = "Ready to Move"
+
+
+class GenerateMarketingCopyResponse(BaseModel):
+    whatsappTeaser: str
+    seoDescription: str
+    instagramCaption: str
+
+
+# ──────────────────────────────────────────────
+# POST /predict-stalled-deal
+# ──────────────────────────────────────────────
+
+class PredictStalledDealRequest(BaseModel):
+    leadId: str
+    fullName: str
+    pipelineStage: str
+    daysInactive: int = 0
+    desiredBhk: int
+    budgetMaxInLakhs: float
+    preferredLocalities: list[str] = Field(default_factory=list)
+
+
+class PredictStalledDealResponse(BaseModel):
+    isStalled: bool
+    daysInactive: int
+    urgencyLevel: str
+    reason: str
+    smartNudge: str
+    actionStrategy: str
+    suggestedPitch: str
+

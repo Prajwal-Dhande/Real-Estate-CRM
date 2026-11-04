@@ -7,6 +7,7 @@ import { NewPropertyModal } from "@/components/properties/NewPropertyModal";
 import { BlueprintViewerModal } from "@/components/properties/BlueprintViewerModal";
 import { FinancialCalculatorModal } from "@/components/properties/FinancialCalculatorModal";
 import { PropertyBrochureModal } from "@/components/properties/PropertyBrochureModal";
+import { AiMarketingCopyModal } from "@/components/properties/AiMarketingCopyModal";
 import { Property } from "@/types";
 import { fetchProperties } from "@/lib/api";
 import { formatCurrencyLakhs } from "@/lib/utils";
@@ -56,6 +57,7 @@ export default function PropertiesPage() {
   const [viewingBlueprintProperty, setViewingBlueprintProperty] = useState<Property | null>(null);
   const [calculatingProperty, setCalculatingProperty] = useState<Property | null>(null);
   const [brochureProperty, setBrochureProperty] = useState<Property | null>(null);
+  const [aiCopyProperty, setAiCopyProperty] = useState<Property | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [localityFilter, setLocalityFilter] = useState<string>("All");
   const [viewMode, setViewMode] = useState<"split" | "map" | "grid">("split");
@@ -450,6 +452,20 @@ export default function PropertiesPage() {
                               <span>Floor Plan</span>
                             </button>
 
+                            {/* GenAI Marketing Copywriter Modal */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setAiCopyProperty(prop);
+                              }}
+                              className="px-2 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 text-[10px] font-bold flex items-center gap-1 transition-all shadow-2xs"
+                              title="Generate AI Marketing Pitch (WhatsApp / 99acres / IG)"
+                            >
+                              <Sparkles className="w-3 h-3 text-purple-600" />
+                              <span>AI Pitch</span>
+                            </button>
+
                             {/* Feature 3: WhatsApp Share Button */}
                             <button
                               type="button"
@@ -528,6 +544,26 @@ export default function PropertiesPage() {
           property={brochureProperty}
           isOpen={Boolean(brochureProperty)}
           onClose={() => setBrochureProperty(null)}
+        />
+      )}
+
+      {/* GenAI Marketing Pitch Modal */}
+      {aiCopyProperty && (
+        <AiMarketingCopyModal
+          isOpen={Boolean(aiCopyProperty)}
+          onClose={() => setAiCopyProperty(null)}
+          params={{
+            title: aiCopyProperty.title,
+            locality: aiCopyProperty.locality,
+            bhk: aiCopyProperty.bhk,
+            carpetAreaSqFt: aiCopyProperty.carpetAreaSqFt,
+            furnishing: aiCopyProperty.furnishing,
+            amenities: aiCopyProperty.amenities,
+            listedPriceInLakhs: aiCopyProperty.listedPriceInLakhs,
+            builderName: aiCopyProperty.builderName,
+            reraNumber: aiCopyProperty.reraNumber,
+            possessionDate: aiCopyProperty.possessionDate
+          }}
         />
       )}
     </div>

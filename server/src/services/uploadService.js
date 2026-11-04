@@ -74,23 +74,36 @@ async function processUpload({ file, fileType = 'floorPlan', fileName, metadata 
     throw new Error('No file data provided');
   }
 
-  // 1. Check if Cloudinary credentials exist in environment
-  if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+  // 1. Cloudinary Upload (Configured via CLOUDINARY_URL or explicit keys)
+  const hasCloudinary = Boolean(
+    process.env.CLOUDINARY_URL || 
+    (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET)
+  );
+
+  if (hasCloudinary) {
     try {
       const cloudinary = require('cloudinary').v2;
-      cloudinary.config({
-        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-        api_key: process.env.CLOUDINARY_API_KEY,
-        api_secret: process.env.CLOUDINARY_API_SECRET
-      });
+      if (!process.env.CLOUDINARY_URL) {
+        cloudinary.config({
+          cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+          api_key: process.env.CLOUDINARY_API_KEY,
+          api_secret: process.env.CLOUDINARY_API_SECRET
+        });
+      }
 
       const uploadRes = await cloudinary.uploader.upload(file, {
         folder: `estateiq/${fileType}s`,
         resource_type: fileType === 'brochure' ? 'raw' : 'auto'
       });
 
+      // Generate optimized thumbnail URL for real estate previews
+      const thumbnailUrl = uploadRes.secure_url.includes('/upload/') 
+        ? uploadRes.secure_url.replace('/upload/', '/upload/c_fill,w_600,h_450,q_auto,f_auto/')
+        : uploadRes.secure_url;
+
       return {
         url: uploadRes.secure_url,
+        thumbnailUrl,
         fileName: fileName || `${fileType}-${Date.now()}`,
         storage: 'cloudinary',
         size: uploadRes.bytes || 0
@@ -100,18 +113,17 @@ async function processUpload({ file, fileType = 'floorPlan', fileName, metadata 
     }
   }
 
-  // 2. Check if AWS S3 credentials exist
+  // 2. AWS S3 Upload (If credentials present)
   if (process.env.AWS_S3_BUCKET && process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
     try {
-      // S3 upload fallback pattern
       console.log('[UploadService] AWS S3 bucket configured for upload');
     } catch (s3Err) {
       console.warn('[UploadService] S3 upload error:', s3Err.message);
     }
   }
 
-  // 3. Local Storage Handling (Saves file to server/public/uploads)
-  const targetDir = DIRS[fileType] || DIRS.floorPlan;
+  // 3. Local Storage Handling (Saves file to server/public/uploads/{fileType}s)
+  const targetDir = DIRS[fileType] || DIRS.image;
   const safeName = (fileName || `${fileType}-${Date.now()}`).replace(/[^a-zA-Z0-9_.-]/g, '_');
   const uniqueName = `${Date.now()}-${safeName}`;
   const filePath = path.join(targetDir, uniqueName);
@@ -123,8 +135,10 @@ async function processUpload({ file, fileType = 'floorPlan', fileName, metadata 
       const buffer = Buffer.from(matches[2], 'base64');
       fs.writeFileSync(filePath, buffer);
       const host = process.env.SERVER_URL || 'http://localhost:5000';
+      const fileUrl = `${host}/uploads/${fileType}s/${uniqueName}`;
       return {
-        url: `${host}/uploads/${fileType}s/${uniqueName}`,
+        url: fileUrl,
+        thumbnailUrl: fileUrl,
         fileName: safeName,
         storage: 'local',
         size: buffer.length
@@ -136,6 +150,7 @@ async function processUpload({ file, fileType = 'floorPlan', fileName, metadata 
   if (typeof file === 'string' && (file.startsWith('http://') || file.startsWith('https://'))) {
     return {
       url: file,
+      thumbnailUrl: file,
       fileName: fileName || path.basename(file),
       storage: 'external',
       size: 0
@@ -147,8 +162,10 @@ async function processUpload({ file, fileType = 'floorPlan', fileName, metadata 
     const svgPath = path.join(targetDir, `${Date.now()}-blueprint.svg`);
     fs.writeFileSync(svgPath, file, 'utf8');
     const host = process.env.SERVER_URL || 'http://localhost:5000';
+    const svgUrl = `${host}/uploads/${fileType}s/${path.basename(svgPath)}`;
     return {
-      url: `${host}/uploads/${fileType}s/${path.basename(svgPath)}`,
+      url: svgUrl,
+      thumbnailUrl: svgUrl,
       fileName: 'blueprint.svg',
       storage: 'local',
       size: file.length
@@ -158,10 +175,32 @@ async function processUpload({ file, fileType = 'floorPlan', fileName, metadata 
   throw new Error('Unsupported file format. Please provide a Base64 data URL, image, PDF, or SVG.');
 }
 
+/**
+ * Handle Multiple Image Uploads in Parallel
+ */
+async function processMultipleUploads({ files, fileType = 'image' }) {
+  if (!Array.isArray(files) || files.length === 0) {
+    return [];
+  }
+
+  const uploadPromises = files.map(async (item, index) => {
+    const fileData = typeof item === 'string' ? item : item.file;
+    const fileName = typeof item === 'object' && item.fileName ? item.fileName : `photo-${index + 1}.jpg`;
+    return processUpload({
+      file: fileData,
+      fileType,
+      fileName,
+      metadata: typeof item === 'object' ? item.metadata : {}
+    });
+  });
+
+  return Promise.all(uploadPromises);
+}
+
 module.exports = {
   processUpload,
+  processMultipleUploads,
   generateSvgFloorPlan,
   UPLOADS_ROOT,
   DIRS
 };
-

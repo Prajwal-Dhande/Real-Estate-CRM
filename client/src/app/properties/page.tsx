@@ -466,6 +466,19 @@ export default function PropertiesPage() {
                               <span>AI Pitch</span>
                             </button>
 
+                            {/* Public Shareable Client View Link */}
+                            <a
+                              href={`/p/${prop._id}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 text-[10px] font-bold flex items-center gap-1 transition-all shadow-2xs"
+                              title="Open Public Shareable Client View (/p/:id)"
+                            >
+                              <ExternalLink className="w-3 h-3 text-blue-600" />
+                              <span>Client Link</span>
+                            </a>
+
                             {/* Feature 3: WhatsApp Share Button */}
                             <button
                               type="button"

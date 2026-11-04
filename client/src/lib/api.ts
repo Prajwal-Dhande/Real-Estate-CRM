@@ -883,6 +883,28 @@ export async function fetchProperties(query?: string): Promise<Property[]> {
 }
 
 /**
+ * Fetch a single property by its ID (Public or Authenticated)
+ */
+export async function fetchPropertyById(id: string): Promise<Property | null> {
+  try {
+    const res = await fetch(`${API_BASE}/properties/${id}`, {
+      headers: getHeaders(),
+      cache: "no-store"
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.property) return data.property;
+    }
+  } catch (err) {
+    console.warn(`[API] Failed to fetch property ${id} from server:`, err);
+  }
+
+  // Fallback to mock list
+  const found = MOCK_PROPERTIES.find((p) => p._id === id);
+  return found || MOCK_PROPERTIES[0] || null;
+}
+
+/**
  * Create a new property
  */
 export async function createProperty(payload: Partial<Property>): Promise<Property> {
@@ -1216,6 +1238,35 @@ export async function uploadPropertyDocument(
         storage: "local-fallback"
       }
     };
+  }
+}
+
+/**
+ * Upload multiple property photos to Cloudinary / Server Storage (Enterprise Uploader)
+ */
+export async function uploadPropertyImages(
+  files: { file: string; fileName: string }[]
+): Promise<{ url: string; thumbnailUrl: string; fileName: string; storage: string }[]> {
+  try {
+    const res = await fetch(`${API_BASE}/properties/upload`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({ files, fileType: "image" })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Upload failed");
+    }
+    const data = await res.json();
+    return data.data;
+  } catch (err: any) {
+    console.warn("[API] Local fallback for uploadPropertyImages:", err.message);
+    return files.map((item, idx) => ({
+      url: item.file.startsWith("data:") ? item.file : "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      thumbnailUrl: item.file.startsWith("data:") ? item.file : "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      fileName: item.fileName || `photo-${idx + 1}.jpg`,
+      storage: "local-fallback"
+    }));
   }
 }
 

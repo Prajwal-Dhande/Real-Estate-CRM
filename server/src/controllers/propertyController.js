@@ -356,11 +356,25 @@ async function deleteProperty(req, res) {
  */
 async function uploadDocument(req, res) {
   try {
-    const { file, fileType = 'floorPlan', fileName, metadata } = req.body;
+    const { file, files, fileType = 'floorPlan', fileName, metadata } = req.body;
+
+    // Bulk/Multiple files upload support
+    if (files && Array.isArray(files) && files.length > 0) {
+      const results = await uploadService.processMultipleUploads({
+        files,
+        fileType
+      });
+      return res.status(200).json({
+        success: true,
+        message: `${results.length} files uploaded successfully`,
+        data: results
+      });
+    }
+
     if (!file) {
       return res.status(400).json({
         success: false,
-        message: 'No file provided for upload'
+        message: 'No file or files array provided for upload'
       });
     }
 

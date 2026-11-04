@@ -1,6 +1,7 @@
 version: "3.8"
 
 services:
+  # 1. MongoDB Database
   mongodb:
     image: mongo:7.0
     container_name: estateiq-mongodb
@@ -11,9 +12,15 @@ services:
     environment:
       MONGO_INITDB_DATABASE: estateiq
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - estateiq-network
 
+  # 2. Redis Cache & Job Queue
   redis:
     image: redis:7-alpine
     container_name: estateiq-redis
@@ -23,6 +30,84 @@ services:
       - redis_data:/data
     command: redis-server --appendonly yes
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - estateiq-network
+
+  # 3. AI Copilot & Valuation Microservice (FastAPI + ML)
+  ai-engine:
+    build:
+      context: ./ai-engine
+      dockerfile: Dockerfile
+    container_name: estateiq-ai-engine
+    ports:
+      - "8001:8001"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PORT=8001
+      - HOST=0.0.0.0
+    restart: unless-stopped
+    networks:
+      - estateiq-network
+
+  # 4. Core Backend API (Node.js + Express + BullMQ + Socket.io)
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: estateiq-server
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongodb:27017/estateiq
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - AI_ENGINE_URL=http://ai-engine:8001/api/v1
+      - CLIENT_URL=http://localhost:3000
+      - SERVER_URL=http://localhost:5000
+      - JWT_SECRET=${JWT_SECRET:-estateiq_nagpur_real_estate_jwt_secret_2026}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME:-}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY:-}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET:-}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET:-}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+    volumes:
+      - uploads_data:/app/public/uploads
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ai-engine:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - estateiq-network
+
+  # 5. Frontend Client (Next.js 14 App Router)
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:5000
+        - NEXT_PUBLIC_AI_ENGINE_URL=http://localhost:8001
+    container_name: estateiq-client
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    depends_on:
+      - server
+    restart: unless-stopped
     networks:
       - estateiq-network
 
@@ -30,6 +115,8 @@ volumes:
   mongo_data:
     driver: local
   redis_data:
+    driver: local
+  uploads_data:
     driver: local
 
 networks:

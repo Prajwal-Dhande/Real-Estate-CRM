@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Property, PredictPriceResult } from "@/types";
-import { createProperty, predictPrice, uploadPropertyDocument } from "@/lib/api";
+import { createProperty, predictPrice, uploadPropertyDocument, uploadPropertyImages } from "@/lib/api";
 import { formatCurrencyLakhs } from "@/lib/utils";
 import { AiMarketingCopyModal } from "@/components/properties/AiMarketingCopyModal";
 import { 
@@ -20,7 +20,11 @@ import {
   Sparkles,
   Eye,
   Download,
-  Bot
+  Bot,
+  ImagePlus,
+  Trash2,
+  Star,
+  Image as ImageIcon
 } from "lucide-react";
 
 interface NewPropertyModalProps {
@@ -91,7 +95,9 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
   const [possessionDate, setPossessionDate] = useState("Ready to Move");
   const [floorPlanUrl, setFloorPlanUrl] = useState<string>("");
   const [brochureUrl, setBrochureUrl] = useState<string>("https://maharera.mahaonline.gov.in");
-  const [selectedImage, setSelectedImage] = useState<string>(PRESET_IMAGES[0]);
+  const [images, setImages] = useState<string[]>([PRESET_IMAGES[0], PRESET_IMAGES[1]]);
+  const [isUploadingImages, setIsUploadingImages] = useState<boolean>(false);
+  const [dragOver, setDragOver] = useState<boolean>(false);
   const [uploadingDoc, setUploadingDoc] = useState<boolean>(false);
   const [showBlueprintPreview, setShowBlueprintPreview] = useState<boolean>(false);
   
@@ -162,6 +168,47 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
 
   const currentFloorPlan = floorPlanUrl || `/api/properties/blueprint/sample?bhk=${bhk}&carpetAreaSqFt=${carpetAreaSqFt}`;
 
+  // Drag & Drop / Multi-file Photo Upload Handler (Cloudinary / Local Server)
+  const handlePhotoUpload = async (fileList: FileList | null) => {
+    if (!fileList || fileList.length === 0) return;
+    setIsUploadingImages(true);
+    try {
+      const filesToProcess: { file: string; fileName: string }[] = [];
+      for (let i = 0; i < fileList.length; i++) {
+        const file = fileList[i];
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        filesToProcess.push({ file: base64, fileName: file.name });
+      }
+
+      const uploaded = await uploadPropertyImages(filesToProcess);
+      const newUrls = uploaded.map((u) => u.url);
+      setImages((prev) => [...prev, ...newUrls]);
+    } catch (err: any) {
+      alert("Photo upload error: " + err.message);
+    } finally {
+      setIsUploadingImages(false);
+    }
+  };
+
+  const handleRemovePhoto = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSetCoverPhoto = (index: number) => {
+    if (index === 0) return;
+    setImages((prev) => {
+      const next = [...prev];
+      const [item] = next.splice(index, 1);
+      next.unshift(item);
+      return next;
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !description || !locality) return;
@@ -193,7 +240,7 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
         possessionDate: possessionDate || "Ready to Move",
         floorPlanUrl: currentFloorPlan,
         brochureUrl: brochureUrl || "https://maharera.mahaonline.gov.in",
-        images: [selectedImage]
+        images: images.length > 0 ? images : [PRESET_IMAGES[0]]
       });
 
       onPropertyCreated(created);
@@ -506,6 +553,118 @@ export function NewPropertyModal({ isOpen, onClose, onPropertyCreated }: NewProp
                 className="w-full text-xs font-mono font-bold text-slate-900 p-2 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-slate-900 bg-slate-50/70"
               />
             </div>
+          </div>
+
+          {/* REAL PROPERTY PHOTOS (Cloudinary / Local Uploader) */}
+          <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/90 space-y-3 font-mono">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-800 flex items-center gap-1.5 uppercase tracking-wide">
+                <ImageIcon className="w-3.5 h-3.5 text-indigo-600" />
+                Property Photo Gallery ({images.length} photos)
+              </span>
+              <span className="text-[10px] text-slate-400">
+                Cloudinary &amp; Local Storage Ready
+              </span>
+            </div>
+
+            {/* Drag & Drop Upload Zone */}
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOver(true);
+              }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setDragOver(false);
+                handlePhotoUpload(e.dataTransfer.files);
+              }}
+              className={`border-2 border-dashed rounded-xl p-4 text-center transition-all ${
+                dragOver
+                  ? "border-indigo-500 bg-indigo-50/50"
+                  : "border-slate-200 bg-white hover:border-slate-300"
+              }`}
+            >
+              <input
+                type="file"
+                id="property-photo-input"
+                multiple
+                accept="image/*"
+                onChange={(e) => handlePhotoUpload(e.target.files)}
+                className="hidden"
+              />
+              <label
+                htmlFor="property-photo-input"
+                className="cursor-pointer flex flex-col items-center justify-center gap-1.5"
+              >
+                <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <ImagePlus className="w-5 h-5" />
+                </div>
+                <p className="text-xs font-semibold text-slate-800">
+                  {isUploadingImages ? "Uploading photos..." : "Drag & drop photos here, or click to browse"}
+                </p>
+                <p className="text-[10px] text-slate-400">
+                  Supports JPG, PNG, WebP • Auto-optimizes &amp; generates thumbnails
+                </p>
+              </label>
+            </div>
+
+            {/* Thumbnail Previews Grid */}
+            {images.length > 0 && (
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-[10px] text-slate-500">
+                  <span>First photo is the default Cover Photo</span>
+                  <button
+                    type="button"
+                    onClick={() => setImages([...PRESET_IMAGES])}
+                    className="text-indigo-600 hover:text-indigo-800 underline cursor-pointer"
+                  >
+                    Load Nagpur Sample Photos
+                  </button>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  {images.map((imgUrl, idx) => (
+                    <div
+                      key={idx}
+                      className="group relative aspect-4/3 rounded-lg overflow-hidden border border-slate-200 bg-slate-100"
+                    >
+                      <img
+                        src={imgUrl}
+                        alt={`Photo ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+
+                      {/* Cover Badge */}
+                      {idx === 0 ? (
+                        <span className="absolute top-1 left-1 bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-xs flex items-center gap-0.5">
+                          <Star className="w-2.5 h-2.5 fill-white" />
+                          <span>Cover</span>
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleSetCoverPhoto(idx)}
+                          className="absolute top-1 left-1 bg-slate-900/70 hover:bg-slate-900 text-white text-[9px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                          title="Make Cover Photo"
+                        >
+                          Set Cover
+                        </button>
+                      )}
+
+                      {/* Remove Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePhoto(idx)}
+                        className="absolute top-1 right-1 p-1 bg-rose-600 hover:bg-rose-700 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity shadow-xs cursor-pointer"
+                        title="Delete photo"
+                      >
+                        <Trash2 className="w-2.5 h-2.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Amenities Pills */}

@@ -162,3 +162,6 @@ export function formatIndianDenomination(amountInr: number): string {
   return formatInr(amountInr);
 }
 
+// Alias for convenience
+export const calculatePropertyFinancials = calculateFinancialBreakdown;
+

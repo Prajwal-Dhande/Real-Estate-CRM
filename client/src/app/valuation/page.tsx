@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { predictPrice } from "@/lib/api";
 import { PredictPriceResult } from "@/types";
 import { formatCurrencyLakhs } from "@/lib/utils";
+import { calculateFinancialBreakdown, formatInr, formatIndianDenomination } from "@/lib/financials";
 import { 
   BrainCircuit, 
   Sparkles, 
@@ -18,7 +19,10 @@ import {
   HelpCircle,
   Cpu,
   BarChart3,
-  Sliders
+  Sliders,
+  Coins,
+  Receipt,
+  Share2
 } from "lucide-react";
 
 const LOCALITY_DATA = [
@@ -44,6 +48,12 @@ export default function ValuationSandboxPage() {
   const [furnishing, setFurnishing] = useState("Semi-Furnished");
   const [amenitiesCount, setAmenitiesCount] = useState<number>(4);
 
+  // Financial & Loan Suite State
+  const [valDownPayment, setValDownPayment] = useState<number>(20);
+  const [valTenure, setValTenure] = useState<number>(20);
+  const [valInterest, setValInterest] = useState<number>(8.5);
+  const [valIsWoman, setValIsWoman] = useState<boolean>(false);
+
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PredictPriceResult>({
     estimatedPriceInLakhs: 73.67,
@@ -51,6 +61,20 @@ export default function ValuationSandboxPage() {
     priceRangeMax: 79.56,
     confidenceScore: 0.88
   });
+
+  const valFinancial = calculateFinancialBreakdown({
+    propertyPriceInLakhs: result.estimatedPriceInLakhs,
+    downPaymentPercent: valDownPayment,
+    interestRateAnnual: valInterest,
+    tenureYears: valTenure,
+    isWomanBuyer: valIsWoman,
+    isUnderConstruction: false,
+  });
+
+  const handleShareValuationWhatsApp = () => {
+    const text = `*ESTATEIQ AI VALUATION & FINANCIAL ESTIMATE*\n📍 *${bhk} BHK in ${locality}, Nagpur*\n📐 Area: ${carpetAreaSqFt} sq.ft • Floor ${floorNumber}/${totalFloors}\n🤖 AI Estimated Value: ₹${result.estimatedPriceInLakhs.toFixed(2)} Lakhs (Conf. ${Math.round(result.confidenceScore * 100)}%)\n\n📑 *ON-ROAD COST SHEET (Nagpur NMC):*\n• Stamp Duty (${valFinancial.stampDutyPercent}%): ${formatInr(valFinancial.stampDutyInr)}\n• Registration Fee: ${formatInr(valFinancial.registrationFeeInr)}\n• Net On-Road Acquisition: ${formatIndianDenomination(valFinancial.netOnRoadPriceInr)}\n\n🏦 *FINANCING (${valDownPayment}% Down, ${valTenure} Yrs @ ${valInterest}%):*\n• Monthly EMI: ${formatInr(valFinancial.monthlyEmiInr)} / mo\n• Upfront Cash Needed: ${formatIndianDenomination(valFinancial.totalInitialCashRequiredInr)}\n\nShared via EstateIQ Nagpur AI Platform`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+  };
 
   const handlePredict = async () => {
     setLoading(true);
@@ -323,6 +347,101 @@ export default function ValuationSandboxPage() {
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-3 h-3 text-emerald-400 shrink-0" />
                   <span>{amenitiesCount} amenities infrastructure index</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Feature 1: Interactive EMI & Maharashtra Statutory Cost Card */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-200/60">
+                    <Coins className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold font-mono text-slate-900 uppercase tracking-wider">
+                      MahaRERA Financial &amp; EMI Suite
+                    </h3>
+                    <p className="text-[10px] text-slate-500 font-mono">
+                      Amortization on AI fair market estimate
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleShareValuationWhatsApp}
+                  className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-mono font-bold flex items-center gap-1 transition-all shadow-xs cursor-pointer"
+                  title="Share Valuation & Costs on WhatsApp"
+                >
+                  <Share2 className="w-3 h-3" />
+                  <span>Share</span>
+                </button>
+              </div>
+
+              {/* Key Financial Numbers Grid */}
+              <div className="grid grid-cols-2 gap-2.5 font-mono text-xs">
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
+                  <span className="text-[10px] text-slate-500 block">Monthly Loan EMI</span>
+                  <span className="text-sm font-black text-indigo-700">{formatInr(valFinancial.monthlyEmiInr)}</span>
+                  <span className="text-[9px] text-slate-400 block">{valTenure} yrs @ {valInterest}%</span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/60">
+                  <span className="text-[10px] text-emerald-700 block">Net On-Road Total</span>
+                  <span className="text-sm font-black text-emerald-800">{formatIndianDenomination(valFinancial.netOnRoadPriceInr)}</span>
+                  <span className="text-[9px] text-emerald-600 block">incl. 6% Stamp + Reg</span>
+                </div>
+              </div>
+
+              {/* Sliders: Downpayment & Tenure */}
+              <div className="space-y-3 pt-1 border-t border-slate-100 text-xs font-mono">
+                <div>
+                  <div className="flex justify-between text-[11px] mb-1">
+                    <span className="text-slate-600">Down Payment ({valDownPayment}%):</span>
+                    <span className="font-bold text-slate-900">{formatIndianDenomination(valFinancial.downPaymentInr)}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="10"
+                    max="50"
+                    step="5"
+                    value={valDownPayment}
+                    onChange={(e) => setValDownPayment(Number(e.target.value))}
+                    className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-[11px] mb-1">
+                    <span className="text-slate-600">Loan Tenure:</span>
+                    <span className="font-bold text-slate-900">{valTenure} Years</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="5"
+                    max="30"
+                    step="1"
+                    value={valTenure}
+                    onChange={(e) => setValTenure(Number(e.target.value))}
+                    className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  />
+                </div>
+              </div>
+
+              {/* Line items table */}
+              <div className="rounded-xl border border-slate-150 overflow-hidden text-[11px] font-mono divide-y divide-slate-100 bg-slate-50/40">
+                <div className="flex justify-between px-3 py-1.5">
+                  <span className="text-slate-500">Maharashtra Stamp Duty ({valFinancial.stampDutyPercent}%)</span>
+                  <span className="font-semibold text-slate-700">{formatInr(valFinancial.stampDutyInr)}</span>
+                </div>
+                <div className="flex justify-between px-3 py-1.5">
+                  <span className="text-slate-500">Govt. Registration Fee</span>
+                  <span className="font-semibold text-slate-700">{formatInr(valFinancial.registrationFeeInr)}</span>
+                </div>
+                <div className="flex justify-between px-3 py-1.5 bg-indigo-50/40">
+                  <span className="text-indigo-900 font-bold">Total Upfront Cash Needed</span>
+                  <span className="font-black text-indigo-900">{formatIndianDenomination(valFinancial.totalInitialCashRequiredInr)}</span>
                 </div>
               </div>
             </div>

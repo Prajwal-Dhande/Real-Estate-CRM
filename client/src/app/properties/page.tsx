@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import { Header } from "@/components/Header";
 import { NewPropertyModal } from "@/components/properties/NewPropertyModal";
 import { BlueprintViewerModal } from "@/components/properties/BlueprintViewerModal";
+import { FinancialCalculatorModal } from "@/components/properties/FinancialCalculatorModal";
+import { PropertyBrochureModal } from "@/components/properties/PropertyBrochureModal";
 import { Property } from "@/types";
 import { fetchProperties } from "@/lib/api";
 import { formatCurrencyLakhs } from "@/lib/utils";
@@ -29,7 +31,10 @@ import {
   ExternalLink,
   Sparkles,
   ShieldCheck,
-  ChevronDown
+  ChevronDown,
+  Calculator,
+  Printer,
+  Share2
 } from "lucide-react";
 
 // Dynamically import PropertyMap with SSR disabled to prevent Leaflet window errors
@@ -49,6 +54,8 @@ export default function PropertiesPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [viewingBlueprintProperty, setViewingBlueprintProperty] = useState<Property | null>(null);
+  const [calculatingProperty, setCalculatingProperty] = useState<Property | null>(null);
+  const [brochureProperty, setBrochureProperty] = useState<Property | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [localityFilter, setLocalityFilter] = useState<string>("All");
   const [viewMode, setViewMode] = useState<"split" | "map" | "grid">("split");
@@ -113,6 +120,11 @@ export default function PropertiesPage() {
 
     return matchesSearch && matchesLocality && matchesTerritory;
   });
+
+  const handleSharePropertyWhatsApp = (prop: Property) => {
+    const text = `*ESTATEIQ PROPERTY ENQUIRY*\n📍 *${prop.title}*\n🏙️ Locality: ${prop.locality}, Nagpur\n📐 ${prop.bhk} BHK • ${prop.carpetAreaSqFt} sq.ft\n💰 Listed Price: ₹${prop.listedPriceInLakhs} Lakhs\n📜 MahaRERA: ${prop.reraNumber || 'Verified'}\n\nWould you like full floor plans, videos and on-road cost sheets?\nShared via EstateIQ Nagpur Platform`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+  };
 
   const territoryPropCount = properties.filter((prop) =>
     assignedLocalities.some((al) => al.toLowerCase() === prop.locality.toLowerCase())
@@ -395,33 +407,61 @@ export default function PropertiesPage() {
                             <span className="truncate">{prop.possessionDate || "Ready to Move"}</span>
                           </div>
 
-                          <div className="flex items-center gap-1.5 shrink-0">
+                          <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
+                            {/* Feature 1: Interactive EMI & Cost Sheet */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCalculatingProperty(prop);
+                              }}
+                              className="px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold flex items-center gap-1 transition-all shadow-2xs"
+                              title="Calculate Home Loan EMI & Maharashtra Stamp Duty"
+                            >
+                              <Calculator className="w-3 h-3 text-emerald-600" />
+                              <span>₹ Costs / EMI</span>
+                            </button>
+
+                            {/* Feature 2: 1-Click Branded PDF Brochure */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setBrochureProperty(prop);
+                              }}
+                              className="px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-[10px] font-bold flex items-center gap-1 transition-all shadow-2xs"
+                              title="View & Download Client PDF Brochure"
+                            >
+                              <Printer className="w-3 h-3 text-indigo-600" />
+                              <span>Brochure</span>
+                            </button>
+
+                            {/* CAD Floor Plan Modal */}
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setViewingBlueprintProperty(prop);
                               }}
-                              className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-[11px] font-bold flex items-center gap-1 transition-all shadow-2xs"
+                              className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-[10px] font-bold flex items-center gap-1 transition-all shadow-2xs"
                               title="View Architectural CAD Floor Plan"
                             >
-                              <Compass className="w-3 h-3 text-indigo-600" />
+                              <Compass className="w-3 h-3 text-slate-600" />
                               <span>Floor Plan</span>
                             </button>
 
-                            {prop.brochureUrl && (
-                              <a
-                                href={prop.brochureUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold flex items-center gap-1 transition-all shadow-2xs"
-                                title="Download Certified Project Brochure"
-                              >
-                                <Download className="w-3 h-3 text-slate-500" />
-                                <span>Brochure</span>
-                              </a>
-                            )}
+                            {/* Feature 3: WhatsApp Share Button */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSharePropertyWhatsApp(prop);
+                              }}
+                              className="p-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-[10px] font-bold flex items-center justify-center transition-all shadow-2xs"
+                              title="Share Property Details on WhatsApp"
+                            >
+                              <Share2 className="w-3 h-3" />
+                            </button>
                           </div>
                         </div>
 
@@ -468,6 +508,28 @@ export default function PropertiesPage() {
         property={viewingBlueprintProperty}
         onClose={() => setViewingBlueprintProperty(null)}
       />
+
+      {/* Feature 1: Financial Suite & Cost Sheet Modal */}
+      {calculatingProperty && (
+        <FinancialCalculatorModal
+          property={calculatingProperty}
+          isOpen={Boolean(calculatingProperty)}
+          onClose={() => setCalculatingProperty(null)}
+          onOpenBrochure={() => {
+            setBrochureProperty(calculatingProperty);
+            setCalculatingProperty(null);
+          }}
+        />
+      )}
+
+      {/* Feature 2: 1-Click Branded PDF Brochure Modal */}
+      {brochureProperty && (
+        <PropertyBrochureModal
+          property={brochureProperty}
+          isOpen={Boolean(brochureProperty)}
+          onClose={() => setBrochureProperty(null)}
+        />
+      )}
     </div>
   );
 }

@@ -218,6 +218,25 @@ export function LeadCard({ lead, onClick, onFollowupUpdate }: LeadCardProps) {
     }
   };
 
+  // Direct 1-Click WhatsApp Chat Deep Link
+  const handleDirectWhatsApp = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    let cleanDigits = lead.phone.replace(/[^\d]/g, "");
+    if (cleanDigits.length === 10) cleanDigits = `91${cleanDigits}`;
+    if (!cleanDigits.startsWith("91") && cleanDigits.length === 12) cleanDigits = cleanDigits;
+
+    const localities = lead.preferredLocalities && lead.preferredLocalities.length > 0 
+      ? lead.preferredLocalities.join(", ") 
+      : "Nagpur prime localities";
+      
+    const message = 
+`Hi ${lead.fullName}, this is Prajwal from EstateIQ Nagpur Real Estate.
+I have curated top verified properties matching your ${lead.desiredBhk} BHK requirement in ${localities} within your ₹${lead.budgetMaxInLakhs}L budget.
+Would you like me to share their MahaRERA registered CAD floor plans and video walkthroughs?`;
+
+    window.open(`https://wa.me/${cleanDigits}?text=${encodeURIComponent(message)}`, "_blank");
+  };
+
   return (
     <div
       ref={setNodeRef}
@@ -253,10 +272,21 @@ export function LeadCard({ lead, onClick, onFollowupUpdate }: LeadCardProps) {
               </h4>
               {renderSourceBadge(lead.source, lead.campaignName)}
             </div>
-            <p className="text-[10px] text-slate-400 mt-0.5 truncate flex items-center gap-1 font-mono">
-              <Phone className="w-2.5 h-2.5 text-slate-300 shrink-0" />
-              <span>{lead.phone}</span>
-            </p>
+            <div className="flex items-center justify-between gap-1 mt-0.5">
+              <p className="text-[10px] text-slate-400 truncate flex items-center gap-1 font-mono">
+                <Phone className="w-2.5 h-2.5 text-slate-300 shrink-0" />
+                <span>{lead.phone}</span>
+              </p>
+              <button
+                type="button"
+                onClick={handleDirectWhatsApp}
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/80 text-[9px] font-mono font-bold transition-all shadow-2xs hover:scale-105 active:scale-95 shrink-0"
+                title={`Launch 1-click WhatsApp chat with ${lead.fullName}`}
+              >
+                <MessageSquare className="w-2.5 h-2.5 text-emerald-600" />
+                <span>WA</span>
+              </button>
+            </div>
           </div>
         </div>
 

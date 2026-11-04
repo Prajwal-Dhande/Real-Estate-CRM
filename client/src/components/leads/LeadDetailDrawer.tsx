@@ -114,9 +114,16 @@ export function LeadDetailDrawer({ lead, onClose, onLeadUpdated }: LeadDetailDra
     }
   };
 
+  // Clean international WhatsApp phone number generator
+  const getCleanWhatsAppUrl = (phone: string, text: string) => {
+    let clean = phone.replace(/[^\d]/g, "");
+    if (clean.length === 10) clean = `91${clean}`;
+    return `https://wa.me/${clean}?text=${encodeURIComponent(text)}`;
+  };
+
   // Generate personalized WhatsApp Pitch
   const topProperty = lead.recommendedProperties?.[0]?.property;
-  const whatsappPitch = `Namaste ${lead.fullName}, I am Rahul from EstateIQ Nagpur. Based on your requirement for a ${lead.desiredBhk} BHK property in ${lead.preferredLocalities?.join(", ") || "Nagpur"} within ₹${lead.budgetMaxInLakhs} Lakhs, our AI matcher identified an exclusive option for you:${topProperty ? `\n\n📍 ${topProperty.title} (${topProperty.locality})\n💰 Listed at: ₹${topProperty.listedPriceInLakhs}L (${topProperty.carpetAreaSqFt} sq.ft)` : ""}\n\nWould you like me to share the verified floor plan and schedule a site visit this week?`;
+  const whatsappPitch = `Namaste ${lead.fullName}, I am Prajwal from EstateIQ Nagpur Real Estate. Based on your requirement for a ${lead.desiredBhk} BHK property in ${lead.preferredLocalities?.join(", ") || "Nagpur"} within ₹${lead.budgetMaxInLakhs} Lakhs, our AI matcher identified an exclusive option for you:${topProperty ? `\n\n📍 ${topProperty.title} (${topProperty.locality})\n💰 Listed at: ₹${topProperty.listedPriceInLakhs}L (${topProperty.carpetAreaSqFt} sq.ft)` : ""}\n\nWould you like me to share the verified MahaRERA CAD floor plan and schedule a site visit this week?`;
 
   const handleCopyPitch = () => {
     navigator.clipboard.writeText(whatsappPitch);
@@ -148,12 +155,25 @@ export function LeadDetailDrawer({ lead, onClose, onLeadUpdated }: LeadDetailDra
             </p>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <a
+              href={getCleanWhatsAppUrl(lead.phone, whatsappPitch)}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-mono font-bold transition-all shadow-xs active:scale-95"
+              title="Launch 1-Click WhatsApp Chat"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>WhatsApp</span>
+            </a>
+
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Stage Selector Bar */}
@@ -593,13 +613,13 @@ export function LeadDetailDrawer({ lead, onClose, onLeadUpdated }: LeadDetailDra
                 </button>
 
                 <a
-                  href={`https://wa.me/91${lead.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(whatsappPitch)}`}
+                  href={getCleanWhatsAppUrl(lead.phone, whatsappPitch)}
                   target="_blank"
                   rel="noreferrer"
                   className="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-xs font-mono font-semibold flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <MessageSquare className="w-3.5 h-3.5" />
-                  <span>Send WhatsApp</span>
+                  <span>Launch WhatsApp Chat</span>
                 </a>
               </div>
             </div>

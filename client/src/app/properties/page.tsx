@@ -80,7 +80,14 @@ export default function PropertiesPage() {
     loadProperties();
   }, [user]);
 
-  // Deep-link integration from Global Command Palette (Priority 5)
+  // Listen for global custom events to open modals directly from Sidebar / Command Palette
+  useEffect(() => {
+    const handleOpenNewProperty = () => setIsNewModalOpen(true);
+    window.addEventListener("open-new-property-modal", handleOpenNewProperty);
+    return () => window.removeEventListener("open-new-property-modal", handleOpenNewProperty);
+  }, []);
+
+  // Deep-link integration from Global Command Palette & Sidebar (Priority 5)
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);

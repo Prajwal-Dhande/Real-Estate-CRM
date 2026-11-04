@@ -89,7 +89,20 @@ export default function LeadsPage() {
     loadLeads();
   }, [user]);
 
-  // Deep-link integration from Global Command Palette (Priority 5)
+  // Deep-link integration from Global Command Palette & Sidebar (Priority 5)
+  useEffect(() => {
+    const handleOpenNewLead = () => setIsNewLeadModalOpen(true);
+    const handleOpenWhatsApp = () => setIsWhatsAppModalOpen(true);
+
+    window.addEventListener("open-new-lead-modal", handleOpenNewLead);
+    window.addEventListener("open-whatsapp-modal", handleOpenWhatsApp);
+
+    return () => {
+      window.removeEventListener("open-new-lead-modal", handleOpenNewLead);
+      window.removeEventListener("open-whatsapp-modal", handleOpenWhatsApp);
+    };
+  }, []);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);

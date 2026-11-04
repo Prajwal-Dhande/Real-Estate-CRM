@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { 
   LayoutDashboard, 
   KanbanSquare, 
@@ -16,7 +16,12 @@ import {
   Repeat, 
   LogOut, 
   Check,
-  Sparkles
+  Sparkles,
+  Plus,
+  ChevronDown,
+  MessageSquare,
+  Users,
+  Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
@@ -50,8 +55,78 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, isAdmin, isAgent, switchDemo, logout } = useAuth();
   const [showSwitchMenu, setShowSwitchMenu] = useState(false);
+  const [showQuickMenu, setShowQuickMenu] = useState(false);
+  const quickMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close Quick Action menu on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (quickMenuRef.current && !quickMenuRef.current.contains(e.target as Node)) {
+        setShowQuickMenu(false);
+      }
+    };
+    if (showQuickMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showQuickMenu]);
+
+  // Keyboard shortcut listener: ⌘N / Ctrl+N or C to toggle quick menu
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // ⌘N or Ctrl+N
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "n") {
+        e.preventDefault();
+        setShowQuickMenu((prev) => !prev);
+        return;
+      }
+
+      // Single 'c' or 'C' shortcut when not inside an input/textarea
+      if (
+        (e.key === "c" || e.key === "C") &&
+        document.activeElement?.tagName !== "INPUT" &&
+        document.activeElement?.tagName !== "TEXTAREA"
+      ) {
+        e.preventDefault();
+        setShowQuickMenu((prev) => !prev);
+        return;
+      }
+
+      // Escape closes the menu
+      if (e.key === "Escape" && showQuickMenu) {
+        setShowQuickMenu(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showQuickMenu]);
+
+  const handleQuickAction = (type: "lead" | "property" | "whatsapp") => {
+    setShowQuickMenu(false);
+    if (type === "lead") {
+      if (pathname === "/leads") {
+        window.dispatchEvent(new CustomEvent("open-new-lead-modal"));
+      } else {
+        router.push("/leads?action=new-lead");
+      }
+    } else if (type === "property") {
+      if (pathname === "/properties") {
+        window.dispatchEvent(new CustomEvent("open-new-property-modal"));
+      } else {
+        router.push("/properties?action=new-property");
+      }
+    } else if (type === "whatsapp") {
+      if (pathname === "/leads") {
+        window.dispatchEvent(new CustomEvent("open-whatsapp-modal"));
+      } else {
+        router.push("/leads?action=simulate-whatsapp");
+      }
+    }
+  };
 
   // Compute user initials
   const initials = user?.name
@@ -94,6 +169,140 @@ export function Sidebar() {
             </span>
           </div>
         </Link>
+      </div>
+
+      {/* Primary Quick Action Split CTA Button (Linear / Salesforce Style) */}
+      <div className="px-3.5 pt-3.5 pb-2 relative" ref={quickMenuRef}>
+        <div className="flex items-center rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-emerald-500 p-[1px] shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/35 transition-all">
+          {/* Main Left Button */}
+          <button
+            type="button"
+            onClick={() => handleQuickAction("lead")}
+            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-l-[11px] bg-gradient-to-r from-indigo-600 via-indigo-500 to-emerald-500 hover:brightness-110 text-white font-bold text-xs tracking-tight transition-all active:scale-[0.99] cursor-pointer group"
+            title="Create New Buyer Lead (Press C or ⌘N)"
+          >
+            <div className="w-4 h-4 rounded-md bg-white/20 flex items-center justify-center shadow-2xs group-hover:rotate-90 transition-transform duration-200">
+              <Plus className="w-3 h-3 text-white" />
+            </div>
+            <span>Quick Action</span>
+          </button>
+
+          {/* Split Divider */}
+          <div className="w-[1px] h-5 bg-white/25" />
+
+          {/* Right Dropdown Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setShowQuickMenu((prev) => !prev)}
+            className="p-2 rounded-r-[11px] bg-emerald-500 hover:bg-emerald-400 text-white transition-all active:scale-[0.96] cursor-pointer flex items-center justify-center"
+            title="More Quick Actions"
+            aria-expanded={showQuickMenu}
+          >
+            <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", showQuickMenu ? "rotate-180" : "")} />
+          </button>
+        </div>
+
+        {/* Dropdown Menu */}
+        {showQuickMenu && (
+          <div className="absolute left-3.5 right-3.5 top-[54px] z-50 bg-[#0F172A] border border-slate-700/90 shadow-2xl rounded-2xl p-1.5 space-y-1 animate-scale-in text-xs">
+            <div className="px-2.5 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-400 border-b border-slate-800 flex items-center justify-between">
+              <span>Instant Actions</span>
+              <kbd className="px-1.5 py-0.2 bg-slate-800 text-[9px] text-slate-400 rounded border border-slate-700">⌘N / C</kbd>
+            </div>
+
+            {/* Option 1: New Buyer Lead */}
+            <button
+              type="button"
+              onClick={() => handleQuickAction("lead")}
+              className="w-full flex items-center justify-between p-2 rounded-xl text-left hover:bg-slate-800/80 transition-all group cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <Users className="w-3.5 h-3.5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-white text-xs truncate group-hover:text-emerald-300 transition-colors">
+                    New Buyer Lead
+                  </p>
+                  <p className="text-[10px] text-slate-400 truncate">
+                    Auto AI Locality & Budget match
+                  </p>
+                </div>
+              </div>
+              <kbd className="px-1.5 py-0.5 text-[9px] font-mono text-slate-400 bg-slate-800/80 rounded border border-slate-700/80">
+                L
+              </kbd>
+            </button>
+
+            {/* Option 2: List New Property */}
+            <button
+              type="button"
+              onClick={() => handleQuickAction("property")}
+              className="w-full flex items-center justify-between p-2 rounded-xl text-left hover:bg-slate-800/80 transition-all group cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-7 h-7 rounded-lg bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <Building2 className="w-3.5 h-3.5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-white text-xs truncate group-hover:text-sky-300 transition-colors">
+                    List New Property
+                  </p>
+                  <p className="text-[10px] text-slate-400 truncate">
+                    MahaRERA & Blueprint upload
+                  </p>
+                </div>
+              </div>
+              <kbd className="px-1.5 py-0.5 text-[9px] font-mono text-slate-400 bg-slate-800/80 rounded border border-slate-700/80">
+                P
+              </kbd>
+            </button>
+
+            {/* Option 3: Simulate WhatsApp Lead */}
+            <button
+              type="button"
+              onClick={() => handleQuickAction("whatsapp")}
+              className="w-full flex items-center justify-between p-2 rounded-xl text-left hover:bg-slate-800/80 transition-all group cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-7 h-7 rounded-lg bg-green-500/15 border border-green-500/30 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <MessageSquare className="w-3.5 h-3.5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-white text-xs truncate group-hover:text-emerald-300 transition-colors">
+                    Simulate WhatsApp
+                  </p>
+                  <p className="text-[10px] text-slate-400 truncate">
+                    Meta Cloud API NLP parser
+                  </p>
+                </div>
+              </div>
+              <kbd className="px-1.5 py-0.5 text-[9px] font-mono text-slate-400 bg-slate-800/80 rounded border border-slate-700/80">
+                W
+              </kbd>
+            </button>
+
+            <div className="border-t border-slate-800/80 my-1" />
+
+            {/* Option 4: Open Command Palette */}
+            <button
+              type="button"
+              onClick={() => {
+                setShowQuickMenu(false);
+                window.dispatchEvent(new CustomEvent("open-command-palette"));
+              }}
+              className="w-full flex items-center justify-between p-2 rounded-xl text-left hover:bg-slate-800/80 transition-all group cursor-pointer text-slate-400 hover:text-slate-200"
+            >
+              <div className="flex items-center gap-2.5">
+                <Search className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-400" />
+                <span className="text-xs">Search or Jump To...</span>
+              </div>
+              <kbd className="px-1.5 py-0.5 text-[9px] font-mono bg-slate-800 rounded border border-slate-700">
+                ⌘K
+              </kbd>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Navigation Links */}
